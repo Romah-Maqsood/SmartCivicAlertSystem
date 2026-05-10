@@ -1,5 +1,20 @@
 var builder = WebApplication.CreateBuilder(args);
 
+// Add MongoDB Context
+builder.Services.AddSingleton<SmartCityPulse.Data.MongoDbContext>();
+
+// Add SignalR
+builder.Services.AddSignalR();
+
+// Add Session support
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -19,6 +34,13 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+
+app.UseSession();
+app.UseRouting();
+
+app.MapHub<SmartCityPulse.Hubs.CityHub>("/cityHub");
+
 
 app.MapControllerRoute(
     name: "default",
