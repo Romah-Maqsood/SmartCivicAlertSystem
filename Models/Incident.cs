@@ -14,7 +14,7 @@ namespace SmartCityPulse.Models
 
         [BsonElement("description")]
         public string Description { get; set; } = string.Empty;
-
+        //location detail
         [BsonElement("location")]
         public string Location { get; set; } = string.Empty;
 
