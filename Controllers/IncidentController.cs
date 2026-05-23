@@ -31,6 +31,13 @@ namespace SmartCityPulse.Controllers
                 incident.Status = "Open";
                 incident.Comments = new List<IncidentComment>();
 
+                // Save citizen ID if logged in
+                var userId = HttpContext.Session.GetString("UserId");
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    incident.ReportedBy = userId;
+                }
+
                 await _context.Incidents.InsertOneAsync(incident);
 
                 TempData["SuccessMessage"] = "✅ Incident reported successfully!";
@@ -43,6 +50,42 @@ namespace SmartCityPulse.Controllers
         public async Task<IActionResult> Index()
         {
             var incidents = await _context.Incidents.Find(_ => true).ToListAsync();
+            return View(incidents);
+        }
+
+        // ==================== GET: Incident Details ====================
+        [HttpGet]
+        public async Task<IActionResult> Details(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            var incident = await _context.Incidents.Find(i => i.Id == id).FirstOrDefaultAsync();
+            if (incident == null)
+            {
+                return NotFound();
+            }
+
+            return View(incident);
+        }
+
+        // ==================== GET: My Incidents (For Citizen) ====================
+        [HttpGet]
+        public async Task<IActionResult> MyIncidents()
+        {
+            var userId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var incidents = await _context.Incidents
+                .Find(i => i.ReportedBy == userId)
+                .SortByDescending(i => i.ReportedAt)
+                .ToListAsync();
+
             return View(incidents);
         }
     }
