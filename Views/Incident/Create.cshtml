@@ -1,7 +1,6 @@
-﻿@model SmartCityPulse.Models.Incident
-@{
-    ViewData["Title"] = "Report Incident";
+﻿@{
     Layout = null;
+    ViewData["Title"] = "Report New Incident";
 }
 
 <!DOCTYPE html>
@@ -10,167 +9,305 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #E8EDF5;
+            color: #1A1F36;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Container */
+        .form-container {
+            width: 100%;
+            max-width: 700px;
+            margin: 40px 20px;
+        }
+
+        /* Card */
+        .form-card {
+            background: #FFFFFF;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            border: 1px solid #EAECF0;
+        }
+
+        /* Header */
+        .form-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+            .form-header i {
+                font-size: 48px;
+                color: #2563EB;
+                margin-bottom: 12px;
             }
 
-            body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-                color: #FFFFFF;
-                min-height: 100vh;
+            .form-header h1 {
+                font-size: 24px;
+                font-weight: 700;
+                color: #1A1F36;
+                margin-bottom: 6px;
             }
 
-            .navbar {
-                background-color: #1E293B;
-                border-bottom: 2px solid #3B82F6;
-                padding: 1rem 2rem;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
+            .form-header p {
+                font-size: 13px;
+                color: #6B7280;
             }
 
-            .navbar-brand {
-                color: white;
-                font-size: 1.5rem;
-                font-weight: bold;
-                text-decoration: none;
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1A1F36;
+            margin-bottom: 8px;
+        }
+
+            .form-label i {
+                color: #2563EB;
+                font-size: 14px;
             }
 
-                .navbar-brand span {
-                    color: #3B82F6;
-                }
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            background: #FFFFFF;
+            border: 1px solid #EAECF0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #1A1F36;
+            transition: all 0.2s ease;
+        }
 
-            .nav-links a {
-                color: #94A3B8;
-                text-decoration: none;
-                margin-left: 1.5rem;
+            .form-control:focus {
+                outline: none;
+                border-color: #2563EB;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
             }
 
-            .container {
-                max-width: 800px;
-                margin: 0 auto;
-                padding: 2rem;
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%236B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+
+        /* Row Layout */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 28px;
+        }
+
+        .btn-submit {
+            flex: 1;
+            background: #2563EB;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+            .btn-submit:hover {
+                background: #1D4ED8;
+                transform: translateY(-1px);
             }
 
-            .card {
-                background: #1E293B;
-                border: 1px solid #334155;
-                border-radius: 16px;
-                padding: 2rem;
+        .btn-cancel {
+            flex: 1;
+            background: #F1F5F9;
+            color: #5A6A7F;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+            .btn-cancel:hover {
+                background: #E2E8F0;
             }
 
-            .card-title {
-                font-size: 1.5rem;
-                margin-bottom: 1.5rem;
-                color: #3B82F6;
-            }
+        /* Alert Messages */
+        .alert-success {
+            background: #DCFCE7;
+            color: #166534;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
 
-            .form-group {
-                margin-bottom: 1rem;
-            }
+        .alert-error {
+            background: #FEF2F2;
+            color: #DC2626;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
 
-                .form-group label {
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    color: #94A3B8;
-                }
+        /* Responsive */
+        @@media (max-width: 640px) {
+            .form-card
 
-            input, select, textarea {
-                width: 100%;
-                padding: 0.75rem;
-                background: #0F172A;
-                border: 1px solid #334155;
-                border-radius: 8px;
-                color: white;
-                font-size: 1rem;
-            }
+        {
+            padding: 24px;
+        }
 
-                input:focus, select:focus, textarea:focus {
-                    outline: none;
-                    border-color: #3B82F6;
-                }
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
 
-            .btn-submit {
-                background: #3B82F6;
-                color: white;
-                border: none;
-                padding: 0.75rem 1.5rem;
-                border-radius: 8px;
-                font-size: 1rem;
-                cursor: pointer;
-                width: 100%;
-            }
+        .btn-group {
+            flex-direction: column;
+        }
 
-                .btn-submit:hover {
-                    background: #2563EB;
-                }
+        .form-container {
+            margin: 20px 16px;
+        }
 
-            .alert-success {
-                background: #14532D;
-                color: #BBF7D0;
-                padding: 1rem;
-                border-radius: 12px;
-                margin-bottom: 1rem;
-            }
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="/" class="navbar-brand">🔥 SMART CIVIC <span>ALERT</span></a>
-        <div class="nav-links">
-            <a href="/Home/Index">Home</a>
-            <a href="/Account/Login">Login</a>
-            <a href="/Incident/Create">Report Incident</a>
-            <a href="/Incident/Index">All Incidents</a>
-        </div>
-    </nav>
-
-    <div class="container">
-        <div class="card">
-            <h1 class="card-title"><i class="fas fa-exclamation-triangle"></i> Report an Incident</h1>
+    <div class="form-container">
+        <div class="form-card">
+            <div class="form-header">
+                <i class="fas fa-clipboard-list"></i>
+                <h1>Report New Incident</h1>
+                <p>Fill out the details below to submit your report</p>
+            </div>
 
             @if (TempData["SuccessMessage"] != null)
             {
-                <div class="alert-success">@TempData["SuccessMessage"]</div>
+                <div class="alert-success">
+                    <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+                </div>
             }
 
-            <form method="post">
-                <div class="form-group">
-                    <label>Title</label>
-                    <input type="text" name="Title" required />
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert-error">
+                    <i class="fas fa-exclamation-triangle"></i> @ViewBag.Error
                 </div>
+            }
+
+            <form method="post" action="/Incident/Create">
                 <div class="form-group">
-                    <label>Description</label>
-                    <textarea name="Description" rows="4" required></textarea>
+                    <label class="form-label">
+                        <i class="fas fa-heading"></i> Title
+                    </label>
+                    <input type="text" name="Title" class="form-control" placeholder="e.g., Fire in Market, Water Leak" required />
                 </div>
+
                 <div class="form-group">
-                    <label>Location</label>
-                    <input type="text" name="Location" required />
+                    <label class="form-label">
+                        <i class="fas fa-align-left"></i> Description
+                    </label>
+                    <textarea name="Description" class="form-control" placeholder="Describe the incident in detail..." required></textarea>
                 </div>
+
                 <div class="form-group">
-                    <label>Severity</label>
-                    <select name="Severity">
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                        <option value="Critical">Critical</option>
-                    </select>
+                    <label class="form-label">
+                        <i class="fas fa-location-dot"></i> Location
+                    </label>
+                    <input type="text" name="Location" class="form-control" placeholder="e.g., Gulshan Chowrangi, Karachi" required />
                 </div>
-                <div class="form-group">
-                    <label>Department (Optional)</label>
-                    <select name="Department">
-                        <option value="">Auto-assign</option>
-                        <option value="Fire">Fire</option>
-                        <option value="Police">Police</option>
-                        <option value="Rescue">Rescue</option>
-                    </select>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-chart-line"></i> Severity
+                        </label>
+                        <select name="Severity" class="form-control" required>
+                            <option value="Low">🟢 Low</option>
+                            <option value="Medium">🟡 Medium</option>
+                            <option value="High">🟠 High</option>
+                            <option value="Critical">🔴 Critical</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-building"></i> Department
+                        </label>
+                        <select name="Department" class="form-control">
+                            <option value="Unassigned">🤖 Auto-assign (AI)</option>
+                            <option value="Fire Department">🚒 Fire Department</option>
+                            <option value="Police Department">🚓 Police Department</option>
+                            <option value="Rescue/Medical">🚑 Rescue/Medical</option>
+                            <option value="Roads Department">🛣️ Roads Department</option>
+                            <option value="Electric Department">💡 Electric Department</option>
+                        </select>
+                    </div>
                 </div>
-                <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Submit Report</button>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane"></i> Submit Incident
+                    </button>
+                    <a href="/Citizen/Index" class="btn-cancel">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
             </form>
         </div>
     </div>
