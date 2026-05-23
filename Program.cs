@@ -1,7 +1,9 @@
+using SmartCityPulse.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add MongoDB Context
-builder.Services.AddSingleton<SmartCityPulse.Data.MongoDbContext>();
+// ✅ MongoDB Context - Simple way
+builder.Services.AddSingleton<MongoDbContext>();  // Auto-detects IConfiguration
 
 // Add SignalR
 builder.Services.AddSignalR();
@@ -15,7 +17,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Add services to the container.
+// Add MVC
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -24,23 +26,15 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
-app.UseAuthorization();
-
 
 app.UseSession();
-app.UseRouting();
-
-//app.MapHub<SmartCityPulse.Hubs.CityHub>("/cityHub");
-
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

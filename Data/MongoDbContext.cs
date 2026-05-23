@@ -7,6 +7,7 @@ namespace SmartCityPulse.Data
     {
         private readonly IMongoDatabase _database;
 
+        // ✅ Simple constructor - sirf configuration lega
         public MongoDbContext(IConfiguration configuration)
         {
             var connectionString = configuration.GetValue<string>("MongoDB:ConnectionString");
@@ -15,6 +16,13 @@ namespace SmartCityPulse.Data
             _database = client.GetDatabase(databaseName);
         }
 
-        public IMongoCollection<Incident> Incidents => _database.GetCollection<Incident>("Incidents");
+        public IMongoCollection<AppUser> Users =>
+            _database.GetCollection<AppUser>("Users");
+
+        public IMongoCollection<AppUser> Operators =>
+            _database.GetCollection<AppUser>("Operators");
+
+        public IMongoCollection<Incident> Incidents =>
+            _database.GetCollection<Incident>("Incidents");
     }
 }
