@@ -1,0 +1,205 @@
+﻿@model IEnumerable<SmartCityPulse.Models.Incident>
+
+@{
+    Layout = null;
+    ViewData["Title"] = "My Reports";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background-color: #F0F4F8;
+            color: #1E293B;
+        }
+
+        .navbar {
+            background-color: #FFFFFF;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1E293B;
+            text-decoration: none;
+        }
+
+            .navbar-brand span {
+                color: #3B82F6;
+            }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+            .page-header h1 {
+                font-size: 1.75rem;
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+            }
+
+            .page-header p {
+                color: #64748B;
+            }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #3B82F6;
+            color: white;
+            padding: 0.625rem 1.25rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            border: none;
+            cursor: pointer;
+        }
+
+            .btn-back:hover {
+                background-color: #2563EB;
+            }
+
+        .table-container {
+            background-color: white;
+            border-radius: 20px;
+            overflow-x: auto;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        th {
+            font-weight: 600;
+            color: #64748B;
+            font-size: 0.875rem;
+            background-color: #F8FAFC;
+        }
+
+        td {
+            color: #1E293B;
+            font-size: 0.875rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .status-resolved {
+            background-color: #DCFCE7;
+            color: #166534;
+        }
+
+        .status-progress {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-open {
+            background-color: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .severity-critical {
+            color: #EF4444;
+            font-weight: 600;
+        }
+
+        .severity-high {
+            color: #F97316;
+            font-weight: 600;
+        }
+
+        .severity-medium {
+            color: #EAB308;
+            font-weight: 600;
+        }
+
+        .severity-low {
+            color: #10B981;
+            font-weight: 600;
+        }
+
+        .btn-view {
+            color: #3B82F6;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/Citizen/Index" class="navbar-brand">SMART CIVIC <span>ALERT</span></a>
+        <a href="/Account/Logout" style="color: #64748B;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+
+    <div class="container">
+        <a href="/Citizen/Index" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+
+        <div class="page-header">
+            <h1><i class="fas fa-clipboard-list" style="color: #3B82F6;"></i> My Incident Reports</h1>
+            <p>View all incidents you have reported</p>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Title</th><th>Location</th><th>Severity</th><th>Status</th><th>Reported On</th><th>Updated On</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var incident in Model)
+                    {
+                        <tr>
+                            <td>#@incident.Id?.Substring(0, 6)</td>
+                            <td>@incident.Title</td>
+                            <td>@incident.Location</td>
+                            <td class="severity-@incident.Severity?.ToLower()">@incident.Severity</td>
+                            <td><span class="status-badge status-@incident.Status?.ToLower()">@incident.Status</span></td>
+                            <td>@incident.ReportedAt.ToString("MMM dd, yyyy")</td>
+                            <td>@incident.UpdatedAt.ToString("MMM dd, yyyy")</td>
+                            <td><a href="/Citizen/Details/@incident.Id" class="btn-view"><i class="fas fa-eye"></i> View</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

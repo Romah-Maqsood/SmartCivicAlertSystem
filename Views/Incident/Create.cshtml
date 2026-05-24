@@ -119,6 +119,62 @@
             background-position: right 16px center;
         }
 
+        /* Location Input Group */
+        .location-group {
+            display: flex;
+            gap: 10px;
+        }
+
+            .location-group input {
+                flex: 1;
+            }
+
+        .btn-coordinates {
+            background: #6B7280;
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+            .btn-coordinates:hover {
+                background: #4B5563;
+                transform: translateY(-1px);
+            }
+
+        .coordinates-info {
+            font-size: 11px;
+            color: #6B7280;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+            .coordinates-info i {
+                font-size: 12px;
+            }
+
+            .coordinates-info.success {
+                color: #10B981;
+            }
+
+            .coordinates-info.warning {
+                color: #F59E0B;
+            }
+
+            .coordinates-info.error {
+                color: #DC2626;
+            }
+
         /* Row Layout */
         .form-row {
             display: grid;
@@ -205,25 +261,31 @@
 
         /* Responsive */
         @@media (max-width: 640px) {
-            .form-card
+            .form-card {
+                padding: 24px;
+            }
 
-        {
-            padding: 24px;
-        }
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
 
-        .form-row {
-            grid-template-columns: 1fr;
-            gap: 0;
-        }
+            .btn-group {
+                flex-direction: column;
+            }
 
-        .btn-group {
-            flex-direction: column;
-        }
+            .form-container {
+                margin: 20px 16px;
+            }
 
-        .form-container {
-            margin: 20px 16px;
-        }
+            .location-group {
+                flex-direction: column;
+            }
 
+            .btn-coordinates {
+                padding: 10px;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -269,7 +331,17 @@
                     <label class="form-label">
                         <i class="fas fa-location-dot"></i> Location
                     </label>
-                    <input type="text" name="Location" class="form-control" placeholder="e.g., Gulshan Chowrangi, Karachi" required />
+                    <div class="location-group">
+                        <input type="text" name="Location" id="Location" class="form-control" placeholder="e.g., Gulshan Chowrangi, Karachi" required />
+                        <button type="button" class="btn-coordinates" id="getCoordinatesBtn">
+                            <i class="fas fa-map-pin"></i> Get Coordinates
+                        </button>
+                    </div>
+                    <div id="coordinatesInfo" class="coordinates-info">
+                        <i class="fas fa-info-circle"></i> Enter location and click "Get Coordinates"
+                    </div>
+                    <input type="hidden" name="Latitude" id="Latitude" />
+                    <input type="hidden" name="Longitude" id="Longitude" />
                 </div>
 
                 <div class="form-row">
@@ -311,5 +383,78 @@
             </form>
         </div>
     </div>
+
+    <script>
+        // Get Coordinates Functionality
+        const getCoordinatesBtn = document.getElementById('getCoordinatesBtn');
+        const locationInput = document.getElementById('Location');
+        const latitudeInput = document.getElementById('Latitude');
+        const longitudeInput = document.getElementById('Longitude');
+        const coordinatesInfo = document.getElementById('coordinatesInfo');
+
+        async function getCoordinates() {
+            const location = locationInput.value.trim();
+
+            if (!location) {
+                coordinatesInfo.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please enter a location first';
+                coordinatesInfo.className = 'coordinates-info warning';
+                return;
+            }
+
+            // Show loading state
+            const originalBtnText = getCoordinatesBtn.innerHTML;
+            getCoordinatesBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading...';
+            getCoordinatesBtn.disabled = true;
+
+            coordinatesInfo.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Fetching coordinates...';
+            coordinatesInfo.className = 'coordinates-info';
+
+            try {
+                // Using Nominatim (OpenStreetMap) free geocoding API
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1`, {
+                    headers: {
+                        'Accept-Language': 'en'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data && data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+
+                    latitudeInput.value = lat;
+                    longitudeInput.value = lon;
+
+                    coordinatesInfo.innerHTML = `<i class="fas fa-check-circle"></i> Coordinates found: ${lat.toFixed(6)}, ${lon.toFixed(6)} - Location will appear on map`;
+                    coordinatesInfo.className = 'coordinates-info success';
+                } else {
+                    latitudeInput.value = '';
+                    longitudeInput.value = '';
+                    coordinatesInfo.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Could not find coordinates for "${location}". Please try a more specific location.`;
+                    coordinatesInfo.className = 'coordinates-info warning';
+                }
+            } catch (error) {
+                console.error('Geocoding error:', error);
+                latitudeInput.value = '';
+                longitudeInput.value = '';
+                coordinatesInfo.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error fetching coordinates. Please try again.';
+                coordinatesInfo.className = 'coordinates-info error';
+            } finally {
+                // Reset button state
+                getCoordinatesBtn.innerHTML = '<i class="fas fa-map-pin"></i> Get Coordinates';
+                getCoordinatesBtn.disabled = false;
+            }
+        }
+
+        getCoordinatesBtn.addEventListener('click', getCoordinates);
+
+        // Optional: Get coordinates when location input loses focus (blur)
+        locationInput.addEventListener('blur', function() {
+            if (locationInput.value.trim() && !latitudeInput.value) {
+                getCoordinates();
+            }
+        });
+    </script>
 </body>
 </html>

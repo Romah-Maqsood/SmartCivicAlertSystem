@@ -1,0 +1,380 @@
+﻿@{
+    Layout = null;
+    ViewData["Title"] = "Incident Map";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #E8EDF5;
+            color: #1A1F36;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: #FFFFFF;
+            border-bottom: 1px solid #EAECF0;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-title h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A1F36;
+        }
+
+        .page-title p {
+            font-size: 13px;
+            color: #6B7280;
+            margin-top: 4px;
+        }
+
+        .back-btn {
+            background: #2563EB;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+            .back-btn:hover {
+                background: #1D4ED8;
+                transform: translateY(-1px);
+            }
+
+        /* Legend */
+        .legend {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin: 16px 24px;
+            border: 1px solid #EAECF0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .legend-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1A1F36;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #5A6A7F;
+        }
+
+        .legend-marker {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+            .legend-marker.critical {
+                background: #DC2626;
+            }
+
+            .legend-marker.high {
+                background: #F97316;
+            }
+
+            .legend-marker.medium {
+                background: #EAB308;
+            }
+
+            .legend-marker.low {
+                background: #10B981;
+            }
+
+        /* Map Container */
+        .map-container {
+            margin: 0 24px 24px 24px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #EAECF0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        #incidentMap {
+            height: 550px;
+            width: 100%;
+            background: #F0F4F9;
+        }
+
+        /* Loading State */
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 550px;
+            background: #FFFFFF;
+            border-radius: 20px;
+            margin: 0 24px 24px 24px;
+            border: 1px solid #EAECF0;
+        }
+
+        .loading-spinner {
+            text-align: center;
+        }
+
+            .loading-spinner i {
+                font-size: 48px;
+                color: #2563EB;
+                margin-bottom: 16px;
+            }
+
+        /* No Data Message */
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            background: #FFFFFF;
+            border-radius: 20px;
+            margin: 0 24px 24px 24px;
+            border: 1px solid #EAECF0;
+        }
+
+            .no-data i {
+                font-size: 64px;
+                color: #94A3B8;
+                margin-bottom: 16px;
+            }
+
+        /* Popup */
+        .custom-popup .popup-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #1A1F36;
+            margin-bottom: 8px;
+        }
+
+        .custom-popup .popup-location {
+            font-size: 12px;
+            color: #6B7280;
+            margin-bottom: 8px;
+        }
+
+        .popup-severity {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .severity-critical {
+            background: #FEF2F2;
+            color: #DC2626;
+        }
+
+        .severity-high {
+            background: #FFF7ED;
+            color: #F97316;
+        }
+
+        .severity-medium {
+            background: #FEFCE8;
+            color: #EAB308;
+        }
+
+        .severity-low {
+            background: #ECFDF5;
+            color: #10B981;
+        }
+
+        .view-details {
+            display: inline-block;
+            margin-top: 8px;
+            color: #2563EB;
+            text-decoration: none;
+            font-size: 11px;
+        }
+
+        @@media (max-width: 768px) {
+            .top-bar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .legend {
+                justify-content: center;
+            }
+
+            .map-container {
+                margin: 0 16px 16px 16px;
+            }
+
+            #incidentMap {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="page-title">
+                <h1><i class="fas fa-map-marker-alt" style="color: #2563EB;"></i> Incident Map</h1>
+                <p>View your reported incidents on the map</p>
+            </div>
+            <a href="/Citizen/Index" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <span class="legend-title">Severity Legend:</span>
+            <div class="legend-item"><div class="legend-marker critical"></div><span>Critical</span></div>
+            <div class="legend-item"><div class="legend-marker high"></div><span>High</span></div>
+            <div class="legend-item"><div class="legend-marker medium"></div><span>Medium</span></div>
+            <div class="legend-item"><div class="legend-marker low"></div><span>Low</span></div>
+        </div>
+
+        <!-- Loading -->
+        <div id="mapLoading" class="loading-container">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-pulse"></i>
+                <p>Loading map data...</p>
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div id="mapContainer" class="map-container" style="display: none;">
+            <div id="incidentMap"></div>
+        </div>
+
+        <!-- No Data -->
+        <div id="noDataMessage" class="no-data" style="display: none;">
+            <i class="fas fa-map-marked-alt"></i>
+            <h3>No incidents with location data</h3>
+            <p>Your reported incidents don't have location coordinates yet.</p>
+            <a href="/Incident/Create" class="back-btn" style="margin-top: 16px; display: inline-block;">
+                <i class="fas fa-plus-circle"></i> Report New Incident
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let map;
+        let markers = [];
+
+        const severityColors = {
+            'Critical': '#DC2626',
+            'High': '#F97316',
+            'Medium': '#EAB308',
+            'Low': '#10B981'
+        };
+
+        async function loadIncidents() {
+            const loadingDiv = document.getElementById('mapLoading');
+            const mapContainer = document.getElementById('mapContainer');
+            const noDataDiv = document.getElementById('noDataMessage');
+
+            try {
+                const response = await fetch('/Citizen/GetIncidentsForMap');
+                const incidents = await response.json();
+
+                if (!incidents || incidents.length === 0) {
+                    loadingDiv.style.display = 'none';
+                    noDataDiv.style.display = 'block';
+                    return;
+                }
+
+                loadingDiv.style.display = 'none';
+                mapContainer.style.display = 'block';
+
+                // Initialize map
+                map = L.map('incidentMap').setView([24.8607, 67.0011], 12);
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+                    subdomains: 'abcd',
+                    maxZoom: 19
+                }).addTo(map);
+
+                incidents.forEach(incident => {
+                    if (incident.latitude && incident.longitude) {
+                        addMarker(incident);
+                    }
+                });
+
+                if (markers.length > 0) {
+                    const group = L.featureGroup(markers);
+                    map.fitBounds(group.getBounds().pad(0.1));
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                loadingDiv.innerHTML = `<div class="loading-spinner"><i class="fas fa-exclamation-triangle" style="color:#DC2626;"></i><p>Error loading map. Please try again.</p></div>`;
+            }
+        }
+
+        function addMarker(incident) {
+            const color = severityColors[incident.severity] || '#6B7280';
+
+            const icon = L.divIcon({
+                html: `<div style="width:24px;height:24px;background:${color};border:2px solid white;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,0.2);"></div>`,
+                iconSize: [24, 24],
+                popupAnchor: [0, -12]
+            });
+
+            const popupContent = `
+                <div class="custom-popup" style="min-width:180px;">
+                    <div class="popup-title">${escapeHtml(incident.title)}</div>
+                    <div class="popup-location"><i class="fas fa-location-dot"></i> ${escapeHtml(incident.location)}</div>
+                    <div><span class="popup-severity severity-${incident.severity.toLowerCase()}">${incident.severity}</span></div>
+                    <a href="/Citizen/Details/${incident.id}" class="view-details">View Details →</a>
+                </div>
+            `;
+
+            const marker = L.marker([incident.latitude, incident.longitude], { icon })
+                .bindPopup(popupContent);
+
+            marker.addTo(map);
+            markers.push(marker);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.addEventListener('DOMContentLoaded', loadIncidents);
+    </script>
+</body>
+</html>

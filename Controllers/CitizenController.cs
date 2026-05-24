@@ -292,5 +292,31 @@ namespace SmartCityPulse.Controllers
             TempData["SuccessMessage"] = "🚨 Emergency alert sent! Authorities have been notified.";
             return RedirectToAction("Index");
         }
+        // ==================== MAP VIEW - Get Incidents with Coordinates ====================
+        [HttpGet]
+        public async Task<IActionResult> GetIncidentsForMap()
+        {
+            if (!IsCitizen())
+            {
+                return Unauthorized();
+            }
+
+            var userId = HttpContext.Session.GetString("UserId");
+
+            var incidents = await _context.Incidents
+                .Find(i => i.ReportedBy == userId)
+                .ToListAsync();
+
+            var mapData = incidents.Select(i => new {
+                i.Id,
+                i.Title,
+                i.Location,
+                i.Severity,
+                i.Latitude,
+                i.Longitude
+            }).Where(i => i.Latitude != null && i.Longitude != null);
+
+            return Json(mapData);
+        }
     }
 }
