@@ -44,6 +44,8 @@ namespace SmartCityPulse.Models
 
         [BsonElement("comments")]
         public List<IncidentComment> Comments { get; set; } = new();
+
+
     }
 
     public class IncidentComment

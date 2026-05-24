@@ -15,6 +15,7 @@ namespace SmartCityPulse.Controllers
             _context = context;
         }
 
+        // ==================== LOGIN ====================
         [HttpGet]
         public IActionResult Login()
         {
@@ -24,53 +25,57 @@ namespace SmartCityPulse.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password)
         {
+            // Check if fields are empty
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
                 ViewBag.Error = "Email and password are required!";
                 return View();
             }
 
-            // Check in Users collection first
+            // Find user by email
             var user = await _context.Users.Find(u => u.Email == email).FirstOrDefaultAsync();
-            if (user != null && user.PasswordHash == password)
+
+            if (user == null)
             {
-                SetSession(user);
-                return RedirectByRole(user.Role);
+                ViewBag.Error = "Invalid email or password!";
+                return View();
             }
 
-            // If not found, check in Operators collection
-            var op = await _context.Operators.Find(o => o.Email == email).FirstOrDefaultAsync();
-            if (op != null && op.PasswordHash == password)
+            // Check password (simple comparison for now)
+            if (user.PasswordHash != password)
             {
-                SetSession(op);
-                return RedirectByRole(op.Role);
+                ViewBag.Error = "Invalid email or password!";
+                return View();
             }
 
-            ViewBag.Error = "Invalid email or password!";
-            return View();
-        }
+            // Store user info in session
+            HttpContext.Session.SetString("UserId", user.Id);
+            HttpContext.Session.SetString("UserName", user.Name);
+            HttpContext.Session.SetString("UserEmail", user.Email);
+            HttpContext.Session.SetString("UserRole", user.Role);
 
-        private void SetSession(AppUser user)
-        {
-            HttpContext.Session.SetString("UserId", user.Id ?? "");
-            HttpContext.Session.SetString("UserName", user.Name ?? "");
-            HttpContext.Session.SetString("UserEmail", user.Email ?? "");
-            HttpContext.Session.SetString("UserRole", user.Role ?? "");
-            // ✅ Department add karo
-            HttpContext.Session.SetString("UserDepartment", user.Department ?? "");
-        }
+            TempData["SuccessMessage"] = $"Welcome back, {user.Name}!";
 
-        private IActionResult RedirectByRole(string role)
-        {
-            if (role == "Admin")
+            // ✅ ROLE-BASED REDIRECT
+            if (user.Role == "Admin")
+            {
                 return RedirectToAction("Index", "Admin");
-            else if (role == "Operator")
-                return RedirectToAction("Dashboard", "Operator"); // ✅ Dashboard hai Index nahi
+            }
+            else if (user.Role == "Operator")
+            {
+                return RedirectToAction("Dashboard", "Operator");
+            }
+            else if (user.Role == "Citizen")
+            {
+                return RedirectToAction("Index", "Citizen");
+            }
             else
+            {
                 return RedirectToAction("Index", "Home");
+            }
         }
 
-        // ==================== REGISTER (unchanged, only for Citizens) ====================
+        // ==================== REGISTER (Citizen Only) ====================
         [HttpGet]
         public IActionResult Register()
         {
@@ -80,13 +85,32 @@ namespace SmartCityPulse.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(string name, string email, string password, string confirmPassword, string phone)
         {
-            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) ||
-                string.IsNullOrEmpty(password) || password != confirmPassword || password.Length < 6)
+            // Validations
+            if (string.IsNullOrEmpty(name))
             {
-                ViewBag.Error = "Please fill all fields correctly.";
+                ViewBag.Error = "Name is required!";
                 return View();
             }
 
+            if (string.IsNullOrEmpty(email))
+            {
+                ViewBag.Error = "Email is required!";
+                return View();
+            }
+
+            if (password != confirmPassword)
+            {
+                ViewBag.Error = "Passwords do not match!";
+                return View();
+            }
+
+            if (string.IsNullOrEmpty(password) || password.Length < 6)
+            {
+                ViewBag.Error = "Password must be at least 6 characters!";
+                return View();
+            }
+
+            // Check if email already exists
             var existingUser = await _context.Users.Find(u => u.Email == email).FirstOrDefaultAsync();
             if (existingUser != null)
             {
@@ -94,12 +118,13 @@ namespace SmartCityPulse.Controllers
                 return View();
             }
 
+            // Create new citizen user
             var newUser = new AppUser
             {
                 Name = name,
                 Email = email,
                 PasswordHash = password,
-                Phone = phone,
+                Phone = phone ?? "",
                 Role = "Citizen",
                 CreatedAt = DateTime.UtcNow
             };
@@ -110,6 +135,7 @@ namespace SmartCityPulse.Controllers
             return RedirectToAction("Login");
         }
 
+        // ==================== LOGOUT ====================
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
