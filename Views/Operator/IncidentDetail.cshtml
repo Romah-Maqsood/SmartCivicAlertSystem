@@ -7,132 +7,732 @@
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Incident Detail</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="/css/site.css" />
+    <title>Incident Detail - @dept Department</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        .main-content { margin-left: 280px; flex: 1; }
-        .content-area { padding: 32px; }
-        .detail-grid { display: grid; grid-template-columns: 1fr 380px; gap: 24px; }
-        .card { background: #1E293B; border: 1px solid #334155; border-radius: 16px; padding: 28px; margin-bottom: 20px; }
-        .card-title { font-size: 16px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .card-title i { color: #3B82F6; }
-        .incident-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-        .incident-id { font-size: 13px; color: #94A3B8; margin-bottom: 20px; }
-        .detail-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid #334155; }
-        .detail-icon { width: 36px; height: 36px; background: #0F172A; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #3B82F6; }
-        .detail-label { font-size: 11px; color: #94A3B8; margin-bottom: 4px; text-transform: uppercase; }
-        .detail-value { font-size: 14px; font-weight: 500; }
-        .btn-save { background: #3B82F6; color: #fff; border: none; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; }
-        .btn-save:hover { background: #2563EB; }
-        .comment-item { padding: 14px 0; border-bottom: 1px solid #334155; }
-        .comment-author { font-size: 13px; font-weight: 600; color: #3B82F6; }
-        .comment-time { font-size: 11px; color: #94A3B8; }
-        @@media (max-width: 768px) { .main-content { margin-left: 80px; } .detail-grid { grid-template-columns: 1fr; } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #E8EDF5;
+            color: #1A1F36;
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #FFFFFF;
+            border-right: 1px solid #EAECF0;
+            position: fixed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+        }
+
+        .sidebar.collapsed {
+            width: 72px;
+        }
+
+        .sidebar.collapsed .logo h2,
+        .sidebar.collapsed .nav-item span,
+        .sidebar.collapsed .footer-item span {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-item,
+        .sidebar.collapsed .footer-item {
+            justify-content: center;
+            padding: 12px 0;
+        }
+
+        .sidebar.collapsed .nav-item i,
+        .sidebar.collapsed .footer-item i {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .sidebar.collapsed .sidebar-header {
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .sidebar.collapsed .logo {
+            justify-content: center;
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            border-bottom: 1px solid #EAECF0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo i {
+            font-size: 24px;
+            color: #2563EB;
+        }
+
+        .logo h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1A1F36;
+            letter-spacing: -0.3px;
+        }
+
+        .logo span {
+            color: #2563EB;
+        }
+
+        .hamburger {
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            color: #6B7280;
+        }
+
+        .hamburger:hover {
+            background: #F1F5F9;
+            color: #2563EB;
+        }
+
+        .hamburger i {
+            font-size: 18px;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 20px 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            margin: 2px 0;
+            color: #5A6A7F;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-radius: 10px;
+        }
+
+        .nav-item i {
+            width: 20px;
+            font-size: 16px;
+        }
+
+        .nav-item:hover {
+            background: #F1F5F9;
+            color: #2563EB;
+        }
+
+        .nav-item.active {
+            background: #EFF6FF;
+            color: #2563EB;
+        }
+
+        .nav-footer {
+            padding: 16px 12px;
+            border-top: 1px solid #EAECF0;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            color: #5A6A7F;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .footer-item:hover {
+            background: #F1F5F9;
+            color: #2563EB;
+        }
+
+        .footer-item.logout {
+            color: #DC2626;
+        }
+
+        .footer-item.logout:hover {
+            background: #FEF2F2;
+        }
+
+        .dept-info {
+            padding: 8px 16px;
+            margin: 0 12px 12px 12px;
+            background: #EFF6FF;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #2563EB;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 24px 32px;
+            background: #E8EDF5;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .sidebar.collapsed ~ .main-content {
+            margin-left: 72px;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1A1F36;
+        }
+
+        .page-header h1 i {
+            color: #2563EB;
+            margin-right: 8px;
+        }
+
+        .page-header p {
+            font-size: 13px;
+            color: #6B7280;
+            margin-top: 6px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #6B7280;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 24px;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #2563EB;
+        }
+
+        /* Detail Grid */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+        }
+
+        /* Cards */
+        .card {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1A1F36;
+        }
+
+        .card-title i {
+            color: #2563EB;
+        }
+
+        .incident-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A1F36;
+            margin-bottom: 8px;
+        }
+
+        .incident-id {
+            font-size: 12px;
+            color: #6B7280;
+            margin-bottom: 20px;
+        }
+
+        /* Detail Rows */
+        .detail-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid #EAECF0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-icon {
+            width: 36px;
+            height: 36px;
+            background: #F9FAFB;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563EB;
+            font-size: 16px;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            color: #6B7280;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1A1F36;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .badge-critical {
+            background: #FEF2F2;
+            color: #DC2626;
+        }
+
+        .badge-high {
+            background: #FEF3C7;
+            color: #F97316;
+        }
+
+        .badge-medium {
+            background: #FEF9C3;
+            color: #EAB308;
+        }
+
+        .badge-low {
+            background: #DCFCE7;
+            color: #10B981;
+        }
+
+        .status-open {
+            background: #DBEAFE;
+            color: #1E40AF;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-inprogress {
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-resolved {
+            background: #DCFCE7;
+            color: #166534;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #6B7280;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        select, textarea, input {
+            width: 100%;
+            background: #F9FAFB;
+            border: 1px solid #EAECF0;
+            color: #1A1F36;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        select:focus, textarea:focus, input:focus {
+            outline: none;
+            border-color: #2563EB;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-save {
+            background: #2563EB;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .btn-save:hover {
+            background: #1D4ED8;
+            transform: translateY(-1px);
+        }
+
+        /* Comments */
+        .comment-item {
+            padding: 14px 0;
+            border-bottom: 1px solid #EAECF0;
+        }
+
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .comment-author {
+            font-size: 12px;
+            font-weight: 600;
+            color: #2563EB;
+        }
+
+        .comment-author i {
+            margin-right: 4px;
+        }
+
+        .comment-time {
+            font-size: 10px;
+            color: #6B7280;
+        }
+
+        .comment-text {
+            font-size: 13px;
+            color: #1A1F36;
+            line-height: 1.5;
+        }
+
+        .add-comment {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #EAECF0;
+        }
+
+        .alert-success {
+            background: #DCFCE7;
+            border: 1px solid #BBF7D0;
+            color: #166534;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        @@media (max-width: 1024px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="dashboard">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-city"></i>
+                    <h2>SMART CIVIC <span>ALERT</span></h2>
+                </div>
+                <div class="hamburger" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
 
-<aside class="sidebar">
-    <div class="sidebar-brand"><div class="brand-icon">🚨</div><h2>SMART CIVIC</h2><span>ALERT SYSTEM</span></div>
-    <nav class="sidebar-nav">
-        <a href="/Operator/Dashboard" class="nav-item"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
-        <a href="/Operator/Incidents" class="nav-item active"><i class="fas fa-list-alt"></i> <span>Incidents</span></a>
-        <a href="/Operator/CreateIncident" class="nav-item"><i class="fas fa-plus-circle"></i> <span>Create Incident</span></a>
-    </nav>
-    <div class="sidebar-footer">
-        <div class="dept-badge"><i class="fas fa-building"></i> @dept Department</div>
-        <a href="/Account/Logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
-    </div>
-</aside>
+            <div class="nav-menu">
+                <a href="/Operator/Dashboard" class="nav-item">
+                    <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
+                </a>
+                <a href="/Operator/Incidents" class="nav-item active">
+                    <i class="fas fa-list-alt"></i> <span>Incidents</span>
+                </a>
+                <a href="/Operator/CreateIncident" class="nav-item">
+                    <i class="fas fa-plus-circle"></i> <span>Create Incident</span>
+                </a>
+            </div>
 
-<div class="main-content">
-    <div class="topbar">
-        <div><h1>Incident Details</h1><p>@dept — View and manage incident</p></div>
-        <div class="user-profile"><i class="fas fa-user-circle"></i> @operatorName</div>
-    </div>
+            <div class="dept-info">
+                <i class="fas fa-building"></i>
+                <span>@dept Department</span>
+            </div>
 
-    <div class="content-area">
-        @if (TempData["Success"] != null)
-        {
-            <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#22C55E;padding:12px 20px;border-radius:10px;margin-bottom:20px;"><i class="fas fa-check-circle"></i> @TempData["Success"]</div>
-        }
+            <div class="nav-footer">
+                <a href="/Account/Logout" class="footer-item logout">
+                    <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+                </a>
+            </div>
+        </div>
 
-        <a href="/Operator/Incidents" style="display:inline-flex;align-items:center;gap:8px;color:#94A3B8;text-decoration:none;margin-bottom:24px;"><i class="fas fa-arrow-left"></i> Back to Incidents</a>
+        <div class="main-content">
+            <div class="page-header">
+                <h1><i class="fas fa-info-circle"></i> Incident Details</h1>
+                <p>@dept — View and manage incident</p>
+            </div>
 
-        <div class="detail-grid">
-            <div>
-                <div class="card">
-                    <div class="incident-title">@Model.Title</div>
-                    <div class="incident-id">Incident ID: @Model.Id</div>
-                    <div class="detail-row"><div class="detail-icon"><i class="fas fa-align-left"></i></div><div><div class="detail-label">Description</div><div class="detail-value">@Model.Description</div></div></div>
-                    <div class="detail-row"><div class="detail-icon"><i class="fas fa-map-marker-alt"></i></div><div><div class="detail-label">Location</div><div class="detail-value">@Model.Location</div></div></div>
-                    <div class="detail-row"><div class="detail-icon"><i class="fas fa-exclamation-triangle"></i></div><div><div class="detail-label">Severity</div><div class="detail-value"><span class="badge badge-@Model.Severity.ToLower()">@Model.Severity</span></div></div></div>
-                    <div class="detail-row"><div class="detail-icon"><i class="fas fa-traffic-light"></i></div><div><div class="detail-label">Status</div><div class="detail-value"><span class="status-@Model.Status.ToLower().Replace(" ", "")">@Model.Status</span></div></div></div>
-                    <div class="detail-row"><div class="detail-icon"><i class="fas fa-building"></i></div><div><div class="detail-label">Department</div><div class="detail-value">@Model.Department</div></div></div>
-                    <div class="detail-row"><div class="detail-icon"><i class="fas fa-user"></i></div><div><div class="detail-label">Reported By</div><div class="detail-value">@Model.ReportedBy</div></div></div>
-                    <div class="detail-row"><div class="detail-icon"><i class="fas fa-clock"></i></div><div><div class="detail-label">Reported At</div><div class="detail-value">@Model.ReportedAt.ToString("dd MMM yyyy, hh:mm tt")</div></div></div>
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert-success">
+                    <i class="fas fa-check-circle"></i> @TempData["Success"]
+                </div>
+            }
+
+            <a href="/Operator/Incidents" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Incidents
+            </a>
+
+            <div class="detail-grid">
+                <!-- LEFT: Incident Details -->
+                <div>
+                    <div class="card">
+                        <div class="incident-title">@Model.Title</div>
+                        <div class="incident-id">Incident ID: @Model.Id</div>
+
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="fas fa-align-left"></i></div>
+                            <div>
+                                <div class="detail-label">Description</div>
+                                <div class="detail-value">@Model.Description</div>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div>
+                                <div class="detail-label">Location</div>
+                                <div class="detail-value">@Model.Location</div>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div>
+                                <div class="detail-label">Severity</div>
+                                <div class="detail-value">
+                                    <span class="badge badge-@Model.Severity.ToLower()">@Model.Severity</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="fas fa-traffic-light"></i></div>
+                            <div>
+                                <div class="detail-label">Status</div>
+                                <div class="detail-value">
+                                    @{
+                                        var sc = Model.Status == "Open" ? "status-open" : Model.Status == "In Progress" ? "status-inprogress" : "status-resolved";
+                                    }
+                                    <span class="@sc">@Model.Status</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="fas fa-building"></i></div>
+                            <div>
+                                <div class="detail-label">Department</div>
+                                <div class="detail-value">@Model.Department</div>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="fas fa-user"></i></div>
+                            <div>
+                                <div class="detail-label">Reported By</div>
+                                <div class="detail-value">@Model.ReportedBy</div>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="fas fa-clock"></i></div>
+                            <div>
+                                <div class="detail-label">Reported At</div>
+                                <div class="detail-value">@Model.ReportedAt.ToString("dd MMM yyyy, hh:mm tt")</div>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="fas fa-sync"></i></div>
+                            <div>
+                                <div class="detail-label">Last Updated</div>
+                                <div class="detail-value">@Model.UpdatedAt.ToString("dd MMM yyyy, hh:mm tt")</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div class="card">
+                        <div class="card-title">
+                            <i class="fas fa-comments"></i> Comments & Timeline
+                        </div>
+
+                        @if (!Model.Comments.Any())
+                        {
+                            <p style="color: #6B7280; text-align: center; padding: 20px;">No comments yet.</p>
+                        }
+                        else
+                        {
+                            @foreach (var comment in Model.Comments.OrderByDescending(c => c.CreatedAt))
+                            {
+                                <div class="comment-item">
+                                    <div class="comment-header">
+                                        <span class="comment-author">
+                                            <i class="fas fa-user-circle"></i> @comment.Author
+                                        </span>
+                                        <span class="comment-time">@comment.CreatedAt.ToString("hh:mm tt, dd MMM")</span>
+                                    </div>
+                                    <div class="comment-text">@comment.Text</div>
+                                </div>
+                            }
+                        }
+
+                        <div class="add-comment">
+                            <form method="post" action="/Operator/AddComment">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <div class="form-group">
+                                    <textarea name="commentText" placeholder="Write your update here..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn-save" style="background: #F1F5F9; color: #2563EB;">
+                                    <i class="fas fa-paper-plane"></i> Add Comment
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="card">
-                    <div class="card-title"><i class="fas fa-comments"></i> Comments & Timeline</div>
-                    @if (!Model.Comments.Any())
-                    {
-                        <p style="color:#94A3B8;">No comments yet.</p>
-                    }
-                    else
-                    {
-                        @foreach (var comment in Model.Comments.OrderByDescending(c => c.CreatedAt))
-                        {
-                            <div class="comment-item">
-                                <div class="comment-header" style="display:flex;justify-content:space-between;margin-bottom:6px;">
-                                    <span class="comment-author"><i class="fas fa-user-circle"></i> @comment.Author</span>
-                                    <span class="comment-time">@comment.CreatedAt.ToString("hh:mm tt, dd MMM")</span>
-                                </div>
-                                <div class="comment-text">@comment.Text</div>
-                            </div>
-                        }
-                    }
-                    <div style="margin-top:16px;padding-top:16px;border-top:1px solid #334155;">
-                        <form method="post" action="/Operator/AddComment">
+                <!-- RIGHT: Update Status -->
+                <div>
+                    <div class="card">
+                        <div class="card-title">
+                            <i class="fas fa-edit"></i> Update Incident
+                        </div>
+
+                        <form method="post" action="/Operator/UpdateStatus">
                             <input type="hidden" name="id" value="@Model.Id" />
-                            <div class="form-group" style="margin-bottom:12px;">
-                                <textarea name="commentText" placeholder="Write your update here..." required style="width:100%;background:#0F172A;border:1px solid #334155;color:#fff;padding:12px;border-radius:10px;"></textarea>
+
+                            <div class="form-group">
+                                <label>Update Status</label>
+                                <select name="status">
+                                    <option value="Open" selected="@(Model.Status == "Open")">Open</option>
+                                    <option value="In Progress" selected="@(Model.Status == "In Progress")">In Progress</option>
+                                    <option value="Resolved" selected="@(Model.Status == "Resolved")">Resolved</option>
+                                </select>
                             </div>
-                            <button type="submit" class="btn-save" style="background:#334155;"><i class="fas fa-paper-plane"></i> Add Comment</button>
+
+                            <div class="form-group">
+                                <label>Add Comment (Optional)</label>
+                                <textarea name="comment" placeholder="Describe the update..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-save">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
                         </form>
                     </div>
                 </div>
             </div>
-
-            <div>
-                <div class="card">
-                    <div class="card-title"><i class="fas fa-edit"></i> Update Incident</div>
-                    <form method="post" action="/Operator/UpdateStatus">
-                        <input type="hidden" name="id" value="@Model.Id" />
-                        <div class="form-group" style="margin-bottom:16px;">
-                            <label style="display:block;font-size:13px;color:#94A3B8;margin-bottom:8px;">Update Status</label>
-                            <select name="status" style="width:100%;background:#0F172A;border:1px solid #334155;color:#fff;padding:12px;border-radius:10px;">
-                                <option value="Open" selected="@(Model.Status == "Open")">Open</option>
-                                <option value="In Progress" selected="@(Model.Status == "In Progress")">In Progress</option>
-                                <option value="Resolved" selected="@(Model.Status == "Resolved")">Resolved</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="margin-bottom:16px;">
-                            <label style="display:block;font-size:13px;color:#94A3B8;margin-bottom:8px;">Add Comment (Optional)</label>
-                            <textarea name="comment" placeholder="Describe the update..." style="width:100%;background:#0F172A;border:1px solid #334155;color:#fff;padding:12px;border-radius:10px;min-height:80px;"></textarea>
-                        </div>
-                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
-                    </form>
-                </div>
-            </div>
         </div>
     </div>
-</div>
 
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleSidebar');
+        toggleBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+        });
+    </script>
 </body>
 </html>
