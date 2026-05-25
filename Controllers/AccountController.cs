@@ -32,7 +32,22 @@ namespace SmartCityPulse.Controllers
                 return View();
             }
 
-            // Find user by email
+            // ✅ CHECK OPERATORS COLLECTION FIRST
+            var operatorUser = await _context.Operators.Find(o => o.Email == email).FirstOrDefaultAsync();
+
+            if (operatorUser != null && operatorUser.PasswordHash == password)
+            {
+                HttpContext.Session.SetString("UserId", operatorUser.Id);
+                HttpContext.Session.SetString("UserName", operatorUser.Name);
+                HttpContext.Session.SetString("UserEmail", operatorUser.Email);
+                HttpContext.Session.SetString("UserRole", operatorUser.Role);
+                HttpContext.Session.SetString("UserDepartment", operatorUser.Department ?? "");
+
+                TempData["SuccessMessage"] = $"Welcome back, {operatorUser.Name}!";
+                return RedirectToAction("Dashboard", "Operator");
+            }
+
+            // ✅ CHECK USERS COLLECTION (Admin/Citizen)
             var user = await _context.Users.Find(u => u.Email == email).FirstOrDefaultAsync();
 
             if (user == null)
@@ -41,14 +56,12 @@ namespace SmartCityPulse.Controllers
                 return View();
             }
 
-            // Check password (simple comparison for now)
             if (user.PasswordHash != password)
             {
                 ViewBag.Error = "Invalid email or password!";
                 return View();
             }
 
-            // Store user info in session
             HttpContext.Session.SetString("UserId", user.Id);
             HttpContext.Session.SetString("UserName", user.Name);
             HttpContext.Session.SetString("UserEmail", user.Email);
@@ -56,14 +69,9 @@ namespace SmartCityPulse.Controllers
 
             TempData["SuccessMessage"] = $"Welcome back, {user.Name}!";
 
-            // ✅ ROLE-BASED REDIRECT
             if (user.Role == "Admin")
             {
                 return RedirectToAction("Index", "Admin");
-            }
-            else if (user.Role == "Operator")
-            {
-                return RedirectToAction("Dashboard", "Operator");
             }
             else if (user.Role == "Citizen")
             {
@@ -75,7 +83,7 @@ namespace SmartCityPulse.Controllers
             }
         }
 
-        // ==================== REGISTER (Citizen Only) ====================
+        // ==================== REGISTER ====================
         [HttpGet]
         public IActionResult Register()
         {
@@ -85,7 +93,6 @@ namespace SmartCityPulse.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(string name, string email, string password, string confirmPassword, string phone)
         {
-            // Validations
             if (string.IsNullOrEmpty(name))
             {
                 ViewBag.Error = "Name is required!";
@@ -110,7 +117,6 @@ namespace SmartCityPulse.Controllers
                 return View();
             }
 
-            // Check if email already exists
             var existingUser = await _context.Users.Find(u => u.Email == email).FirstOrDefaultAsync();
             if (existingUser != null)
             {
@@ -118,7 +124,6 @@ namespace SmartCityPulse.Controllers
                 return View();
             }
 
-            // Create new citizen user
             var newUser = new AppUser
             {
                 Name = name,
