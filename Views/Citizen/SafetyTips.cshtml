@@ -1,6 +1,6 @@
 ﻿@{
     Layout = null;
-    ViewData["Title"] = "Download Reports";
+    ViewData["Title"] = "Safety Tips";
 }
 
 <!DOCTYPE html>
@@ -48,7 +48,6 @@
             max-width: 800px;
             margin: 2rem auto;
             padding: 0 2rem;
-            text-align: center;
         }
 
         .top-bar {
@@ -76,53 +75,48 @@
             font-size: 0.875rem;
         }
 
-        .cards {
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .card {
+        .tips-card {
             background: #FFFFFF;
             border-radius: 20px;
             padding: 2rem;
-            text-align: center;
-            width: 250px;
             border: 1px solid #EAECF0;
-            cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-            .card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+        .tip-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #EAECF0;
+        }
+
+            .tip-item:last-child {
+                border-bottom: none;
             }
 
-            .card i {
-                font-size: 3rem;
-                margin-bottom: 1rem;
+        .tip-icon {
+            width: 50px;
+            height: 50px;
+            background: #EFF6FF;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .tip-icon i {
+                font-size: 1.5rem;
+                color: #2563EB;
             }
 
-            .card h3 {
-                font-size: 1.25rem;
-                margin-bottom: 0.5rem;
-            }
+        .tip-content h3 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
 
-            .card p {
-                font-size: 0.875rem;
-                color: #6B7280;
-                margin-bottom: 1rem;
-            }
-
-        .btn-download {
-            background: #2563EB;
-            color: white;
-            padding: 0.5rem 1.25rem;
-            border-radius: 40px;
-            text-decoration: none;
+        .tip-content p {
             font-size: 0.875rem;
-            display: inline-block;
+            color: #6B7280;
         }
 
         @@media (max-width: 768px) {
@@ -146,29 +140,47 @@
 
     <div class="container">
         <div class="top-bar">
-            <div class="page-title"><h1><i class="fas fa-download" style="color: #2563EB;"></i> Download Reports</h1></div>
+            <div class="page-title"><h1><i class="fas fa-shield-alt" style="color: #2563EB;"></i> Safety Tips</h1></div>
             <a href="/Citizen/Index" class="btn-back"><i class="fas fa-arrow-left"></i> Back</a>
         </div>
 
-        <div class="cards">
-            <div class="card" onclick="downloadPDF()">
-                <i class="fas fa-file-pdf" style="color: #DC2626;"></i>
-                <h3>PDF Report</h3>
-                <p>Download formatted PDF document</p>
-                <button class="btn-download"><i class="fas fa-download"></i> Download PDF</button>
+        <div class="tips-card">
+            <div class="tip-item">
+                <div class="tip-icon"><i class="fas fa-phone-alt"></i></div>
+                <div class="tip-content">
+                    <h3>Emergency Helplines</h3>
+                    <p>Rescue 1122 | Police 15 | Fire 16 | Ambulance 115</p>
+                </div>
             </div>
-            <div class="card" onclick="downloadCSV()">
-                <i class="fas fa-file-excel" style="color: #10B981;"></i>
-                <h3>CSV Report</h3>
-                <p>Download CSV for Excel</p>
-                <button class="btn-download"><i class="fas fa-download"></i> Download CSV</button>
+            <div class="tip-item">
+                <div class="tip-icon"><i class="fas fa-location-dot"></i></div>
+                <div class="tip-content">
+                    <h3>Share Your Location</h3>
+                    <p>Always share your exact location when reporting an incident for faster response.</p>
+                </div>
+            </div>
+            <div class="tip-item">
+                <div class="tip-icon"><i class="fas fa-camera"></i></div>
+                <div class="tip-content">
+                    <h3>Take Photos</h3>
+                    <p>Take clear photos of the incident scene for better assessment by authorities.</p>
+                </div>
+            </div>
+            <div class="tip-item">
+                <div class="tip-icon"><i class="fas fa-clock"></i></div>
+                <div class="tip-content">
+                    <h3>Report Immediately</h3>
+                    <p>Report incidents as soon as possible to ensure quick response and resolution.</p>
+                </div>
+            </div>
+            <div class="tip-item">
+                <div class="tip-icon"><i class="fas fa-id-card"></i></div>
+                <div class="tip-content">
+                    <h3>Keep ID Ready</h3>
+                    <p>Keep your CNIC or identification ready when reporting for verification purposes.</p>
+                </div>
             </div>
         </div>
     </div>
-
-    <script>
-        function downloadPDF() { window.location.href = '/Citizen/DownloadPDF'; }
-        function downloadCSV() { window.location.href = '/Citizen/DownloadCSV'; }
-    </script>
 </body>
 </html>
