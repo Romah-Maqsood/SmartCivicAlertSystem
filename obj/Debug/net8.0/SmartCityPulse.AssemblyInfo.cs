@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartCityPulse")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+58641ce582d0adb678827c148ef27ba58c93a8a8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3132b8291f92d5b69990892bd95762f9235bd72c")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartCityPulse")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartCityPulse")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
