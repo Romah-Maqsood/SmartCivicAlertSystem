@@ -50,16 +50,16 @@ namespace SmartCityPulse.Controllers
 
             // Get statistics
             var totalIncidents = await _context.Incidents
-                .CountAsync(i => i.ReportedBy == userId);
+                .CountDocumentsAsync(i => i.ReportedBy == userId);
 
             var resolvedIncidents = await _context.Incidents
-                .CountAsync(i => i.ReportedBy == userId && i.Status == "Resolved");
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Resolved");
 
             var pendingIncidents = await _context.Incidents
-                .CountAsync(i => i.ReportedBy == userId && i.Status != "Resolved");
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status != "Resolved");
 
             var criticalIncidents = await _context.Incidents
-                .CountAsync(i => i.ReportedBy == userId && i.Severity == "Critical");
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Critical");
 
             // Weekly data for chart (last 7 days)
             var weeklyData = new List<int>();
@@ -67,16 +67,35 @@ namespace SmartCityPulse.Controllers
             {
                 var date = DateTime.UtcNow.Date.AddDays(-i);
                 var count = await _context.Incidents
-                    .CountAsync(inc => inc.ReportedBy == userId && inc.ReportedAt.Date == date);
+                    .CountDocumentsAsync(inc => inc.ReportedBy == userId && inc.ReportedAt.Date == date);
                 weeklyData.Add((int)count);
             }
 
+            // Severity counts for charts
+            var highIncidents = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "High");
+            var mediumIncidents = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Medium");
+            var lowIncidents = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Low");
+
+            // Status counts for charts
+            var openIncidents = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Open");
+            var inProgressIncidents = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "In Progress");
+
             ViewBag.UserName = userName;
             ViewBag.UserEmail = userEmail;
-            ViewBag.TotalIncidents = totalIncidents;
-            ViewBag.ResolvedIncidents = resolvedIncidents;
-            ViewBag.PendingIncidents = pendingIncidents;
-            ViewBag.CriticalIncidents = criticalIncidents;
+            ViewBag.TotalIncidents = (int)totalIncidents;
+            ViewBag.ResolvedIncidents = (int)resolvedIncidents;
+            ViewBag.PendingIncidents = (int)pendingIncidents;
+            ViewBag.CriticalIncidents = (int)criticalIncidents;
+            ViewBag.HighIncidents = (int)highIncidents;
+            ViewBag.MediumIncidents = (int)mediumIncidents;
+            ViewBag.LowIncidents = (int)lowIncidents;
+            ViewBag.OpenIncidents = (int)openIncidents;
+            ViewBag.InProgressIncidents = (int)inProgressIncidents;
             ViewBag.MyIncidents = myIncidents;
             ViewBag.AllIncidents = allIncidents;
             ViewBag.WeeklyData = weeklyData;
@@ -119,7 +138,6 @@ namespace SmartCityPulse.Controllers
                 return NotFound();
             }
 
-            // Check if incident belongs to this citizen
             if (incident.ReportedBy != userId)
             {
                 return Unauthorized();
@@ -155,7 +173,6 @@ namespace SmartCityPulse.Controllers
                 return NotFound();
             }
 
-            // Check if incident belongs to this citizen
             if (incident.ReportedBy != userId)
             {
                 return Unauthorized();
@@ -164,7 +181,7 @@ namespace SmartCityPulse.Controllers
             return View(incident);
         }
 
-        // ==================== MAP VIEW (Placeholder) ====================
+        // ==================== MAP VIEW ====================
         [HttpGet]
         public IActionResult MapView()
         {
@@ -175,7 +192,36 @@ namespace SmartCityPulse.Controllers
             return View();
         }
 
-        // ==================== NOTIFICATIONS (Placeholder) ====================
+        // ==================== MAP VIEW - Get Incidents with Coordinates ====================
+        [HttpGet]
+        public async Task<IActionResult> GetIncidentsForMap()
+        {
+            if (!IsCitizen())
+            {
+                return Unauthorized();
+            }
+
+            var userId = HttpContext.Session.GetString("UserId");
+
+            var incidents = await _context.Incidents
+                .Find(i => i.ReportedBy == userId)
+                .ToListAsync();
+
+            var mapData = incidents
+                .Where(i => i.Latitude.HasValue && i.Longitude.HasValue)
+                .Select(i => new {
+                    i.Id,
+                    i.Title,
+                    i.Location,
+                    i.Severity,
+                    Latitude = i.Latitude.Value,
+                    Longitude = i.Longitude.Value
+                });
+
+            return Json(mapData);
+        }
+
+        // ==================== NOTIFICATIONS ====================
         [HttpGet]
         public IActionResult Notifications()
         {
@@ -186,7 +232,47 @@ namespace SmartCityPulse.Controllers
             return View();
         }
 
-        // ==================== DOWNLOAD REPORTS (Placeholder) ====================
+        [HttpGet]
+        public async Task<IActionResult> GetNotifications()
+        {
+            if (!IsCitizen()) return Unauthorized();
+
+            var userId = HttpContext.Session.GetString("UserId");
+
+            // Get incidents that have status changes (status is not Open or updated recently)
+            var notifications = await _context.Incidents
+                .Find(i => i.ReportedBy == userId && (i.Status != "Open" || i.UpdatedAt > DateTime.UtcNow.AddDays(-1)))
+                .SortByDescending(i => i.UpdatedAt)
+                .Limit(20)
+                .ToListAsync();
+
+            var result = notifications.Select(i => new {
+                i.Id,
+                i.Title,
+                i.Status,
+                UpdatedAt = i.UpdatedAt,
+                Message = GetStatusMessage(i.Status, i.Title)
+            });
+
+            return Json(result);
+        }
+
+        private string GetStatusMessage(string status, string title)
+        {
+            switch (status)
+            {
+                case "In Progress":
+                    return $"Your incident '{title}' is now In Progress. The concerned department is working on it.";
+                case "Resolved":
+                    return $"Great news! Your incident '{title}' has been resolved.";
+                case "Assigned":
+                    return $"Your incident '{title}' has been assigned to the appropriate department.";
+                default:
+                    return $"Status updated to {status} for your incident '{title}'.";
+            }
+        }
+
+        // ==================== DOWNLOAD REPORTS ====================
         [HttpGet]
         public IActionResult DownloadReports()
         {
@@ -195,6 +281,45 @@ namespace SmartCityPulse.Controllers
                 return RedirectToAction("Login", "Account");
             }
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadPDF()
+        {
+            if (!IsCitizen()) return Unauthorized();
+
+            var userId = HttpContext.Session.GetString("UserId");
+            var incidents = await _context.Incidents.Find(i => i.ReportedBy == userId).ToListAsync();
+
+            var html = @"<html><head><style>body{font-family:Arial;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #ddd;padding:8px;}th{background-color:#f2f2f2;}</style></head><body>
+                        <h1>My Incident Reports</h1>
+                        <table><thead>汽<th>ID</th><th>Title</th><th>Location</th><th>Severity</th><th>Status</th><th>Date</th></thead><tbody>";
+
+            foreach (var i in incidents)
+            {
+                html += $"<tr><td>{i.Id}</td><td>{i.Title}</td><td>{i.Location}</td><td>{i.Severity}</td><td>{i.Status}</td><td>{i.ReportedAt:yyyy-MM-dd}</td></tr>";
+            }
+
+            html += @"</tbody></table></body></html>";
+
+            return File(System.Text.Encoding.UTF8.GetBytes(html), "application/pdf", "IncidentReports.pdf");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadCSV()
+        {
+            if (!IsCitizen()) return Unauthorized();
+
+            var userId = HttpContext.Session.GetString("UserId");
+            var incidents = await _context.Incidents.Find(i => i.ReportedBy == userId).ToListAsync();
+
+            var csv = "ID,Title,Location,Severity,Status,ReportedAt\n";
+            foreach (var i in incidents)
+            {
+                csv += $"{i.Id},{i.Title},{i.Location},{i.Severity},{i.Status},{i.ReportedAt:yyyy-MM-dd}\n";
+            }
+
+            return File(System.Text.Encoding.UTF8.GetBytes(csv), "text/csv", "IncidentReports.csv");
         }
 
         // ==================== PROFILE MANAGEMENT ====================
@@ -237,20 +362,18 @@ namespace SmartCityPulse.Controllers
                 return NotFound();
             }
 
-            // Update user details
             user.Name = name;
             user.Phone = phone;
 
             await _context.Users.ReplaceOneAsync(u => u.Id == userId, user);
 
-            // Update session
             HttpContext.Session.SetString("UserName", name);
 
             TempData["SuccessMessage"] = "Profile updated successfully!";
             return RedirectToAction("Profile");
         }
 
-        // ==================== SAFETY TIPS (Placeholder) ====================
+        // ==================== SAFETY TIPS ====================
         [HttpGet]
         public IActionResult SafetyTips()
         {
@@ -258,6 +381,62 @@ namespace SmartCityPulse.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
+            return View();
+        }
+
+        // ==================== STATISTICS ====================
+        [HttpGet]
+        public async Task<IActionResult> Statistics()
+        {
+            if (!IsCitizen())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var userId = HttpContext.Session.GetString("UserId");
+
+            // Weekly data for chart (last 7 days)
+            var weeklyData = new List<int>();
+            for (int i = 6; i >= 0; i--)
+            {
+                var date = DateTime.UtcNow.Date.AddDays(-i);
+                var count = await _context.Incidents
+                    .CountDocumentsAsync(inc => inc.ReportedBy == userId && inc.ReportedAt.Date == date);
+                weeklyData.Add((int)count);
+            }
+
+            // Severity counts
+            var criticalCount = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Critical");
+            var highCount = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "High");
+            var mediumCount = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Medium");
+            var lowCount = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Low");
+
+            // Status counts
+            var openCount = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Open");
+            var inProgressCount = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "In Progress");
+            var resolvedCount = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Resolved");
+
+            // Total incidents
+            var totalIncidents = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId);
+
+            ViewBag.WeeklyData = weeklyData;
+            ViewBag.CriticalIncidents = (int)criticalCount;
+            ViewBag.HighIncidents = (int)highCount;
+            ViewBag.MediumIncidents = (int)mediumCount;
+            ViewBag.LowIncidents = (int)lowCount;
+            ViewBag.OpenIncidents = (int)openCount;
+            ViewBag.InProgressIncidents = (int)inProgressCount;
+            ViewBag.ResolvedIncidents = (int)resolvedCount;
+            ViewBag.TotalIncidents = (int)totalIncidents;
+
             return View();
         }
 
@@ -275,9 +454,9 @@ namespace SmartCityPulse.Controllers
 
             var emergencyIncident = new Incident
             {
-                Title = "🚨 EMERGENCY SOS - Immediate Assistance Required",
-                Description = $"Emergency SOS alert raised by citizen {userName}. Immediate assistance required at their location.",
-                Location = "Location shared via emergency system",
+                Title = "EMERGENCY SOS - Immediate Assistance Required",
+                Description = $"Emergency SOS alert raised by citizen {userName}. Immediate assistance required.",
+                Location = "Emergency Location",
                 Severity = "Critical",
                 Status = "Open",
                 ReportedBy = userId,
@@ -289,34 +468,17 @@ namespace SmartCityPulse.Controllers
 
             await _context.Incidents.InsertOneAsync(emergencyIncident);
 
-            TempData["SuccessMessage"] = "🚨 Emergency alert sent! Authorities have been notified.";
+            TempData["SuccessMessage"] = "Emergency alert sent! Authorities have been notified.";
             return RedirectToAction("Index");
         }
-        // ==================== MAP VIEW - Get Incidents with Coordinates ====================
-        [HttpGet]
-        public async Task<IActionResult> GetIncidentsForMap()
+        [HttpPost]
+        public async Task<IActionResult> MarkNotificationAsRead(string id)
         {
-            if (!IsCitizen())
-            {
-                return Unauthorized();
-            }
-
-            var userId = HttpContext.Session.GetString("UserId");
-
-            var incidents = await _context.Incidents
-                .Find(i => i.ReportedBy == userId)
-                .ToListAsync();
-
-            var mapData = incidents.Select(i => new {
-                i.Id,
-                i.Title,
-                i.Location,
-                i.Severity,
-                i.Latitude,
-                i.Longitude
-            }).Where(i => i.Latitude != null && i.Longitude != null);
-
-            return Json(mapData);
+            await _context.Notifications.UpdateOneAsync(
+                n => n.Id == id,
+                Builders<Notification>.Update.Set(n => n.IsRead, true)
+            );
+            return Ok();
         }
     }
 }

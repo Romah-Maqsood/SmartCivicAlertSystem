@@ -9,6 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
@@ -18,32 +19,33 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: #E8EDF5;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* Simple Navbar */
+        /* Navbar - New Theme */
         .navbar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background-color: #1E293B;
-            border-bottom: 2px solid #3B82F6;
+            background: #FFFFFF;
+            border-bottom: 1px solid #EAECF0;
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
         }
 
         .navbar-brand {
-            color: #FFFFFF;
+            color: #1A1F36;
             font-size: 1.25rem;
-            font-weight: bold;
+            font-weight: 700;
             text-decoration: none;
             display: flex;
             align-items: center;
@@ -51,20 +53,27 @@
         }
 
             .navbar-brand i {
-                color: #3B82F6;
+                color: #2563EB;
             }
 
             .navbar-brand span {
-                color: #3B82F6;
+                color: #2563EB;
             }
 
         .nav-links a {
-            color: #94A3B8;
+            color: #6B7280;
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
         }
+
+            .nav-links a:hover {
+                color: #2563EB;
+            }
 
         .login-container {
             width: 100%;
@@ -74,11 +83,11 @@
         }
 
         .login-card {
-            background-color: #1E293B;
-            border: 1px solid #334155;
+            background: #FFFFFF;
+            border: 1px solid #EAECF0;
             border-radius: 24px;
             padding: 2rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
         }
 
         .logo {
@@ -88,17 +97,18 @@
 
             .logo i {
                 font-size: 3rem;
-                color: #3B82F6;
+                color: #2563EB;
                 margin-bottom: 0.5rem;
             }
 
             .logo h2 {
-                color: white;
+                color: #1A1F36;
                 font-size: 1.5rem;
+                font-weight: 700;
             }
 
             .logo span {
-                color: #3B82F6;
+                color: #2563EB;
             }
 
         .input-group {
@@ -107,8 +117,9 @@
 
             .input-group label {
                 display: block;
-                color: #94A3B8;
-                font-size: 0.875rem;
+                color: #6B7280;
+                font-size: 0.75rem;
+                font-weight: 500;
                 margin-bottom: 0.5rem;
             }
 
@@ -121,32 +132,38 @@
                 left: 1rem;
                 top: 50%;
                 transform: translateY(-50%);
-                color: #64748B;
+                color: #94A3B8;
             }
 
         .input-group input {
             width: 100%;
             padding: 0.75rem 1rem 0.75rem 2.5rem;
-            background-color: #0F172A;
-            border: 1px solid #334155;
+            background: #FFFFFF;
+            border: 1px solid #EAECF0;
             border-radius: 12px;
-            color: white;
-            font-size: 1rem;
+            color: #1A1F36;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
         }
 
             .input-group input:focus {
                 outline: none;
-                border-color: #3B82F6;
+                border-color: #2563EB;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+            }
+
+            .input-group input::placeholder {
+                color: #94A3B8;
             }
 
         .btn-login {
             width: 100%;
-            padding: 0.875rem;
-            background-color: #3B82F6;
+            padding: 0.75rem;
+            background: #2563EB;
             border: none;
-            border-radius: 12px;
+            border-radius: 40px;
             color: white;
-            font-size: 1rem;
+            font-size: 0.875rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
@@ -157,7 +174,7 @@
         }
 
             .btn-login:hover {
-                background-color: #2563EB;
+                background: #1D4ED8;
                 transform: translateY(-1px);
             }
 
@@ -167,39 +184,64 @@
         }
 
             .forgot-link a {
-                color: #3B82F6;
+                color: #2563EB;
                 text-decoration: none;
-                font-size: 0.875rem;
+                font-size: 0.75rem;
             }
+
+                .forgot-link a:hover {
+                    text-decoration: underline;
+                }
 
         .register-link {
             text-align: center;
-            color: #94A3B8;
-            font-size: 0.875rem;
+            color: #6B7280;
+            font-size: 0.75rem;
             margin-top: 1.5rem;
         }
 
             .register-link a {
-                color: #3B82F6;
+                color: #2563EB;
                 text-decoration: none;
+                font-weight: 500;
             }
 
+                .register-link a:hover {
+                    text-decoration: underline;
+                }
+
         .alert-error {
-            background-color: #7F1D1D;
-            color: #FECACA;
+            background: #FEF2F2;
+            color: #DC2626;
             padding: 0.75rem;
             border-radius: 12px;
             margin-bottom: 1.5rem;
-            border-left: 4px solid #EF4444;
+            border-left: 3px solid #DC2626;
+            font-size: 0.75rem;
         }
 
         .alert-success {
-            background-color: #14532D;
-            color: #BBF7D0;
+            background: #DCFCE7;
+            color: #166534;
             padding: 0.75rem;
             border-radius: 12px;
             margin-bottom: 1.5rem;
-            border-left: 4px solid #22C55E;
+            border-left: 3px solid #10B981;
+            font-size: 0.75rem;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .login-container {
+                padding: 1rem;
+                margin-top: 120px;
+            }
         }
     </style>
 </head>

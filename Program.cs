@@ -36,8 +36,14 @@ app.UseRouting();
 app.UseSession();
 app.UseAuthorization();
 
+// ✅ Route Configuration - Fixed (No duplicates)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "citizen",
+    pattern: "citizen/{action=Index}/{id?}",
+    defaults: new { controller = "Citizen" });
 
 app.Run();

@@ -24,5 +24,7 @@ namespace SmartCityPulse.Data
 
         public IMongoCollection<Incident> Incidents =>
             _database.GetCollection<Incident>("Incidents");
+
+        public IMongoCollection<Notification> Notifications => _database.GetCollection<Notification>("Notifications");
     }
 }

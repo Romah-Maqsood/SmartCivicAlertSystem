@@ -21,84 +21,99 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
             background: #E8EDF5;
             color: #1A1F36;
         }
 
-        /* Top Bar */
-        .top-bar {
+        .navbar {
             background: #FFFFFF;
-            border-bottom: 1px solid #EAECF0;
-            padding: 16px 24px;
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
+            border-bottom: 1px solid #EAECF0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1A1F36;
+            text-decoration: none;
+        }
+
+            .navbar-brand span {
+                color: #2563EB;
+            }
+
+        .container {
+            max-width: 1400px;
+            margin: 1rem auto;
+            padding: 0 2rem;
+        }
+
+        .top-bar {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #EAECF0;
         }
 
         .page-title h1 {
-            font-size: 20px;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: #1A1F36;
         }
 
         .page-title p {
-            font-size: 13px;
+            font-size: 0.875rem;
             color: #6B7280;
-            margin-top: 4px;
+            margin-top: 0.25rem;
         }
 
-        .back-btn {
+        .btn-back {
             background: #2563EB;
             color: white;
-            padding: 8px 20px;
+            padding: 0.5rem 1.25rem;
             border-radius: 40px;
             text-decoration: none;
-            font-size: 13px;
+            font-size: 0.875rem;
             font-weight: 500;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
+            gap: 0.5rem;
         }
 
-            .back-btn:hover {
-                background: #1D4ED8;
-                transform: translateY(-1px);
-            }
-
-        /* Legend */
         .legend {
             background: #FFFFFF;
             border-radius: 12px;
-            padding: 12px 16px;
-            margin: 16px 24px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
             border: 1px solid #EAECF0;
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 1rem;
             align-items: center;
         }
 
         .legend-title {
-            font-size: 13px;
+            font-size: 0.875rem;
             font-weight: 600;
-            color: #1A1F36;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: #5A6A7F;
+            gap: 0.5rem;
+            font-size: 0.75rem;
         }
 
         .legend-marker {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
         }
 
@@ -118,190 +133,97 @@
                 background: #10B981;
             }
 
-        /* Map Container */
-        .map-container {
-            margin: 0 24px 24px 24px;
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid #EAECF0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        #incidentMap {
+        #map {
             height: 550px;
-            width: 100%;
+            border-radius: 20px;
+            border: 1px solid #EAECF0;
             background: #F0F4F9;
         }
 
-        /* Loading State */
-        .loading-container {
+        .loading {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 550px;
             background: #FFFFFF;
             border-radius: 20px;
-            margin: 0 24px 24px 24px;
             border: 1px solid #EAECF0;
         }
 
-        .loading-spinner {
-            text-align: center;
-        }
-
-            .loading-spinner i {
-                font-size: 48px;
-                color: #2563EB;
-                margin-bottom: 16px;
-            }
-
-        /* No Data Message */
         .no-data {
             text-align: center;
             padding: 60px;
             background: #FFFFFF;
             border-radius: 20px;
-            margin: 0 24px 24px 24px;
             border: 1px solid #EAECF0;
         }
 
-            .no-data i {
-                font-size: 64px;
-                color: #94A3B8;
-                margin-bottom: 16px;
+        @@media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
             }
 
-        /* Popup */
-        .custom-popup .popup-title {
-            font-weight: 700;
-            font-size: 14px;
-            color: #1A1F36;
-            margin-bottom: 8px;
-        }
+            #map {
+                height: 400px;
+            }
 
-        .custom-popup .popup-location {
-            font-size: 12px;
-            color: #6B7280;
-            margin-bottom: 8px;
-        }
-
-        .popup-severity {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-
-        .severity-critical {
-            background: #FEF2F2;
-            color: #DC2626;
-        }
-
-        .severity-high {
-            background: #FFF7ED;
-            color: #F97316;
-        }
-
-        .severity-medium {
-            background: #FEFCE8;
-            color: #EAB308;
-        }
-
-        .severity-low {
-            background: #ECFDF5;
-            color: #10B981;
-        }
-
-        .view-details {
-            display: inline-block;
-            margin-top: 8px;
-            color: #2563EB;
-            text-decoration: none;
-            font-size: 11px;
-        }
-
-        @@media (max-width: 768px) {
             .top-bar {
                 flex-direction: column;
+                gap: 1rem;
                 text-align: center;
-            }
-
-            .legend {
-                justify-content: center;
-            }
-
-            .map-container {
-                margin: 0 16px 16px 16px;
-            }
-
-            #incidentMap {
-                height: 400px;
             }
         }
     </style>
 </head>
 <body>
-    <div>
-        <!-- Top Bar -->
+    <nav class="navbar">
+        <a href="/Citizen/Index" class="navbar-brand">SMART CIVIC <span>ALERT</span></a>
+        <a href="/Account/Logout" style="color: #6B7280;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+
+    <div class="container">
         <div class="top-bar">
             <div class="page-title">
                 <h1><i class="fas fa-map-marker-alt" style="color: #2563EB;"></i> Incident Map</h1>
                 <p>View your reported incidents on the map</p>
             </div>
-            <a href="/Citizen/Index" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
-            </a>
+            <a href="/Citizen/Index" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
         </div>
 
-        <!-- Legend -->
         <div class="legend">
-            <span class="legend-title">Severity Legend:</span>
+            <span class="legend-title">Severity:</span>
             <div class="legend-item"><div class="legend-marker critical"></div><span>Critical</span></div>
             <div class="legend-item"><div class="legend-marker high"></div><span>High</span></div>
             <div class="legend-item"><div class="legend-marker medium"></div><span>Medium</span></div>
             <div class="legend-item"><div class="legend-marker low"></div><span>Low</span></div>
         </div>
 
-        <!-- Loading -->
-        <div id="mapLoading" class="loading-container">
-            <div class="loading-spinner">
-                <i class="fas fa-spinner fa-pulse"></i>
-                <p>Loading map data...</p>
+        <div id="loadingDiv" class="loading">
+            <div style="text-align: center;">
+                <i class="fas fa-spinner fa-pulse" style="font-size: 2rem; color: #2563EB;"></i>
+                <p style="margin-top: 1rem;">Loading map data...</p>
             </div>
         </div>
 
-        <!-- Map Container -->
-        <div id="mapContainer" class="map-container" style="display: none;">
-            <div id="incidentMap"></div>
+        <div id="mapContainer" style="display: none;">
+            <div id="map"></div>
         </div>
 
-        <!-- No Data -->
-        <div id="noDataMessage" class="no-data" style="display: none;">
-            <i class="fas fa-map-marked-alt"></i>
-            <h3>No incidents with location data</h3>
+        <div id="noDataDiv" class="no-data" style="display: none;">
+            <i class="fas fa-map-marked-alt" style="font-size: 3rem; color: #94A3B8;"></i>
+            <h3 style="margin-top: 1rem;">No incidents with location data</h3>
             <p>Your reported incidents don't have location coordinates yet.</p>
-            <a href="/Incident/Create" class="back-btn" style="margin-top: 16px; display: inline-block;">
-                <i class="fas fa-plus-circle"></i> Report New Incident
-            </a>
+            <a href="/Incident/Create" style="display: inline-block; margin-top: 1rem; background: #2563EB; color: white; padding: 0.5rem 1.25rem; border-radius: 40px; text-decoration: none;">Report New Incident</a>
         </div>
     </div>
 
     <script>
-        let map;
-        let markers = [];
+        document.addEventListener('DOMContentLoaded', loadMap);
 
-        const severityColors = {
-            'Critical': '#DC2626',
-            'High': '#F97316',
-            'Medium': '#EAB308',
-            'Low': '#10B981'
-        };
-
-        async function loadIncidents() {
-            const loadingDiv = document.getElementById('mapLoading');
+        async function loadMap() {
+            const loadingDiv = document.getElementById('loadingDiv');
             const mapContainer = document.getElementById('mapContainer');
-            const noDataDiv = document.getElementById('noDataMessage');
+            const noDataDiv = document.getElementById('noDataDiv');
 
             try {
                 const response = await fetch('/Citizen/GetIncidentsForMap');
@@ -316,55 +238,43 @@
                 loadingDiv.style.display = 'none';
                 mapContainer.style.display = 'block';
 
-                // Initialize map
-                map = L.map('incidentMap').setView([24.8607, 67.0011], 12);
-
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
-                    subdomains: 'abcd',
-                    maxZoom: 19
+                const map = L.map('map').setView([24.8607, 67.0011], 12);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap'
                 }).addTo(map);
+
+                const colors = { 'Critical': '#DC2626', 'High': '#F97316', 'Medium': '#EAB308', 'Low': '#10B981' };
+                const bounds = [];
 
                 incidents.forEach(incident => {
                     if (incident.latitude && incident.longitude) {
-                        addMarker(incident);
+                        bounds.push([incident.latitude, incident.longitude]);
+                        const color = colors[incident.severity] || '#6B7280';
+                        const marker = L.marker([incident.latitude, incident.longitude], {
+                            icon: L.divIcon({
+                                html: `<div style="width: 24px; height: 24px; background: ${color}; border: 2px solid white; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>`,
+                                iconSize: [24, 24],
+                                popupAnchor: [0, -12]
+                            })
+                        }).bindPopup(`
+                            <div style="min-width: 180px;">
+                                <b>${escapeHtml(incident.title)}</b><br>
+                                <i class="fas fa-location-dot"></i> ${escapeHtml(incident.location)}<br>
+                                <span style="display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; background: ${color}20; color: ${color}; margin-top: 5px;">${incident.severity}</span><br>
+                                <a href="/Citizen/Details/${incident.id}" style="color: #2563EB; text-decoration: none; margin-top: 8px; display: inline-block;">View Details →</a>
+                            </div>
+                        `);
+                        marker.addTo(map);
                     }
                 });
 
-                if (markers.length > 0) {
-                    const group = L.featureGroup(markers);
-                    map.fitBounds(group.getBounds().pad(0.1));
+                if (bounds.length > 0) {
+                    map.fitBounds(bounds);
                 }
-
             } catch (error) {
-                console.error('Error:', error);
-                loadingDiv.innerHTML = `<div class="loading-spinner"><i class="fas fa-exclamation-triangle" style="color:#DC2626;"></i><p>Error loading map. Please try again.</p></div>`;
+                console.error(error);
+                loadingDiv.innerHTML = '<div style="text-align: center;"><i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #DC2626;"></i><p style="margin-top: 1rem;">Error loading map. Please try again.</p></div>';
             }
-        }
-
-        function addMarker(incident) {
-            const color = severityColors[incident.severity] || '#6B7280';
-
-            const icon = L.divIcon({
-                html: `<div style="width:24px;height:24px;background:${color};border:2px solid white;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,0.2);"></div>`,
-                iconSize: [24, 24],
-                popupAnchor: [0, -12]
-            });
-
-            const popupContent = `
-                <div class="custom-popup" style="min-width:180px;">
-                    <div class="popup-title">${escapeHtml(incident.title)}</div>
-                    <div class="popup-location"><i class="fas fa-location-dot"></i> ${escapeHtml(incident.location)}</div>
-                    <div><span class="popup-severity severity-${incident.severity.toLowerCase()}">${incident.severity}</span></div>
-                    <a href="/Citizen/Details/${incident.id}" class="view-details">View Details →</a>
-                </div>
-            `;
-
-            const marker = L.marker([incident.latitude, incident.longitude], { icon })
-                .bindPopup(popupContent);
-
-            marker.addTo(map);
-            markers.push(marker);
         }
 
         function escapeHtml(text) {
@@ -373,8 +283,6 @@
             div.textContent = text;
             return div.innerHTML;
         }
-
-        document.addEventListener('DOMContentLoaded', loadIncidents);
     </script>
 </body>
 </html>

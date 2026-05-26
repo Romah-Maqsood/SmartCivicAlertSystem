@@ -28,14 +28,12 @@
             justify-content: center;
         }
 
-        /* Container */
         .form-container {
             width: 100%;
             max-width: 700px;
             margin: 40px 20px;
         }
 
-        /* Card */
         .form-card {
             background: #FFFFFF;
             border-radius: 24px;
@@ -44,7 +42,6 @@
             border: 1px solid #EAECF0;
         }
 
-        /* Header */
         .form-header {
             text-align: center;
             margin-bottom: 28px;
@@ -68,7 +65,6 @@
                 color: #6B7280;
             }
 
-        /* Form Groups */
         .form-group {
             margin-bottom: 20px;
         }
@@ -119,7 +115,6 @@
             background-position: right 16px center;
         }
 
-        /* Location Input Group */
         .location-group {
             display: flex;
             gap: 10px;
@@ -175,14 +170,12 @@
                 color: #DC2626;
             }
 
-        /* Row Layout */
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
 
-        /* Buttons */
         .btn-group {
             display: flex;
             gap: 16px;
@@ -234,7 +227,6 @@
                 background: #E2E8F0;
             }
 
-        /* Alert Messages */
         .alert-success {
             background: #DCFCE7;
             color: #166534;
@@ -259,7 +251,6 @@
             font-size: 13px;
         }
 
-        /* Responsive */
         @@media (max-width: 640px) {
             .form-card {
                 padding: 24px;
@@ -300,16 +291,16 @@
 
             @if (TempData["SuccessMessage"] != null)
             {
-                <div class="alert-success">
-                    <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
-                </div>
+            <div class="alert-success">
+                <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            </div>
             }
 
             @if (ViewBag.Error != null)
             {
-                <div class="alert-error">
-                    <i class="fas fa-exclamation-triangle"></i> @ViewBag.Error
-                </div>
+            <div class="alert-error">
+                <i class="fas fa-exclamation-triangle"></i> @ViewBag.Error
+            </div>
             }
 
             <form method="post" action="/Incident/Create">
@@ -350,10 +341,10 @@
                             <i class="fas fa-chart-line"></i> Severity
                         </label>
                         <select name="Severity" class="form-control" required>
-                            <option value="Low">🟢 Low</option>
-                            <option value="Medium">🟡 Medium</option>
-                            <option value="High">🟠 High</option>
-                            <option value="Critical">🔴 Critical</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Critical">Critical</option>
                         </select>
                     </div>
 
@@ -362,12 +353,12 @@
                             <i class="fas fa-building"></i> Department
                         </label>
                         <select name="Department" class="form-control">
-                            <option value="Unassigned">🤖 Auto-assign (AI)</option>
-                            <option value="Fire Department">🚒 Fire Department</option>
-                            <option value="Police Department">🚓 Police Department</option>
-                            <option value="Rescue/Medical">🚑 Rescue/Medical</option>
-                            <option value="Roads Department">🛣️ Roads Department</option>
-                            <option value="Electric Department">💡 Electric Department</option>
+                            <option value="Unassigned">Auto-assign (AI)</option>
+                            <option value="Fire Department">Fire Department</option>
+                            <option value="Police Department">Police Department</option>
+                            <option value="Rescue/Medical">Rescue/Medical</option>
+                            <option value="Roads Department">Roads Department</option>
+                            <option value="Electric Department">Electric Department</option>
                         </select>
                     </div>
                 </div>
@@ -385,12 +376,15 @@
     </div>
 
     <script>
-        // Get Coordinates Functionality
         const getCoordinatesBtn = document.getElementById('getCoordinatesBtn');
         const locationInput = document.getElementById('Location');
         const latitudeInput = document.getElementById('Latitude');
         const longitudeInput = document.getElementById('Longitude');
         const coordinatesInfo = document.getElementById('coordinatesInfo');
+
+        if (getCoordinatesBtn) {
+            getCoordinatesBtn.addEventListener('click', getCoordinates);
+        }
 
         async function getCoordinates() {
             const location = locationInput.value.trim();
@@ -401,20 +395,14 @@
                 return;
             }
 
-            // Show loading state
-            const originalBtnText = getCoordinatesBtn.innerHTML;
             getCoordinatesBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading...';
             getCoordinatesBtn.disabled = true;
-
             coordinatesInfo.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Fetching coordinates...';
             coordinatesInfo.className = 'coordinates-info';
 
             try {
-                // Using Nominatim (OpenStreetMap) free geocoding API
                 const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1`, {
-                    headers: {
-                        'Accept-Language': 'en'
-                    }
+                    headers: { 'Accept-Language': 'en' }
                 });
 
                 const data = await response.json();
@@ -422,39 +410,26 @@
                 if (data && data.length > 0) {
                     const lat = parseFloat(data[0].lat);
                     const lon = parseFloat(data[0].lon);
-
                     latitudeInput.value = lat;
                     longitudeInput.value = lon;
-
-                    coordinatesInfo.innerHTML = `<i class="fas fa-check-circle"></i> Coordinates found: ${lat.toFixed(6)}, ${lon.toFixed(6)} - Location will appear on map`;
+                    coordinatesInfo.innerHTML = `<i class="fas fa-check-circle"></i> Coordinates found: ${lat.toFixed(6)}, ${lon.toFixed(6)}`;
                     coordinatesInfo.className = 'coordinates-info success';
                 } else {
                     latitudeInput.value = '';
                     longitudeInput.value = '';
-                    coordinatesInfo.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Could not find coordinates for "${location}". Please try a more specific location.`;
+                    coordinatesInfo.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Could not find coordinates for "${location}".`;
                     coordinatesInfo.className = 'coordinates-info warning';
                 }
             } catch (error) {
-                console.error('Geocoding error:', error);
                 latitudeInput.value = '';
                 longitudeInput.value = '';
                 coordinatesInfo.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error fetching coordinates. Please try again.';
                 coordinatesInfo.className = 'coordinates-info error';
             } finally {
-                // Reset button state
                 getCoordinatesBtn.innerHTML = '<i class="fas fa-map-pin"></i> Get Coordinates';
                 getCoordinatesBtn.disabled = false;
             }
         }
-
-        getCoordinatesBtn.addEventListener('click', getCoordinates);
-
-        // Optional: Get coordinates when location input loses focus (blur)
-        locationInput.addEventListener('blur', function() {
-            if (locationInput.value.trim() && !latitudeInput.value) {
-                getCoordinates();
-            }
-        });
     </script>
 </body>
 </html>
