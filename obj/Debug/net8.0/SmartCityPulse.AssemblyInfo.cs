@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartCityPulse")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+796bb2325be04145a2385f775b177ac943e539d9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ca820d57a17585757c53150a1a82598bebff3d31")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartCityPulse")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartCityPulse")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

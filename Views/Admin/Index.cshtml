@@ -80,7 +80,7 @@
         }
         .sidebar.collapsed { width: var(--sidebar-coll); }
 
-        /* ⭐ UPDATED: Hide entire brand section when collapsed */
+        /* ⭐ Hide brand section when collapsed */
         .sidebar.collapsed .sidebar-brand {
             display: none;
         }
@@ -105,26 +105,33 @@
         .brand-text h2 { font-size: 14px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.3px; }
         .brand-text span { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
 
-        /* ⭐ UPDATED TOGGLE BUTTON - Inside Sidebar, Always Shows 3 Lines */
-        .toggle-btn {
-            position: absolute;
-            top: 22px;
-            right: 10px;
-            width: 28px;
-            height: 28px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 50%;
+        /* ⭐ Hamburger as a nav item (aligned with other icons) */
+        .hamburger-item {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 12px;
+            padding: 10px 12px;
+            margin-bottom: 2px;
+            border-radius: var(--radius-nav);
             cursor: pointer;
-            font-size: 14px;
-            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-nav);
             transition: var(--transition);
-            z-index: 101;
+            white-space: nowrap;
+            overflow: hidden;
         }
-        .toggle-btn:hover { background: var(--blue-light); color: var(--blue); border-color: var(--blue); }
+        .hamburger-item:hover {
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+        .hamburger-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .sidebar.collapsed .hamburger-item span { display: none; }
 
         .sidebar-nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
         .nav-section-label {
@@ -441,7 +448,6 @@
 
 <!-- ===== SIDEBAR ===== -->
 <aside class="sidebar" id="sidebar">
-    <!-- ⭐ UPDATED: Entire brand section will be hidden when collapsed -->
     <div class="sidebar-brand">
         <div class="brand-icon"><i class="fas fa-city"></i></div>
         <div class="brand-text">
@@ -449,9 +455,11 @@
             <span>Alert System · Admin</span>
         </div>
     </div>
-    <!-- ⭐ UPDATED: Hamburger icon always visible inside sidebar -->
-    <div class="toggle-btn" onclick="toggleSidebar()" title="Toggle sidebar">
+
+    <!-- ⭐ Hamburger icon as a nav item (aligned with other icons) -->
+    <div class="hamburger-item" onclick="toggleSidebar()" title="Toggle sidebar">
         <i class="fas fa-bars"></i>
+        <span>Toggle Sidebar</span>
     </div>
 
     <nav class="sidebar-nav">
@@ -521,7 +529,7 @@
     <!-- CONTENT -->
     <div class="content-area">
 
-        <!-- ===== DASHBOARD ===== -->
+        <!-- ===== DASHBOARD SECTION ===== -->
         <div id="dashboardSection">
             <div class="stats-grid">
                 <div class="stat-card blue">
@@ -607,7 +615,171 @@
             </div>
         </div>
 
-        <!-- ... remaining sections (Incidents, Operators, Citizens, Analytics, Reports) remain unchanged ... -->
+        <!-- ===== INCIDENTS SECTION ===== -->
+        <div id="incidentsSection" class="hide">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-list-alt"></i> All Incidents</h2>
+            </div>
+            <div class="filter-bar">
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="Open">Open</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                </select>
+                <select id="severityFilter">
+                    <option value="">All Severity</option>
+                    <option value="Critical">Critical</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+                <button class="btn-primary btn-sm" onclick="loadAllIncidents()"><i class="fas fa-filter"></i> Filter</button>
+                <button class="btn-ghost btn-sm" onclick="clearFilters()"><i class="fas fa-times"></i> Clear</button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr><th>Title</th><th>Location</th><th>Department</th><th>Severity</th><th>Status</th><th>Reported At</th><th>Action</th></tr>
+                    </thead>
+                    <tbody id="allIncidentsTable">
+                        <tr><td colspan="7"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== OPERATORS SECTION ===== -->
+        <div id="operatorsSection" class="hide">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-users-cog"></i> Operators Management</h2>
+                <button class="btn-primary" onclick="openAddOperatorModal()"><i class="fas fa-plus"></i> Add Operator</button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Department</th><th>Actions</th></tr></thead>
+                    <tbody id="operatorsTable">
+                        <tr><td colspan="5"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== CITIZENS SECTION ===== -->
+        <div id="citizensSection" class="hide">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-user"></i> Citizens Management</h2>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Actions</th></tr></thead>
+                    <tbody id="citizensTable">
+                        <tr><td colspan="5"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== ANALYTICS SECTION ===== -->
+        <div id="analyticsSection" class="hide">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-chart-line"></i> Analytics Dashboard</h2>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-building"></i> Department-wise Incidents</div>
+                    <div class="chart-canvas-wrapper"><canvas id="deptChart"></canvas></div>
+                    <div id="deptChartError" class="chart-error hide"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-chart-bar"></i> Severity Overview</div>
+                    <div class="chart-canvas-wrapper"><canvas id="analyticsSeverityChart"></canvas></div>
+                    <div id="analyticsSeverityError" class="chart-error hide"></div>
+                </div>
+            </div>
+            <div class="chart-card" style="margin-top:20px;">
+                <div class="chart-title"><i class="fas fa-chart-area"></i> Weekly Trend — Total vs Resolved</div>
+                <div class="chart-canvas-wrapper"><canvas id="trendDetailChart"></canvas></div>
+                <div id="trendDetailError" class="chart-error hide"></div>
+            </div>
+        </div>
+
+        <!-- ===== REPORTS SECTION ===== -->
+        <div id="reportsSection" class="hide">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-file-alt"></i> Generate Reports</h2>
+            </div>
+            <p style="color:var(--text-secondary); font-size:13px; margin-bottom:24px;">
+                Export filtered incident reports in CSV, JSON, or PDF format.
+            </p>
+
+            <!-- Custom Report -->
+            <div class="chart-card" style="margin-bottom:28px;">
+                <div class="chart-title"><i class="fas fa-sliders-h"></i> Custom Report</div>
+                <div class="report-form-grid">
+                    <div class="form-group"><label>Start Date</label><input type="date" id="reportStartDate" /></div>
+                    <div class="form-group"><label>End Date</label><input type="date" id="reportEndDate" /></div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select id="reportDepartment">
+                            <option value="">All Departments</option>
+                            <option value="Fire Department">Fire</option>
+                            <option value="Police Department">Police</option>
+                            <option value="Rescue Department">Rescue</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Severity</label>
+                        <select id="reportSeverity">
+                            <option value="">All Severities</option>
+                            <option value="Critical">Critical</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+                    <button class="btn-ghost" onclick="previewCount()"><i class="fas fa-eye"></i> Preview Count</button>
+                    <span id="previewResult" class="preview-result"></span>
+                    <div class="download-dropdown">
+                        <button class="btn-primary" onclick="toggleDownloadMenu()"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button>
+                        <div class="download-menu" id="downloadMenu">
+                            <a href="#" onclick="downloadCustomReport('csv'); return false;"><i class="fas fa-file-csv"></i> CSV</a>
+                            <a href="#" onclick="downloadCustomReport('json'); return false;"><i class="fas fa-file-code"></i> JSON</a>
+                            <a href="#" onclick="downloadCustomReport('pdf'); return false;"><i class="fas fa-file-pdf"></i> PDF</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Presets -->
+            <h3 style="font-size:15px; font-weight:700; color:var(--text-primary); margin-bottom:14px;">Quick Presets</h3>
+            <div class="report-cards">
+                <div class="report-card">
+                    <div class="rc-icon"><i class="fas fa-calendar-day"></i></div>
+                    <h3>Today's Report</h3>
+                    <p>All incidents reported today</p>
+                    <button class="btn-primary" onclick="downloadQuickReport('today')"><i class="fas fa-download"></i> Download CSV</button>
+                </div>
+                <div class="report-card">
+                    <div class="rc-icon"><i class="fas fa-calendar-week"></i></div>
+                    <h3>Weekly Report</h3>
+                    <p>Last 7 days summary</p>
+                    <button class="btn-primary" onclick="downloadQuickReport('weekly')"><i class="fas fa-download"></i> Download CSV</button>
+                </div>
+                <div class="report-card">
+                    <div class="rc-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <h3>Monthly Report</h3>
+                    <p>Last 30 days overview</p>
+                    <button class="btn-primary" onclick="downloadQuickReport('monthly')"><i class="fas fa-download"></i> Download CSV</button>
+                </div>
+            </div>
+            <p style="margin-top:20px; color:#94A3B8; text-align:center; font-size:12px;">
+                <i class="fas fa-info-circle"></i> PDF export requires iTextSharp. All other formats are available instantly.
+            </p>
+        </div>
+
     </div><!-- /content-area -->
 </div><!-- /main-content -->
 
