@@ -15,7 +15,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* ... same CSS as before ... */
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
@@ -81,6 +80,11 @@
         }
         .sidebar.collapsed { width: var(--sidebar-coll); }
 
+        /* ⭐ UPDATED: Hide entire brand section when collapsed */
+        .sidebar.collapsed .sidebar-brand {
+            display: none;
+        }
+
         .sidebar-brand {
             padding: 22px 20px;
             border-bottom: 1px solid var(--border);
@@ -100,19 +104,23 @@
         }
         .brand-text h2 { font-size: 14px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.3px; }
         .brand-text span { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
-        .sidebar.collapsed .brand-text { display: none; }
 
-        /* ⭐ UPDATED TOGGLE BUTTON WITH 3 LINES (HAMBURGER) */
+        /* ⭐ UPDATED TOGGLE BUTTON - Inside Sidebar, Always Shows 3 Lines */
         .toggle-btn {
             position: absolute;
-            top: 22px; right: -14px;
-            width: 28px; height: 28px;
+            top: 22px;
+            right: 10px;
+            width: 28px;
+            height: 28px;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            font-size: 14px; color: var(--text-secondary);
+            font-size: 14px;
+            color: var(--text-secondary);
             transition: var(--transition);
             z-index: 101;
         }
@@ -160,7 +168,6 @@
         .main-content { margin-left: var(--sidebar-w); flex: 1; transition: margin-left 0.25s ease; }
         .main-content.expanded { margin-left: var(--sidebar-coll); }
 
-        /* ... rest of the CSS remains the same ... */
         .topbar {
             background: var(--bg-topbar);
             border-bottom: 1px solid var(--border);
@@ -434,6 +441,7 @@
 
 <!-- ===== SIDEBAR ===== -->
 <aside class="sidebar" id="sidebar">
+    <!-- ⭐ UPDATED: Entire brand section will be hidden when collapsed -->
     <div class="sidebar-brand">
         <div class="brand-icon"><i class="fas fa-city"></i></div>
         <div class="brand-text">
@@ -441,9 +449,9 @@
             <span>Alert System · Admin</span>
         </div>
     </div>
-    <!-- ⭐ UPDATED TOGGLE BUTTON: 3 LINES (fas fa-bars) -->
+    <!-- ⭐ UPDATED: Hamburger icon always visible inside sidebar -->
     <div class="toggle-btn" onclick="toggleSidebar()" title="Toggle sidebar">
-        <i class="fas fa-bars" id="toggleIcon"></i>
+        <i class="fas fa-bars"></i>
     </div>
 
     <nav class="sidebar-nav">
@@ -599,10 +607,9 @@
             </div>
         </div>
 
-        <!-- ... remaining sections (Incidents, Operators, Citizens, Analytics, Reports) remain exactly the same ... -->
-        <!-- They are unchanged to keep the response manageable, but can be provided if needed. -->
-    </div>
-</div>
+        <!-- ... remaining sections (Incidents, Operators, Citizens, Analytics, Reports) remain unchanged ... -->
+    </div><!-- /content-area -->
+</div><!-- /main-content -->
 
 <!-- ===== CONFIRM DELETE MODAL ===== -->
 <div id="confirmModal" class="modal">
@@ -655,13 +662,12 @@
         }
     };
 
-    // ===== SIDEBAR TOGGLE (Updated) =====
+    // ===== SIDEBAR TOGGLE =====
     function toggleSidebar() {
         const sb = document.getElementById('sidebar');
         const mc = document.getElementById('mainContent');
         sb.classList.toggle('collapsed');
         mc.classList.toggle('expanded');
-        // The icon remains 'fas fa-bars' (3 lines) as requested.
     }
 
     // ===== DROPDOWN =====
