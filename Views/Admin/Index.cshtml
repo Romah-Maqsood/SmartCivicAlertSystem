@@ -80,10 +80,7 @@
         }
         .sidebar.collapsed { width: var(--sidebar-coll); }
 
-        /* ⭐ Hide brand section when collapsed */
-        .sidebar.collapsed .sidebar-brand {
-            display: none;
-        }
+        .sidebar.collapsed .sidebar-brand { display: none; }
 
         .sidebar-brand {
             padding: 22px 20px;
@@ -105,7 +102,6 @@
         .brand-text h2 { font-size: 14px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.3px; }
         .brand-text span { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
 
-        /* ⭐ Hamburger as a nav item (aligned with other icons) */
         .hamburger-item {
             display: flex;
             align-items: center;
@@ -121,16 +117,8 @@
             white-space: nowrap;
             overflow: hidden;
         }
-        .hamburger-item:hover {
-            background: var(--blue-light);
-            color: var(--blue);
-        }
-        .hamburger-item i {
-            width: 20px;
-            text-align: center;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
+        .hamburger-item:hover { background: var(--blue-light); color: var(--blue); }
+        .hamburger-item i { width: 20px; text-align: center; font-size: 14px; flex-shrink: 0; }
         .sidebar.collapsed .hamburger-item span { display: none; }
 
         .sidebar-nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
@@ -175,33 +163,73 @@
         .main-content { margin-left: var(--sidebar-w); flex: 1; transition: margin-left 0.25s ease; }
         .main-content.expanded { margin-left: var(--sidebar-coll); }
 
+        /* ===== TOPBAR ===== */
         .topbar {
             background: var(--bg-topbar);
             border-bottom: 1px solid var(--border);
             padding: 0 32px;
             height: 68px;
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             position: sticky; top: 0; z-index: 50;
         }
-        .breadcrumb { display: flex; align-items: center; gap: 8px; }
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
         .breadcrumb-icon {
             width: 36px; height: 36px;
             background: var(--blue-light);
             border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: var(--blue); font-size: 15px;
         }
-        .breadcrumb h1 { font-size: 16px; font-weight: 700; color: var(--text-primary); }
-        .breadcrumb p { font-size: 12px; color: var(--text-secondary); }
+        .breadcrumb h1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .breadcrumb p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
 
         .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+        .notif-btn {
+            width: 38px; height: 38px;
+            background: var(--bg-page);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--text-secondary); font-size: 15px;
+            transition: var(--transition); position: relative;
+        }
+        .notif-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+        .notif-dot {
+            width: 8px; height: 8px; background: var(--red);
+            border-radius: 50%; position: absolute; top: 6px; right: 6px;
+            border: 2px solid white;
+        }
+
         .user-menu { position: relative; }
         .user-chip {
-            display: flex; align-items: center; gap: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             padding: 6px 14px 6px 6px;
-            background: var(--bg-page); border: 1px solid var(--border);
-            border-radius: 40px; cursor: pointer; transition: var(--transition);
+            background: var(--bg-page);
+            border: 1px solid var(--border);
+            /* ⭐ SQUARE BOX for Admin */
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
         }
+        .user-chip:hover { border-color: var(--blue); background: var(--blue-light); }
         .user-avatar {
             width: 30px; height: 30px;
             background: linear-gradient(135deg, var(--blue), #6366F1);
@@ -211,6 +239,32 @@
         }
         .user-chip span { font-size: 13px; font-weight: 600; color: var(--text-primary); }
         .user-chip i.fa-chevron-down { font-size: 10px; color: var(--text-secondary); }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            min-width: 160px;
+            z-index: 200;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .dropdown-menu.active { display: block; }
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 16px;
+            color: var(--text-nav);
+            text-decoration: none;
+            font-size: 13px;
+            transition: var(--transition);
+        }
+        .dropdown-menu a:hover { background: var(--blue-light); color: var(--blue); }
 
         .content-area { padding: 28px 32px; }
 
@@ -456,7 +510,6 @@
         </div>
     </div>
 
-    <!-- ⭐ Hamburger icon as a nav item (aligned with other icons) -->
     <div class="hamburger-item" onclick="toggleSidebar()" title="Toggle sidebar">
         <i class="fas fa-bars"></i>
         <span>Toggle Sidebar</span>
@@ -498,13 +551,13 @@
 <!-- ===== MAIN CONTENT ===== -->
 <div class="main-content" id="mainContent">
 
-    <!-- TOPBAR -->
+    <!-- ===== TOPBAR ===== -->
     <div class="topbar">
         <div class="breadcrumb">
-            <div class="breadcrumb-icon" id="topbarIcon"><i class="fas fa-chart-pie"></i></div>
+            <div class="breadcrumb-icon"><i class="fas fa-user-shield"></i></div>
             <div>
-                <h1 id="topbarTitle">Dashboard</h1>
-                <p id="topbarSub">Overview of your city's incident response</p>
+                <h1>Welcome Admin</h1>
+                <p>Manage your city's incident response</p>
             </div>
         </div>
         <div class="topbar-right">
@@ -519,8 +572,7 @@
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-menu" id="adminDropdown">
-                    <a href="#"><i class="fas fa-user-circle"></i> My Profile</a>
-                    <a href="/Account/Logout" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    <a href="#" onclick="showProfile()"><i class="fas fa-user-circle"></i> My Profile</a>
                 </div>
             </div>
         </div>
@@ -783,6 +835,22 @@
     </div><!-- /content-area -->
 </div><!-- /main-content -->
 
+<!-- ===== PROFILE MODAL ===== -->
+<div id="profileModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-user-circle" style="color:var(--blue); margin-right:8px;"></i> Admin Profile</h3>
+        <div style="padding: 10px 0;">
+            <p><strong>Name:</strong> @ViewBag.UserName</p>
+            <p><strong>Email:</strong> @ViewBag.UserEmail</p>
+            <p><strong>Role:</strong> Admin</p>
+            <p><strong>Account Created:</strong> @DateTime.UtcNow.ToString("dd MMM yyyy")</p>
+        </div>
+        <div class="modal-buttons">
+            <button class="btn-primary" onclick="closeModal('profileModal')">Close</button>
+        </div>
+    </div>
+</div>
+
 <!-- ===== CONFIRM DELETE MODAL ===== -->
 <div id="confirmModal" class="modal">
     <div class="modal-content">
@@ -843,10 +911,20 @@
     }
 
     // ===== DROPDOWN =====
-    function toggleDropdown() { document.getElementById('adminDropdown').classList.toggle('active'); }
+    function toggleDropdown() {
+        document.getElementById('adminDropdown').classList.toggle('active');
+    }
     window.addEventListener('click', e => {
-        if (!e.target.closest('.user-menu')) document.getElementById('adminDropdown').classList.remove('active');
+        if (!e.target.closest('.user-menu')) {
+            document.getElementById('adminDropdown').classList.remove('active');
+        }
     });
+
+    // ===== SHOW PROFILE =====
+    function showProfile() {
+        document.getElementById('adminDropdown').classList.remove('active');
+        document.getElementById('profileModal').classList.add('active');
+    }
 
     // ===== SECTION NAV =====
     const sectionMeta = {
@@ -865,11 +943,7 @@
         ['dashboard','incidents','operators','citizens','analytics','reports'].forEach(s => {
             document.getElementById(s + 'Section').classList.toggle('hide', s !== section);
         });
-        const meta = sectionMeta[section];
-        document.getElementById('topbarIcon').innerHTML = `<i class="${meta.icon}"></i>`;
-        document.getElementById('topbarTitle').innerText = meta.title;
-        document.getElementById('topbarSub').innerText = meta.sub;
-
+        // Top bar remains "Welcome Admin" — no change
         if (section === 'incidents')  loadAllIncidents();
         if (section === 'operators')  loadOperators();
         if (section === 'citizens')   loadCitizens();
