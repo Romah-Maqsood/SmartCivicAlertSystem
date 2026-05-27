@@ -106,8 +106,8 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 10px 12px;
-            margin-bottom: 2px;
+            padding: 8px 12px;           /* slightly reduced padding to align better */
+            margin: 4px 12px 8px;        /* tighter margins */
             border-radius: var(--radius-nav);
             cursor: pointer;
             font-size: 13px;
@@ -121,7 +121,7 @@
         .hamburger-item i { width: 20px; text-align: center; font-size: 14px; flex-shrink: 0; }
         .sidebar.collapsed .hamburger-item span { display: none; }
 
-        .sidebar-nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
+        .sidebar-nav { padding: 0 12px 16px; flex: 1; overflow-y: auto; }
         .nav-section-label {
             font-size: 10px; font-weight: 700; color: var(--text-secondary);
             text-transform: uppercase; letter-spacing: 1px;
@@ -144,6 +144,17 @@
         .nav-item.active { background: var(--blue-light); color: var(--blue); font-weight: 600; }
         .nav-item.active i { color: var(--blue); }
         .sidebar.collapsed .nav-item span { display: none; }
+
+        .nav-badge {
+            background: var(--red);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 50px;
+            margin-left: auto;
+        }
+        .sidebar.collapsed .nav-badge { display: none; }
 
         .sidebar-footer {
             padding: 16px 12px;
@@ -200,16 +211,23 @@
 
         .topbar-right { display: flex; align-items: center; gap: 12px; }
 
-        .notif-btn {
-            width: 38px; height: 38px;
+        /* Unified square icon buttons */
+        .topbar-icon-btn {
+            width: 38px;
+            height: 38px;
             background: var(--bg-page);
             border: 1px solid var(--border);
             border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; color: var(--text-secondary); font-size: 15px;
-            transition: var(--transition); position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 15px;
+            transition: var(--transition);
+            position: relative;
         }
-        .notif-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+        .topbar-icon-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
         .notif-dot {
             width: 8px; height: 8px; background: var(--red);
             border-radius: 50%; position: absolute; top: 6px; right: 6px;
@@ -217,19 +235,6 @@
         }
 
         .user-menu { position: relative; }
-        .user-chip {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 6px 14px 6px 6px;
-            background: var(--bg-page);
-            border: 1px solid var(--border);
-            /* ⭐ SQUARE BOX for Admin */
-            border-radius: 4px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .user-chip:hover { border-color: var(--blue); background: var(--blue-light); }
         .user-avatar {
             width: 30px; height: 30px;
             background: linear-gradient(135deg, var(--blue), #6366F1);
@@ -237,8 +242,6 @@
             display: flex; align-items: center; justify-content: center;
             color: white; font-size: 12px; font-weight: 700;
         }
-        .user-chip span { font-size: 13px; font-weight: 600; color: var(--text-primary); }
-        .user-chip i.fa-chevron-down { font-size: 10px; color: var(--text-secondary); }
 
         .dropdown-menu {
             display: none;
@@ -274,6 +277,7 @@
 
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
 
+        /* Stat cards (keep original top accent) */
         .stat-card {
             background: var(--bg-card);
             border-radius: var(--radius-card);
@@ -305,11 +309,29 @@
         .stat-desc { font-size: 12px; color: var(--text-secondary); }
 
         .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
-        .chart-card {
-            background: var(--bg-card); border-radius: var(--radius-card);
-            padding: 22px; border: 1px solid var(--border);
+
+        /* Chart cards and table wrappers now have a top accent line */
+        .chart-card,
+        .table-wrapper,
+        .report-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border);
             box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
         }
+        .chart-card::before,
+        .table-wrapper::before,
+        .report-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--blue-mid);
+        }
+
+        .chart-card { padding: 22px; }
         .chart-title {
             font-size: 14px; font-weight: 700; color: var(--text-primary);
             margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
@@ -320,11 +342,7 @@
         .chart-error { color: var(--red); font-size: 13px; text-align: center; padding: 40px 0; }
         .hide { display: none !important; }
 
-        .table-wrapper {
-            background: var(--bg-card); border-radius: var(--radius-card);
-            border: 1px solid var(--border); box-shadow: var(--shadow-card);
-            overflow: hidden;
-        }
+        .table-wrapper { overflow: hidden; }
         .table-wrapper table { width: 100%; border-collapse: collapse; }
         .table-wrapper thead { background: #F8FAFC; }
         .table-wrapper thead th {
@@ -453,8 +471,7 @@
 
         .report-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
         .report-card {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: var(--radius-card); padding: 26px 20px;
+            padding: 26px 20px;
             text-align: center; transition: var(--transition);
         }
         .report-card:hover { border-color: var(--blue-mid); box-shadow: var(--shadow-hover); transform: translateY(-3px); }
@@ -483,6 +500,52 @@
         }
         .download-menu a:hover { background: var(--blue-light); color: var(--blue); }
         .download-menu a i { width: 16px; text-align: center; }
+
+        /* Notification styles */
+        .notification-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .notification-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 20px;
+            background: #F8FAFC;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .notification-item.unread {
+            background: #EFF6FF;
+            border-color: var(--blue-mid);
+        }
+        .notification-item .notif-icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+            background: var(--blue-light);
+            color: var(--blue);
+            flex-shrink: 0;
+        }
+        .notification-item .notif-content {
+            flex: 1;
+        }
+        .notification-item .notif-title {
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .notification-item .notif-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        .notification-item .notif-actions {
+            display: flex;
+            gap: 6px;
+        }
 
         @@media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
         @@media (max-width: 768px) {
@@ -539,6 +602,10 @@
         <a class="nav-item" data-page="reports" onclick="showSection('reports')">
             <i class="fas fa-file-alt"></i><span>Reports</span>
         </a>
+        <a class="nav-item" data-page="notifications" onclick="showSection('notifications')">
+            <i class="fas fa-bell"></i><span>Notifications</span>
+            <span class="nav-badge" id="notifBadge">3</span>
+        </a>
     </nav>
 
     <div class="sidebar-footer">
@@ -561,15 +628,13 @@
             </div>
         </div>
         <div class="topbar-right">
-            <div class="notif-btn" title="Notifications">
+            <div class="topbar-icon-btn notif-btn" title="Notifications" onclick="showSection('notifications')">
                 <i class="fas fa-bell"></i>
                 <span class="notif-dot"></span>
             </div>
             <div class="user-menu">
-                <div class="user-chip" onclick="toggleDropdown()">
+                <div class="topbar-icon-btn" id="userMenuBtn" title="My Profile">
                     <div class="user-avatar">@(userName.Length > 0 ? userName[0].ToString().ToUpper() : "A")</div>
-                    <span>@userName</span>
-                    <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="dropdown-menu" id="adminDropdown">
                     <a href="#" onclick="showProfile()"><i class="fas fa-user-circle"></i> My Profile</a>
@@ -583,6 +648,7 @@
 
         <!-- ===== DASHBOARD SECTION ===== -->
         <div id="dashboardSection">
+            <!-- ... (same as before, unchanged) ... -->
             <div class="stats-grid">
                 <div class="stat-card blue">
                     <div class="stat-card-top">
@@ -669,6 +735,7 @@
 
         <!-- ===== INCIDENTS SECTION ===== -->
         <div id="incidentsSection" class="hide">
+            <!-- ... unchanged ... -->
             <div class="section-header">
                 <h2 class="section-title"><i class="fas fa-list-alt"></i> All Incidents</h2>
             </div>
@@ -703,6 +770,7 @@
 
         <!-- ===== OPERATORS SECTION ===== -->
         <div id="operatorsSection" class="hide">
+            <!-- ... unchanged ... -->
             <div class="section-header">
                 <h2 class="section-title"><i class="fas fa-users-cog"></i> Operators Management</h2>
                 <button class="btn-primary" onclick="openAddOperatorModal()"><i class="fas fa-plus"></i> Add Operator</button>
@@ -719,6 +787,7 @@
 
         <!-- ===== CITIZENS SECTION ===== -->
         <div id="citizensSection" class="hide">
+            <!-- ... unchanged ... -->
             <div class="section-header">
                 <h2 class="section-title"><i class="fas fa-user"></i> Citizens Management</h2>
             </div>
@@ -734,6 +803,7 @@
 
         <!-- ===== ANALYTICS SECTION ===== -->
         <div id="analyticsSection" class="hide">
+            <!-- ... unchanged but chart colors will be updated via JS ... -->
             <div class="section-header">
                 <h2 class="section-title"><i class="fas fa-chart-line"></i> Analytics Dashboard</h2>
             </div>
@@ -758,6 +828,7 @@
 
         <!-- ===== REPORTS SECTION ===== -->
         <div id="reportsSection" class="hide">
+            <!-- ... unchanged ... -->
             <div class="section-header">
                 <h2 class="section-title"><i class="fas fa-file-alt"></i> Generate Reports</h2>
             </div>
@@ -832,6 +903,16 @@
             </p>
         </div>
 
+        <!-- ===== NOTIFICATIONS SECTION ===== -->
+        <div id="notificationsSection" class="hide">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-bell"></i> Notifications</h2>
+            </div>
+            <div class="notification-list" id="notificationList">
+                <!-- dynamically filled -->
+            </div>
+        </div>
+
     </div><!-- /content-area -->
 </div><!-- /main-content -->
 
@@ -894,13 +975,46 @@
     let allCitizens = [];
     let allOperators = [];
 
-    const CHART_DEFAULTS = {
-        plugins: { legend: { labels: { color: '#6B7280', font: { family: 'Plus Jakarta Sans', size: 12 }, boxWidth: 12 } } },
-        scales: {
-            y: { ticks: { color: '#6B7280', font: { family: 'Plus Jakarta Sans' } }, grid: { color: '#F1F5F9' } },
-            x: { ticks: { color: '#6B7280', font: { family: 'Plus Jakarta Sans' } }, grid: { color: '#F1F5F9' } }
+    // Mock notifications
+    let notifications = [
+        { id:1, title:"New critical incident reported", time:"2 mins ago", read:false },
+        { id:2, title:"Operator John Doe created", time:"1 hour ago", read:false },
+        { id:3, title:"Monthly report generated", time:"3 hours ago", read:true },
+        { id:4, title:"Server backup completed", time:"1 day ago", read:true }
+    ];
+    function updateNotificationBadge() {
+        const unread = notifications.filter(n => !n.read).length;
+        const badge = document.getElementById('notifBadge');
+        badge.innerText = unread;
+        badge.style.display = unread > 0 ? 'inline-block' : 'none';
+    }
+
+    function renderNotifications() {
+        const container = document.getElementById('notificationList');
+        container.innerHTML = notifications.map(n => `
+            <div class="notification-item ${n.read ? '' : 'unread'}" onclick="toggleNotificationRead(${n.id})">
+                <div class="notif-icon"><i class="fas fa-bell"></i></div>
+                <div class="notif-content">
+                    <div class="notif-title">${n.title}</div>
+                    <div class="notif-time">${n.time}</div>
+                </div>
+                <div class="notif-actions">
+                    <button class="btn-ghost btn-sm" onclick="event.stopPropagation(); toggleNotificationRead(${n.id})">
+                        <i class="fas ${n.read ? 'fa-envelope' : 'fa-envelope-open'}"></i> ${n.read ? 'Unread' : 'Read'}
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function toggleNotificationRead(id) {
+        const notif = notifications.find(n => n.id === id);
+        if (notif) {
+            notif.read = !notif.read;
+            updateNotificationBadge();
+            renderNotifications();
         }
-    };
+    }
 
     // ===== SIDEBAR TOGGLE =====
     function toggleSidebar() {
@@ -927,28 +1041,19 @@
     }
 
     // ===== SECTION NAV =====
-    const sectionMeta = {
-        dashboard: { title: 'Dashboard', sub: 'Overview of your city\'s incident response', icon: 'fas fa-chart-pie' },
-        incidents:  { title: 'All Incidents', sub: 'Browse and filter incident records', icon: 'fas fa-list-alt' },
-        operators:  { title: 'Operators', sub: 'Manage operator accounts and departments', icon: 'fas fa-users-cog' },
-        citizens:   { title: 'Citizens', sub: 'Manage registered citizen accounts', icon: 'fas fa-user' },
-        analytics:  { title: 'Analytics', sub: 'Charts and insights across departments', icon: 'fas fa-chart-line' },
-        reports:    { title: 'Reports', sub: 'Generate and download incident reports', icon: 'fas fa-file-alt' },
-    };
-
     function showSection(section) {
         document.querySelectorAll('.nav-item').forEach(item => {
             item.classList.toggle('active', item.getAttribute('data-page') === section);
         });
-        ['dashboard','incidents','operators','citizens','analytics','reports'].forEach(s => {
+        ['dashboard','incidents','operators','citizens','analytics','reports','notifications'].forEach(s => {
             document.getElementById(s + 'Section').classList.toggle('hide', s !== section);
         });
-        // Top bar remains "Welcome Admin" — no change
         if (section === 'incidents')  loadAllIncidents();
         if (section === 'operators')  loadOperators();
         if (section === 'citizens')   loadCitizens();
         if (section === 'analytics')  { if (!analyticsChartsLoaded) loadAnalytics(); else resizeAnalyticsCharts(); }
         if (section === 'dashboard')  { if (!dashboardChartsLoaded) loadDashboardCharts(); else resizeDashboardCharts(); }
+        if (section === 'notifications') renderNotifications();
     }
 
     function resizeDashboardCharts() {
@@ -972,6 +1077,14 @@
         if (e) e.classList.add('hide');
     }
     function safeDestroy(chart) { if (chart && typeof chart.destroy === 'function') chart.destroy(); }
+
+    const CHART_DEFAULTS = {
+        plugins: { legend: { labels: { color: '#6B7280', font: { family: 'Plus Jakarta Sans', size: 12 }, boxWidth: 12 } } },
+        scales: {
+            y: { ticks: { color: '#6B7280', font: { family: 'Plus Jakarta Sans' } }, grid: { color: '#F1F5F9' } },
+            x: { ticks: { color: '#6B7280', font: { family: 'Plus Jakarta Sans' } }, grid: { color: '#F1F5F9' } }
+        }
+    };
 
     // ===== DASHBOARD CHARTS =====
     function loadDashboardCharts() {
@@ -1219,9 +1332,14 @@
 
                 hideChartError('deptChart','deptChartError');
                 safeDestroy(window.deptChart);
+                // Generate distinct colors for each department
+                const deptColors = generateDistinctColors(data.departments.length);
                 window.deptChart = new Chart(document.getElementById('deptChart').getContext('2d'), {
                     type: 'doughnut',
-                    data: { labels: data.departments.map(d => d.department), datasets: [{ data: data.departments.map(d => d.count), backgroundColor: ['#DC2626','#2563EB','#10B981','#F59E0B'], borderWidth: 0, hoverOffset: 6 }] },
+                    data: {
+                        labels: data.departments.map(d => d.department),
+                        datasets: [{ data: data.departments.map(d => d.count), backgroundColor: deptColors, borderWidth: 0, hoverOffset: 6 }]
+                    },
                     options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: CHART_DEFAULTS.plugins }
                 });
 
@@ -1253,6 +1371,14 @@
                 showChartError('analyticsSeverityChart','analyticsSeverityError','Could not load severity data: '+err.message);
                 showChartError('trendDetailChart','trendDetailError','Could not load trend data: '+err.message);
             });
+    }
+
+    function generateDistinctColors(count) {
+        const palette = [
+            '#6366F1', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#EF4444', '#8B5CF6', '#14B8A6',
+            '#F97316', '#0EA5E9', '#84CC16', '#F43F5E', '#06B6D4', '#A855F7', '#D946EF'
+        ];
+        return palette.slice(0, count);
     }
 
     // ===== REPORTS =====
@@ -1330,6 +1456,7 @@
 
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
+        updateNotificationBadge();
         if (typeof Chart === 'undefined') {
             document.querySelectorAll('.chart-canvas-wrapper').forEach(w => {
                 w.innerHTML = '<p class="chart-error">Chart.js failed to load. Check your internet connection.</p>';
