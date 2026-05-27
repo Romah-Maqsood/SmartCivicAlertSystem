@@ -3,16 +3,20 @@ using SmartCityPulse.Data;
 using SmartCityPulse.Models;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.SignalR;
+using SmartCityPulse.Hubs;
 
 namespace SmartCityPulse.Controllers
 {
     public class OperatorController : Controller
     {
         private readonly MongoDbContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public OperatorController(MongoDbContext context)
+        public OperatorController(MongoDbContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         private bool IsOperatorLoggedIn()
@@ -265,6 +269,23 @@ namespace SmartCityPulse.Controllers
 
             TempData["Success"] = "Comment added successfully!";
             return RedirectToAction("IncidentDetail", new { id });
+        }
+
+        // ==================== GET NEW INCIDENTS COUNT ====================
+        [HttpGet]
+        public async Task<IActionResult> GetNewIncidentsCount()
+        {
+            if (!IsOperatorLoggedIn())
+                return Json(new { count = 0 });
+
+            var department = GetOperatorDepartment();
+            var today = DateTime.UtcNow.Date;
+
+            var count = await _context.Incidents
+                .Find(i => i.Department == department && i.ReportedAt.Date == today && i.Status == "Open")
+                .CountDocumentsAsync();
+
+            return Json(new { count });
         }
     }
 }
