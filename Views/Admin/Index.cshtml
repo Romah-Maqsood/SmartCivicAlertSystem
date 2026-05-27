@@ -106,8 +106,8 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 8px 12px;           /* slightly reduced padding to align better */
-            margin: 4px 12px 8px;        /* tighter margins */
+            padding: 8px 12px;
+            margin: 4px 12px 8px;
             border-radius: var(--radius-nav);
             cursor: pointer;
             font-size: 13px;
@@ -211,10 +211,8 @@
 
         .topbar-right { display: flex; align-items: center; gap: 12px; }
 
-        /* Unified square icon buttons */
         .topbar-icon-btn {
-            width: 38px;
-            height: 38px;
+            width: 38px; height: 38px;
             background: var(--bg-page);
             border: 1px solid var(--border);
             border-radius: 10px;
@@ -233,6 +231,8 @@
             border-radius: 50%; position: absolute; top: 6px; right: 6px;
             border: 2px solid white;
         }
+
+        .user-admin-btn { border-radius: 50%; }
 
         .user-menu { position: relative; }
         .user-avatar {
@@ -277,7 +277,6 @@
 
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
 
-        /* Stat cards (keep original top accent) */
         .stat-card {
             background: var(--bg-card);
             border-radius: var(--radius-card);
@@ -310,7 +309,6 @@
 
         .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
 
-        /* Chart cards and table wrappers now have a top accent line */
         .chart-card,
         .table-wrapper,
         .report-card {
@@ -320,15 +318,6 @@
             box-shadow: var(--shadow-card);
             position: relative;
             overflow: hidden;
-        }
-        .chart-card::before,
-        .table-wrapper::before,
-        .report-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: var(--blue-mid);
         }
 
         .chart-card { padding: 22px; }
@@ -633,11 +622,11 @@
                 <span class="notif-dot"></span>
             </div>
             <div class="user-menu">
-                <div class="topbar-icon-btn" id="userMenuBtn" title="My Profile">
+                <div class="topbar-icon-btn user-admin-btn" id="userMenuBtn" onclick="toggleDropdown(event)" title="My Profile">
                     <div class="user-avatar">@(userName.Length > 0 ? userName[0].ToString().ToUpper() : "A")</div>
                 </div>
                 <div class="dropdown-menu" id="adminDropdown">
-                    <a href="#" onclick="showProfile()"><i class="fas fa-user-circle"></i> My Profile</a>
+                    <a href="#" onclick="showProfile(); return false;"><i class="fas fa-user-circle"></i> My Profile</a>
                 </div>
             </div>
         </div>
@@ -648,7 +637,6 @@
 
         <!-- ===== DASHBOARD SECTION ===== -->
         <div id="dashboardSection">
-            <!-- ... (same as before, unchanged) ... -->
             <div class="stats-grid">
                 <div class="stat-card blue">
                     <div class="stat-card-top">
@@ -735,7 +723,6 @@
 
         <!-- ===== INCIDENTS SECTION ===== -->
         <div id="incidentsSection" class="hide">
-            <!-- ... unchanged ... -->
             <div class="section-header">
                 <h2 class="section-title"><i class="fas fa-list-alt"></i> All Incidents</h2>
             </div>
@@ -770,7 +757,6 @@
 
         <!-- ===== OPERATORS SECTION ===== -->
         <div id="operatorsSection" class="hide">
-            <!-- ... unchanged ... -->
             <div class="section-header">
                 <h2 class="section-title"><i class="fas fa-users-cog"></i> Operators Management</h2>
                 <button class="btn-primary" onclick="openAddOperatorModal()"><i class="fas fa-plus"></i> Add Operator</button>
@@ -787,7 +773,6 @@
 
         <!-- ===== CITIZENS SECTION ===== -->
         <div id="citizensSection" class="hide">
-            <!-- ... unchanged ... -->
             <div class="section-header">
                 <h2 class="section-title"><i class="fas fa-user"></i> Citizens Management</h2>
             </div>
@@ -803,7 +788,6 @@
 
         <!-- ===== ANALYTICS SECTION ===== -->
         <div id="analyticsSection" class="hide">
-            <!-- ... unchanged but chart colors will be updated via JS ... -->
             <div class="section-header">
                 <h2 class="section-title"><i class="fas fa-chart-line"></i> Analytics Dashboard</h2>
             </div>
@@ -828,7 +812,6 @@
 
         <!-- ===== REPORTS SECTION ===== -->
         <div id="reportsSection" class="hide">
-            <!-- ... unchanged ... -->
             <div class="section-header">
                 <h2 class="section-title"><i class="fas fa-file-alt"></i> Generate Reports</h2>
             </div>
@@ -1024,8 +1007,9 @@
         mc.classList.toggle('expanded');
     }
 
-    // ===== DROPDOWN =====
-    function toggleDropdown() {
+    // ===== DROPDOWN (Fixed) =====
+    function toggleDropdown(event) {
+        event.stopPropagation();   // prevent immediate closing
         document.getElementById('adminDropdown').classList.toggle('active');
     }
     window.addEventListener('click', e => {
@@ -1330,19 +1314,42 @@
             .then(data => {
                 if (!data.departments || !data.severity || !data.trend) throw new Error('Invalid data');
 
+                // ---------- Department data filtering ----------
+                // We only want Fire Department, Police Department, Rescue Department, and Unassigned.
+                const allowedDepts = ['Fire Department','Police Department','Rescue Department','Unassigned'];
+                const deptCounts = {};
+                allowedDepts.forEach(d => deptCounts[d] = 0);
+                let othersCount = 0;
+
+                data.departments.forEach(d => {
+                    if (allowedDepts.includes(d.department)) {
+                        deptCounts[d.department] += d.count;
+                    } else {
+                        othersCount += d.count;
+                    }
+                });
+                // Merge "others" into "Unassigned"
+                deptCounts['Unassigned'] += othersCount;
+
+                // Build final arrays for the chart
+                const deptLabels = [];
+                const deptData = [];
+                for (const [dept, cnt] of Object.entries(deptCounts)) {
+                    deptLabels.push(dept);
+                    deptData.push(cnt);
+                }
+
+                // Dept chart
                 hideChartError('deptChart','deptChartError');
                 safeDestroy(window.deptChart);
-                // Generate distinct colors for each department
-                const deptColors = generateDistinctColors(data.departments.length);
+                const deptColors = ['#6366F1','#EC4899','#10B981','#F59E0B']; // distinct colors for 4 categories
                 window.deptChart = new Chart(document.getElementById('deptChart').getContext('2d'), {
                     type: 'doughnut',
-                    data: {
-                        labels: data.departments.map(d => d.department),
-                        datasets: [{ data: data.departments.map(d => d.count), backgroundColor: deptColors, borderWidth: 0, hoverOffset: 6 }]
-                    },
+                    data: { labels: deptLabels, datasets: [{ data: deptData, backgroundColor: deptColors, borderWidth: 0, hoverOffset: 6 }] },
                     options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: CHART_DEFAULTS.plugins }
                 });
 
+                // Severity bar chart
                 hideChartError('analyticsSeverityChart','analyticsSeverityError');
                 safeDestroy(window.analyticsSevChart);
                 window.analyticsSevChart = new Chart(document.getElementById('analyticsSeverityChart').getContext('2d'), {
@@ -1351,6 +1358,7 @@
                     options: { responsive: true, maintainAspectRatio: false, ...CHART_DEFAULTS, plugins: { legend: { display: false } } }
                 });
 
+                // Trend chart
                 hideChartError('trendDetailChart','trendDetailError');
                 safeDestroy(window.trendDetailChart);
                 window.trendDetailChart = new Chart(document.getElementById('trendDetailChart').getContext('2d'), {
@@ -1371,14 +1379,6 @@
                 showChartError('analyticsSeverityChart','analyticsSeverityError','Could not load severity data: '+err.message);
                 showChartError('trendDetailChart','trendDetailError','Could not load trend data: '+err.message);
             });
-    }
-
-    function generateDistinctColors(count) {
-        const palette = [
-            '#6366F1', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#EF4444', '#8B5CF6', '#14B8A6',
-            '#F97316', '#0EA5E9', '#84CC16', '#F43F5E', '#06B6D4', '#A855F7', '#D946EF'
-        ];
-        return palette.slice(0, count);
     }
 
     // ===== REPORTS =====
