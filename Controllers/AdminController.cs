@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
+using MongoDB.Bson;
 using SmartCityPulse.Models;
 using SmartCityPulse.Data;
 using System.Text;
@@ -107,12 +108,14 @@ namespace SmartCityPulse.Controllers
             if (incident == null) return NotFound();
 
             object? citizen = null;
+
             if (!string.IsNullOrEmpty(incident.ReportedBy))
             {
-                var user = await _context.Users.Find(u => u.Id == incident.ReportedBy).FirstOrDefaultAsync();
-                if (user == null)
-                    user = await _context.Operators.Find(o => o.Id == incident.ReportedBy).FirstOrDefaultAsync();
+                // Build filter using ObjectId directly
+                var filter = Builders<AppUser>.Filter.Eq("_id", new ObjectId(incident.ReportedBy));
 
+                // Check Users collection first
+                var user = await _context.Users.Find(filter).FirstOrDefaultAsync();
                 if (user != null)
                 {
                     citizen = new
@@ -122,6 +125,21 @@ namespace SmartCityPulse.Controllers
                         phone = user.Phone,
                         role = user.Role
                     };
+                }
+                else
+                {
+                    // Check Operators collection
+                    var op = await _context.Operators.Find(filter).FirstOrDefaultAsync();
+                    if (op != null)
+                    {
+                        citizen = new
+                        {
+                            name = op.Name,
+                            email = op.Email,
+                            phone = op.Phone,
+                            role = op.Role
+                        };
+                    }
                 }
             }
 

@@ -2,8 +2,6 @@
 @{
     Layout = null;
     ViewData["Title"] = "Incident Details";
-    var citizen = ViewBag.Citizen as SmartCityPulse.Models.AppUser;
-    bool hasCitizen = citizen != null;
 }
 
 <!DOCTYPE html>
@@ -217,21 +215,45 @@
         </div>
         <div class="citizen-section">
             <div class="section-title"><i class="fas fa-user"></i> Reported By</div>
-            @if (hasCitizen)
-            {
-                <div class="citizen-card">
-                    <div class="citizen-name">@citizen.Name</div>
-                    <div class="citizen-meta"><i class="fas fa-envelope"></i> @citizen.Email</div>
-                    <div class="citizen-meta"><i class="fas fa-phone"></i> @(citizen.Phone ?? "N/A")</div>
-                    <div class="citizen-meta"><i class="fas fa-user-tag"></i> Role: @citizen.Role</div>
-                </div>
-            }
-            else
-            {
-                <div class="unknown-citizen"><i class="fas fa-user-slash"></i> Unknown Citizen (Reported without login)</div>
-            }
+            <!-- Citizen info will be loaded here by JavaScript -->
+            <div id="citizenInfoContainer">
+                <p style="color: var(--text-secondary);">Loading reporter information...</p>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Fetch citizen details after page load
+    document.addEventListener('DOMContentLoaded', async function() {
+        const container = document.getElementById('citizenInfoContainer');
+        try {
+            const response = await fetch(`/Admin/GetIncidentDetailJson?id=@Model.Id`, {
+                credentials: 'same-origin'
+            });
+            if (!response.ok) throw new Error('Failed to fetch');
+            const data = await response.json();
+
+            if (data.citizen) {
+                container.innerHTML = `
+                    <div class="citizen-card">
+                        <div class="citizen-name">${escapeHtml(data.citizen.name)}</div>
+                        <div class="citizen-meta"><i class="fas fa-envelope"></i> ${escapeHtml(data.citizen.email)}</div>
+                        <div class="citizen-meta"><i class="fas fa-phone"></i> ${escapeHtml(data.citizen.phone || 'N/A')}</div>
+                        <div class="citizen-meta"><i class="fas fa-user-tag"></i> Role: ${escapeHtml(data.citizen.role)}</div>
+                    </div>`;
+            } else {
+                container.innerHTML = '<div class="unknown-citizen"><i class="fas fa-user-slash"></i> Unknown Citizen (Reported without login)</div>';
+            }
+        } catch (err) {
+            container.innerHTML = '<p style="color: var(--red);">Could not load reporter info.</p>';
+            console.error(err);
+        }
+    });
+
+    function escapeHtml(text) {
+        return text ? String(text).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])) : '';
+    }
+</script>
 </body>
 </html>
