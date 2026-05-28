@@ -25,12 +25,32 @@
             color: #1A1F36;
         }
 
-        /* Main Container - Same as Dashboard Main Content */
+        /* Main Container */
         .statistics-container {
             padding: 1.5rem;
+            height: 100vh;
+            overflow-y: auto;
         }
 
-        /* Welcome Header - Same as Dashboard */
+            /* Custom Scrollbar */
+            .statistics-container::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .statistics-container::-webkit-scrollbar-track {
+                background: #E2E8F0;
+                border-radius: 10px;
+            }
+
+            .statistics-container::-webkit-scrollbar-thumb {
+                background: #94A3B8;
+                border-radius: 10px;
+            }
+
+                .statistics-container::-webkit-scrollbar-thumb:hover {
+                    background: #64748B;
+                }
+
         .welcome-header {
             margin-bottom: 1.5rem;
         }
@@ -59,7 +79,6 @@
             gap: 1.5rem;
         }
 
-        /* Full Width Chart Card */
         .full-width-card {
             background: #FFFFFF;
             border-radius: 20px;
@@ -98,14 +117,12 @@
             width: 100%;
         }
 
-        /* Two Columns Layout */
         .two-columns {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
         }
 
-        /* Small Chart Card */
         .small-card {
             background: #FFFFFF;
             border-radius: 20px;
@@ -124,9 +141,6 @@
                 width: 100%;
             }
 
-        /* No Stats Cards - Removed */
-
-        /* Responsive */
         @@media (max-width: 1024px) {
             .two-columns
 
@@ -149,15 +163,13 @@
 </head>
 <body>
     <div class="statistics-container">
-        <!-- Welcome Header (Same as Dashboard) -->
         <div class="welcome-header">
             <h1><i class="fas fa-chart-line"></i> Incident Statistics</h1>
             <p>Visual insights of your reported incidents</p>
         </div>
 
-        <!-- Graphs Only - No Stats Cards -->
         <div class="graphs-grid">
-            <!-- Big Graph: Trend Chart - Full Width -->
+            <!-- Big Chart -->
             <div class="full-width-card">
                 <div class="card-header">
                     <h3><i class="fas fa-chart-line"></i> Incident Trends (Last 7 Days)</h3>
@@ -165,17 +177,14 @@
                 <canvas id="trendChart"></canvas>
             </div>
 
-            <!-- Two Small Graphs -->
+            <!-- Two Small Charts -->
             <div class="two-columns">
-                <!-- Severity Distribution - Pie Chart -->
                 <div class="small-card">
                     <div class="card-header">
                         <h3><i class="fas fa-chart-pie"></i> Severity Distribution</h3>
                     </div>
                     <canvas id="severityChart"></canvas>
                 </div>
-
-                <!-- Status Distribution - Doughnut Chart -->
                 <div class="small-card">
                     <div class="card-header">
                         <h3><i class="fas fa-chart-donut"></i> Status Distribution</h3>
@@ -187,13 +196,10 @@
     </div>
 
     <script>
-        // Get data from ViewBag
         const weeklyData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.WeeklyData ?? new int[] { 0, 0, 0, 0, 0, 0, 0 }));
         const labels = ['6 days ago', '5 days ago', '4 days ago', '3 days ago', '2 days ago', 'Yesterday', 'Today'];
 
-        // 1. Line Chart - Incident Trends
-        const trendCtx = document.getElementById('trendChart').getContext('2d');
-        new Chart(trendCtx, {
+        new Chart(document.getElementById('trendChart'), {
             type: 'line',
             data: {
                 labels: labels,
@@ -207,44 +213,13 @@
                     tension: 0.3,
                     pointBackgroundColor: '#2563EB',
                     pointBorderColor: '#FFFFFF',
-                    pointRadius: 4,
-                    pointHoverRadius: 6
+                    pointRadius: 4
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: { font: { size: 11, weight: '500' }, boxWidth: 10 }
-                    },
-                    tooltip: {
-                        backgroundColor: '#1E293B',
-                        titleColor: '#FFFFFF',
-                        bodyColor: '#94A3B8',
-                        callbacks: {
-                            label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} incidents`
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: '#E2E8F0', drawBorder: false },
-                        ticks: { stepSize: 1, font: { size: 11 } }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { font: { size: 11 } }
-                    }
-                }
-            }
+            options: { responsive: true, maintainAspectRatio: true }
         });
 
-        // 2. Pie Chart - Severity Distribution
-        const severityCtx = document.getElementById('severityChart').getContext('2d');
-        new Chart(severityCtx, {
+        new Chart(document.getElementById('severityChart'), {
             type: 'pie',
             data: {
                 labels: ['Critical', 'High', 'Medium', 'Low'],
@@ -254,33 +229,10 @@
                     borderWidth: 0
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { font: { size: 11 }, boxWidth: 10, padding: 8 }
-                    },
-                    tooltip: {
-                        backgroundColor: '#1E293B',
-                        titleColor: '#FFFFFF',
-                        bodyColor: '#94A3B8',
-                        callbacks: {
-                            label: (ctx) => {
-                                const total = @ViewBag.TotalIncidents;
-                                const percentage = total > 0 ? ((ctx.raw / total) * 100).toFixed(1) : 0;
-                                return `${ctx.label}: ${ctx.raw} incidents (${percentage}%)`;
-                            }
-                        }
-                    }
-                }
-            }
+            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
         });
 
-        // 3. Doughnut Chart - Status Distribution
-        const statusCtx = document.getElementById('statusChart').getContext('2d');
-        new Chart(statusCtx, {
+        new Chart(document.getElementById('statusChart'), {
             type: 'doughnut',
             data: {
                 labels: ['Open', 'In Progress', 'Resolved'],
@@ -290,24 +242,7 @@
                     borderWidth: 0
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { font: { size: 11 }, boxWidth: 10, padding: 8 }
-                    },
-                    tooltip: {
-                        backgroundColor: '#1E293B',
-                        titleColor: '#FFFFFF',
-                        bodyColor: '#94A3B8',
-                        callbacks: {
-                            label: (ctx) => `${ctx.label}: ${ctx.raw} incidents`
-                        }
-                    }
-                }
-            }
+            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
         });
     </script>
 </body>

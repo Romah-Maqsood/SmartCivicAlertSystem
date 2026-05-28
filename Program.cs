@@ -1,10 +1,10 @@
 using SmartCityPulse.Data;
-using SmartCityPulse.Hubs;  // ✅ ADD THIS LINE
+using SmartCityPulse.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ MongoDB Context - Simple way
-builder.Services.AddSingleton<MongoDbContext>();  // Auto-detects IConfiguration
+// MongoDB Context
+builder.Services.AddSingleton<MongoDbContext>();
 
 // Add SignalR
 builder.Services.AddSignalR();
@@ -23,7 +23,7 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -37,13 +37,10 @@ app.UseRouting();
 app.UseSession();
 app.UseAuthorization();
 
-<<<<<<< HEAD
-=======
-// ✅ ADD THIS - SignalR Hub Mapping (Notification ke liye)
+// SignalR Hub Mapping
 app.MapHub<NotificationHub>("/notificationHub");
 
->>>>>>> 331e1f62fcb331caaab5a32e0aefa4e34ba620ab
-// ✅ Route Configuration - Fixed (No duplicates)
+// Route Configuration
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
