@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
+using MongoDB.Bson;
 using SmartCityPulse.Models;
 using SmartCityPulse.Data;
 using System.Text;
@@ -32,26 +33,20 @@ namespace SmartCityPulse.Controllers
                 var todayStart = DateTime.UtcNow.Date;
                 var todayEnd = todayStart.AddDays(1);
 
-                // Count queries
                 var totalToday = await _context.Incidents
                     .CountDocumentsAsync(i => i.ReportedAt >= todayStart && i.ReportedAt < todayEnd);
-
                 var resolvedToday = await _context.Incidents
                     .CountDocumentsAsync(i => i.Status == "Resolved" && i.UpdatedAt >= todayStart && i.UpdatedAt < todayEnd);
-
                 var criticalIncidents = await _context.Incidents
                     .CountDocumentsAsync(i => i.Severity == "Critical" && i.Status != "Resolved");
-
                 var pendingIncidents = await _context.Incidents
                     .CountDocumentsAsync(i => i.Status == "Open" || i.Status == "In Progress");
-
                 var criticalPending = await _context.Incidents
                     .CountDocumentsAsync(i => i.Severity == "Critical" && (i.Status == "Open" || i.Status == "In Progress"));
 
                 var recentIncidents = await _context.Incidents.Find(_ => true)
                     .SortByDescending(i => i.ReportedAt).Limit(5).ToListAsync();
 
-                // ViewBag mein data pass karein
                 ViewBag.UserName = HttpContext.Session.GetString("UserName") ?? "Admin";
                 ViewBag.TotalToday = totalToday;
                 ViewBag.ResolvedToday = resolvedToday;
@@ -92,7 +87,7 @@ namespace SmartCityPulse.Controllers
             }
         }
 
-        // ==================== INCIDENT DETAIL ====================
+        // ==================== INCIDENT DETAIL (FULL PAGE) ====================
         [HttpGet]
         public async Task<IActionResult> IncidentDetail(string id)
         {
@@ -101,6 +96,66 @@ namespace SmartCityPulse.Controllers
             if (incident == null) return NotFound();
             ViewBag.UserName = HttpContext.Session.GetString("UserName") ?? "Admin";
             return View(incident);
+        }
+
+        // ==================== INCIDENT DETAIL JSON (AJAX - INLINE) ====================
+        [HttpGet]
+        public async Task<IActionResult> GetIncidentDetailJson(string id)
+        {
+            if (!IsAdmin()) return Unauthorized();
+
+            var incident = await _context.Incidents.Find(i => i.Id == id).FirstOrDefaultAsync();
+            if (incident == null) return NotFound();
+
+            object? citizen = null;
+
+            if (!string.IsNullOrEmpty(incident.ReportedBy))
+            {
+                // Build filter using ObjectId directly
+                var filter = Builders<AppUser>.Filter.Eq("_id", new ObjectId(incident.ReportedBy));
+
+                // Check Users collection first
+                var user = await _context.Users.Find(filter).FirstOrDefaultAsync();
+                if (user != null)
+                {
+                    citizen = new
+                    {
+                        name = user.Name,
+                        email = user.Email,
+                        phone = user.Phone,
+                        role = user.Role
+                    };
+                }
+                else
+                {
+                    // Check Operators collection
+                    var op = await _context.Operators.Find(filter).FirstOrDefaultAsync();
+                    if (op != null)
+                    {
+                        citizen = new
+                        {
+                            name = op.Name,
+                            email = op.Email,
+                            phone = op.Phone,
+                            role = op.Role
+                        };
+                    }
+                }
+            }
+
+            return Json(new
+            {
+                id = incident.Id,
+                title = incident.Title,
+                description = incident.Description,
+                location = incident.Location,
+                severity = incident.Severity,
+                status = incident.Status,
+                department = incident.Department,
+                reportedAt = incident.ReportedAt,
+                updatedAt = incident.UpdatedAt,
+                citizen = citizen
+            });
         }
 
         // ==================== OPERATOR MANAGEMENT ====================

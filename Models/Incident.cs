@@ -31,7 +31,7 @@ namespace SmartCityPulse.Models
         public string Status { get; set; } = "Open";
 
         [BsonElement("department")]
-        public string Department { get; set; } = string.Empty;  // ✅ SIRF YAHI
+        public string Department { get; set; } = string.Empty;
 
         [BsonElement("reportedBy")]
         public string ReportedBy { get; set; } = string.Empty;
@@ -44,8 +44,6 @@ namespace SmartCityPulse.Models
 
         [BsonElement("comments")]
         public List<IncidentComment> Comments { get; set; } = new();
-
-
     }
 
     public class IncidentComment
