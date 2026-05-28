@@ -1,5 +1,5 @@
 .vs/
 bin/
-obj/
 NuGet.config 
 NuGetPackages/ 
+obj/

@@ -31,26 +31,35 @@ namespace SmartCityPulse.Controllers
             {
                 var todayStart = DateTime.UtcNow.Date;
                 var todayEnd = todayStart.AddDays(1);
+
+                // Count queries
                 var totalToday = await _context.Incidents
                     .CountDocumentsAsync(i => i.ReportedAt >= todayStart && i.ReportedAt < todayEnd);
+
                 var resolvedToday = await _context.Incidents
                     .CountDocumentsAsync(i => i.Status == "Resolved" && i.UpdatedAt >= todayStart && i.UpdatedAt < todayEnd);
+
                 var criticalIncidents = await _context.Incidents
                     .CountDocumentsAsync(i => i.Severity == "Critical" && i.Status != "Resolved");
+
                 var pendingIncidents = await _context.Incidents
                     .CountDocumentsAsync(i => i.Status == "Open" || i.Status == "In Progress");
-                var recentIncidents = await _context.Incidents.Find(_ => true)
-                    .SortByDescending(i => i.ReportedAt).Limit(5).ToListAsync();
+
                 var criticalPending = await _context.Incidents
                     .CountDocumentsAsync(i => i.Severity == "Critical" && (i.Status == "Open" || i.Status == "In Progress"));
 
+                var recentIncidents = await _context.Incidents.Find(_ => true)
+                    .SortByDescending(i => i.ReportedAt).Limit(5).ToListAsync();
+
+                // ViewBag mein data pass karein
                 ViewBag.UserName = HttpContext.Session.GetString("UserName") ?? "Admin";
                 ViewBag.TotalToday = totalToday;
                 ViewBag.ResolvedToday = resolvedToday;
                 ViewBag.CriticalIncidents = criticalIncidents;
                 ViewBag.PendingIncidents = pendingIncidents;
-                ViewBag.RecentIncidents = recentIncidents;
                 ViewBag.CriticalPending = criticalPending;
+                ViewBag.RecentIncidents = recentIncidents;
+
                 return View();
             }
             catch (Exception ex)
@@ -102,7 +111,7 @@ namespace SmartCityPulse.Controllers
             try
             {
                 var operators = await _context.Operators.Find(_ => true).ToListAsync();
-                operators.ForEach(o => o.PasswordHash = string.Empty); // hide password
+                operators.ForEach(o => o.PasswordHash = string.Empty);
                 return Json(operators);
             }
             catch (Exception ex)

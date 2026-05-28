@@ -19,13 +19,13 @@
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: #E8EDF5;
             color: #1A1F36;
             line-height: 1.5;
         }
 
-        /* Navbar - New Theme */
+        /* ========== NAVBAR ========== */
         .navbar {
             background: #FFFFFF;
             border-bottom: 1px solid #EAECF0;
@@ -33,23 +33,25 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .navbar-brand {
             color: #1A1F36;
-            font-size: 1.5rem;
+            font-size: 1.1rem;
             font-weight: 700;
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 8px;
         }
 
         .navbar-brand i {
             color: #2563EB;
-            font-size: 1.75rem;
+            font-size: 1.3rem;
         }
 
         .navbar-brand span {
@@ -58,90 +60,75 @@
 
         .nav-links {
             display: flex;
-            gap: 1.5rem;
+            gap: 1.25rem;
         }
 
         .nav-links a {
             color: #6B7280;
             text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: color 0.3s ease;
+            gap: 5px;
+            transition: color 0.2s ease;
         }
 
         .nav-links a:hover {
             color: #2563EB;
         }
 
+        /* ========== CONTAINER ========== */
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 2rem 1.5rem;
         }
 
-        /* Hero Section - New Theme */
+        /* ========== HERO ========== */
         .hero-section {
-            text-align: center;
-            padding: 3rem 2rem;
             background: #FFFFFF;
-            border-radius: 24px;
-            margin-bottom: 4rem;
             border: 1px solid #EAECF0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #EFF6FF;
+            color: #2563EB;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 5px 14px;
+            border-radius: 50px;
+            border: 1px solid #BFDBFE;
+            margin-bottom: 1.25rem;
         }
 
         .hero-title {
-            font-size: 2.5rem;
+            font-size: 2.4rem;
             font-weight: 800;
+            line-height: 1.2;
             margin-bottom: 1rem;
             color: #1A1F36;
         }
 
-        /* Fixed gradient-text - Removed webkit-background-clip */
         .gradient-text {
-            background: linear-gradient(135deg, #2563EB, #8B5CF6);
+            background: linear-gradient(135deg, #2563EB, #7C3AED);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
 
         .hero-subtitle {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #6B7280;
-            max-width: 600px;
-            margin: 0 auto 1.5rem;
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 40px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            border: none;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background-color: #2563EB;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #1D4ED8;
-            transform: translateY(-2px);
-        }
-
-        .btn-lg {
-            padding: 0.75rem 2rem;
-            font-size: 1rem;
+            max-width: 520px;
+            margin: 0 auto 1.75rem;
         }
 
         .hero-buttons {
@@ -151,189 +138,266 @@
             flex-wrap: wrap;
         }
 
-        .section-title {
-            font-size: 1.5rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            color: #1A1F36;
-            font-weight: 700;
+        /* ========== BUTTONS ========== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 0.7rem 1.75rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
         }
 
-        /* Feature Cards - New Theme */
+        .btn-primary {
+            background: #2563EB;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #1D4ED8;
+            transform: translateY(-2px);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #6B7280;
+            border: 1px solid #E5E7EB;
+        }
+
+        .btn-ghost:hover {
+            border-color: #2563EB;
+            color: #2563EB;
+        }
+
+        /* ========== SECTION LABELS ========== */
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            color: #6B7280;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 0.4rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1A1F36;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* ========== FEATURE CARDS ========== */
         .feature-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 4rem;
+            gap: 1.25rem;
+            margin-bottom: 3.5rem;
         }
 
         .feature-card {
             background: #FFFFFF;
             border: 1px solid #EAECF0;
-            border-radius: 20px;
-            padding: 1.5rem;
+            border-radius: 16px;
+            padding: 1.5rem 1.25rem;
             text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+            transition: all 0.25s ease;
         }
 
         .feature-card:hover {
             transform: translateY(-4px);
             border-color: #2563EB;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.08);
         }
 
-        .feature-icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
+        .feature-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #EFF6FF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
             color: #2563EB;
+            font-size: 1.25rem;
         }
 
         .feature-card h3 {
-            font-size: 1rem;
+            font-size: 0.875rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
             color: #1A1F36;
+            margin-bottom: 0.4rem;
         }
 
         .feature-card p {
+            font-size: 0.72rem;
             color: #6B7280;
-            font-size: 0.75rem;
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
-        /* Steps Container - New Theme */
+        /* ========== HOW IT WORKS ========== */
         .steps-container {
             display: flex;
-            justify-content: space-between;
-            gap: 1rem;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 3.5rem;
             flex-wrap: wrap;
-            margin-bottom: 4rem;
         }
 
         .step {
             flex: 1;
+            min-width: 140px;
             background: #FFFFFF;
             border: 1px solid #EAECF0;
-            border-radius: 20px;
-            padding: 1.5rem;
+            border-radius: 16px;
+            padding: 1.5rem 1rem;
             text-align: center;
             position: relative;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
         }
 
         .step-number {
             position: absolute;
-            top: -12px;
-            left: 20px;
-            background-color: #2563EB;
-            width: 28px;
-            height: 28px;
+            top: -11px;
+            left: 16px;
+            background: #2563EB;
+            color: #FFFFFF;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 0.75rem;
-            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
         }
 
-        .step-icon {
-            font-size: 2rem;
-            margin-bottom: 0.75rem;
+        .step-icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #EFF6FF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.75rem;
             color: #2563EB;
+            font-size: 1.1rem;
         }
 
         .step h4 {
-            font-size: 1rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
             color: #1A1F36;
+            margin-bottom: 0.3rem;
         }
 
         .step p {
+            font-size: 0.68rem;
             color: #6B7280;
-            font-size: 0.7rem;
         }
 
         .step-arrow {
-            color: #2563EB;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
+            color: #CBD5E1;
+            font-size: 1.2rem;
+            flex-shrink: 0;
         }
 
-        /* Stats Cards - New Theme */
+        /* ========== STATS ========== */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 4rem;
+            gap: 1.25rem;
+            margin-bottom: 3.5rem;
         }
 
         .stat-card {
             background: #FFFFFF;
             border: 1px solid #EAECF0;
-            border-radius: 20px;
+            border-radius: 16px;
             padding: 1.5rem;
             text-align: center;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .stat-blue::before  { background: #3B82F6; }
+        .stat-purple::before { background: #7C3AED; }
+        .stat-green::before { background: #10B981; }
+        .stat-amber::before { background: #F59E0B; }
 
         .stat-card:hover {
             transform: translateY(-2px);
-            border-color: #2563EB;
         }
 
         .stat-value {
             font-size: 1.75rem;
             font-weight: 800;
-            color: #2563EB;
+            color: #1A1F36;
+            margin-bottom: 0.25rem;
         }
 
         .stat-label {
+            font-size: 0.68rem;
             color: #6B7280;
-            font-size: 0.7rem;
-            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
         }
 
-        /* FAQ Section - New Theme */
+        .stat-label i {
+            font-size: 0.8rem;
+            color: #2563EB;
+        }
+
+        /* ========== FAQ ========== */
         .faq-section {
             background: #FFFFFF;
             border: 1px solid #EAECF0;
-            border-radius: 24px;
+            border-radius: 20px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
         }
 
         .faq-section h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
             color: #1A1F36;
             margin-bottom: 1.5rem;
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: 700;
         }
 
         .faq-container {
-            max-width: 800px;
+            max-width: 760px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.75rem;
         }
 
         .faq-item {
             background: #F8FAFC;
             border: 1px solid #EAECF0;
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .faq-item:hover {
-            border-color: #2563EB;
+            transition: border-color 0.2s ease;
         }
 
         .faq-item.active {
@@ -343,28 +407,28 @@
 
         .faq-question {
             width: 100%;
-            padding: 1rem 1.25rem;
+            padding: 0.9rem 1.1rem;
             background: none;
             border: none;
-            color: #1A1F36;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            cursor: pointer;
             text-align: left;
-            transition: color 0.3s ease;
+            gap: 12px;
         }
 
-        .faq-question:hover {
-            color: #2563EB;
+        .faq-question span {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1A1F36;
         }
 
         .faq-question i {
             color: #2563EB;
-            font-size: 1rem;
-            transition: transform 0.3s ease;
+            font-size: 0.85rem;
+            transition: transform 0.25s ease;
+            flex-shrink: 0;
         }
 
         .faq-item.active .faq-question i {
@@ -375,15 +439,17 @@
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease, padding 0.3s ease;
-            color: #6B7280;
-            font-size: 0.8125rem;
-            line-height: 1.5;
-            padding: 0 1.25rem;
         }
 
         .faq-item.active .faq-answer {
-            max-height: 200px;
-            padding: 0 1.25rem 1rem 1.25rem;
+            max-height: 150px;
+            padding: 0 1.1rem 0.9rem;
+        }
+
+        .faq-answer p {
+            font-size: 0.75rem;
+            color: #6B7280;
+            line-height: 1.6;
         }
 
         .faq-answer a {
@@ -396,17 +462,17 @@
             text-decoration: underline;
         }
 
-        /* Footer - New Theme */
+        /* ========== FOOTER ========== */
         .footer {
             text-align: center;
-            padding: 1.5rem;
-            color: #6B7280;
-            font-size: 0.75rem;
-            border-top: 1px solid #EAECF0;
+            padding: 1.25rem;
+            color: #9CA3AF;
+            font-size: 0.72rem;
             background: #FFFFFF;
+            border-top: 1px solid #EAECF0;
         }
 
-        /* Responsive */
+        /* ========== RESPONSIVE ========== */
         @@media (max-width: 1024px) {
             .feature-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -417,6 +483,18 @@
         }
 
         @@media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            .hero-title {
+                font-size: 1.75rem;
+            }
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
             .feature-grid {
                 grid-template-columns: 1fr;
             }
@@ -428,19 +506,6 @@
             }
             .step-arrow {
                 transform: rotate(90deg);
-                justify-content: center;
-            }
-            .hero-title {
-                font-size: 1.75rem;
-            }
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            .navbar {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
             }
             .container {
                 padding: 1rem;
@@ -450,6 +515,7 @@
 </head>
 <body>
 
+    <!-- NAVBAR -->
     <nav class="navbar">
         <a href="/" class="navbar-brand">
             <i class="fas fa-city"></i> SMART CIVIC <span>ALERT</span>
@@ -461,107 +527,121 @@
     </nav>
 
     <div class="container">
+
+        <!-- HERO -->
         <div class="hero-section">
+            <div class="hero-badge">
+                <i class="fas fa-robot"></i> AI-Powered Incident Management
+            </div>
             <h1 class="hero-title">
                 <span class="gradient-text">Smart Civic</span><br />
                 Alert System
             </h1>
             <p class="hero-subtitle">
-                AI-powered city incident management system. Report problems instantly,
-                get real-time updates, and let AI route incidents to the right department.
+                Report city problems instantly, get real-time updates, and let AI
+                route incidents to the right department automatically.
             </p>
             <div class="hero-buttons">
-                <a href="/Incident/Create" class="btn btn-primary btn-lg">
+                <a href="/Incident/Create" class="btn btn-primary">
                     <i class="fas fa-exclamation-triangle"></i> Report Incident
+                </a>
+                <a href="/Incident/Map" class="btn btn-ghost">
+                    <i class="fas fa-map-marker-alt"></i> View Live Map
                 </a>
             </div>
         </div>
 
+        <!-- FEATURES -->
+        <div class="section-label">Core Features</div>
         <h2 class="section-title">Why Choose Smart Civic Alert?</h2>
         <div class="feature-grid">
             <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-robot"></i></div>
+                <div class="feature-icon-box"><i class="fas fa-robot"></i></div>
                 <h3>AI Severity Predictor</h3>
-                <p>AI automatically detects incident severity from description.</p>
+                <p>AI automatically detects incident severity from your description.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-route"></i></div>
+                <div class="feature-icon-box"><i class="fas fa-route"></i></div>
                 <h3>Real-time Routing</h3>
                 <p>Incidents auto-routed to Fire, Police, or Rescue departments.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <div class="feature-icon-box"><i class="fas fa-map-marker-alt"></i></div>
                 <h3>Live Map Tracking</h3>
                 <p>Track incidents on map with color-coded severity markers.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-comment-dots"></i></div>
+                <div class="feature-icon-box"><i class="fas fa-comment-dots"></i></div>
                 <h3>AI Chatbot Assistant</h3>
-                <p>Ask about incident status anytime.</p>
+                <p>Ask about incident status anytime, day or night.</p>
             </div>
         </div>
 
+        <!-- HOW IT WORKS -->
+        <div class="section-label">Process</div>
         <h2 class="section-title">How It Works</h2>
         <div class="steps-container">
             <div class="step">
                 <div class="step-number">1</div>
-                <div class="step-icon"><i class="fas fa-edit"></i></div>
+                <div class="step-icon-box"><i class="fas fa-edit"></i></div>
                 <h4>Report Issue</h4>
                 <p>Citizen reports incident via web form</p>
             </div>
             <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
             <div class="step">
                 <div class="step-number">2</div>
-                <div class="step-icon"><i class="fas fa-microchip"></i></div>
+                <div class="step-icon-box"><i class="fas fa-microchip"></i></div>
                 <h4>AI Analysis</h4>
-                <p>AI predicts severity and routes</p>
+                <p>AI predicts severity and routes to department</p>
             </div>
             <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
             <div class="step">
                 <div class="step-number">3</div>
-                <div class="step-icon"><i class="fas fa-truck"></i></div>
+                <div class="step-icon-box"><i class="fas fa-truck"></i></div>
                 <h4>Department Response</h4>
                 <p>Operator accepts and updates status</p>
             </div>
             <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
             <div class="step">
                 <div class="step-number">4</div>
-                <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="step-icon-box"><i class="fas fa-check-circle"></i></div>
                 <h4>Issue Resolved</h4>
                 <p>Status updated, citizen notified</p>
             </div>
         </div>
 
+        <!-- STATS -->
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card stat-blue">
                 <div class="stat-value">24/7</div>
                 <div class="stat-label"><i class="fas fa-clock"></i> Reporting Available</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card stat-purple">
                 <div class="stat-value">AI</div>
                 <div class="stat-label"><i class="fas fa-brain"></i> Powered Detection</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card stat-green">
                 <div class="stat-value">Live</div>
                 <div class="stat-label"><i class="fas fa-bell"></i> Notifications</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card stat-amber">
                 <div class="stat-value">3+</div>
                 <div class="stat-label"><i class="fas fa-building"></i> Departments</div>
             </div>
         </div>
 
-        <!-- FAQ Section -->
+        <!-- FAQ -->
         <div class="faq-section">
             <h2>Frequently Asked Questions</h2>
             <div class="faq-container">
-                <div class="faq-item">
+
+                <div class="faq-item active">
                     <button class="faq-question" onclick="toggleFAQ(this)">
                         <span>How do I report an incident?</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="faq-answer">
-                        <p>You can report an incident by clicking the <a href="/Incident/Create">"Report Incident"</a> button on this page. You don't need to log in first — simply fill out the form with details about the issue, and our AI will automatically route it to the correct department.</p>
+                        <p>Click the <a href="/Incident/Create">"Report Incident"</a> button on this page. No login needed — fill out the form and our AI will automatically route it to the correct department.</p>
                     </div>
                 </div>
 
@@ -571,7 +651,7 @@
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="faq-answer">
-                        <p>No, you can report incidents without creating an account. However, <a href="/Account/Register">registering</a> allows you to track your reported incidents, receive status updates, and view your reporting history. It only takes a minute!</p>
+                        <p>No account required. However, <a href="/Account/Register">registering</a> lets you track your reports, receive status updates, and view your reporting history. It only takes a minute!</p>
                     </div>
                 </div>
 
@@ -581,28 +661,27 @@
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="faq-answer">
-                        <p>Once you submit a report, our AI system analyzes the severity and category of the incident, then automatically routes it to the appropriate department (Fire, Police, or Rescue). The department operator reviews the report and updates the status, and if you're registered, you'll receive real-time notifications.</p>
+                        <p>Our AI analyzes the severity and category, then auto-routes to the right department (Fire, Police, or Rescue). The operator reviews and updates the status — registered users receive real-time notifications.</p>
                     </div>
                 </div>
+
             </div>
         </div>
+
     </div>
 
+    <!-- FOOTER -->
     <footer class="footer">
-        <p><i class="far fa-copyright"></i> 2026 Smart Civic Alert System - AI-Powered City Incident Management</p>
+        <p><i class="far fa-copyright"></i> 2026 Smart Civic Alert System — AI-Powered City Incident Management</p>
     </footer>
 
     <script>
         function toggleFAQ(button) {
             const faqItem = button.parentElement;
             const isActive = faqItem.classList.contains('active');
-
-            // Close all FAQ items
             document.querySelectorAll('.faq-item').forEach(item => {
                 item.classList.remove('active');
             });
-
-            // Open clicked item if it wasn't already open
             if (!isActive) {
                 faqItem.classList.add('active');
             }
