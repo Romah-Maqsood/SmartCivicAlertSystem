@@ -580,12 +580,12 @@
           }
         }
       },
-      "Microsoft.AspNetCore.SignalR/1.2.9": {
+      "Microsoft.AspNetCore.SignalR/1.2.10": {
         "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Http.Connections": "1.2.0",
           "Microsoft.AspNetCore.SignalR.Core": "1.2.0",
-          "Microsoft.AspNetCore.WebSockets": "2.3.0",
+          "Microsoft.AspNetCore.WebSockets": "2.3.9",
           "System.IO.Pipelines": "8.0.0"
         },
         "compile": {
@@ -659,7 +659,7 @@
           }
         }
       },
-      "Microsoft.AspNetCore.WebSockets/2.3.0": {
+      "Microsoft.AspNetCore.WebSockets/2.3.9": {
         "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Http.Extensions": "2.3.0",
@@ -2294,16 +2294,16 @@
         "microsoft.aspnetcore.routing.abstractions.nuspec"
       ]
     },
-    "Microsoft.AspNetCore.SignalR/1.2.9": {
-      "sha512": "stJwCxfcXqY982p+4dRzlK1Qv2ISrpJrVRzUWvr9PximZXBMSYFVCtOPy9LI2WsjHH/zEL4jSh3Qn2fYZomyKg==",
+    "Microsoft.AspNetCore.SignalR/1.2.10": {
+      "sha512": "zN8T1jA4M/ogenvqfH1fCW1zY4UbUfi7wkUSa0k5uAJJhIgjpF6enIf2MVfcFf8saMJLm2Qwqyuj37aF6SZPkQ==",
       "type": "package",
-      "path": "microsoft.aspnetcore.signalr/1.2.9",
+      "path": "microsoft.aspnetcore.signalr/1.2.10",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/netstandard2.0/Microsoft.AspNetCore.SignalR.dll",
         "lib/netstandard2.0/Microsoft.AspNetCore.SignalR.xml",
-        "microsoft.aspnetcore.signalr.1.2.9.nupkg.sha512",
+        "microsoft.aspnetcore.signalr.1.2.10.nupkg.sha512",
         "microsoft.aspnetcore.signalr.nuspec"
       ]
     },
@@ -2346,16 +2346,16 @@
         "microsoft.aspnetcore.signalr.protocols.json.nuspec"
       ]
     },
-    "Microsoft.AspNetCore.WebSockets/2.3.0": {
-      "sha512": "+T4zpnVPkIjvvkyhTH3WBJlTfqmTBRozvnMudAUDvcb4e+NrWf52q8BXh52rkCrBgX6Cudf6F/UhZwTowyBtKg==",
+    "Microsoft.AspNetCore.WebSockets/2.3.9": {
+      "sha512": "Vk6lUgyMfIql+pAw5XtufzjbiApbvqXm1yIxZuCYzwpgx/feGi7U7qu4B2NqPqwEfsRXuPqLrSm/LdXSs39+OA==",
       "type": "package",
-      "path": "microsoft.aspnetcore.websockets/2.3.0",
+      "path": "microsoft.aspnetcore.websockets/2.3.9",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/netstandard2.0/Microsoft.AspNetCore.WebSockets.dll",
         "lib/netstandard2.0/Microsoft.AspNetCore.WebSockets.xml",
-        "microsoft.aspnetcore.websockets.2.3.0.nupkg.sha512",
+        "microsoft.aspnetcore.websockets.2.3.9.nupkg.sha512",
         "microsoft.aspnetcore.websockets.nuspec"
       ]
     },
@@ -3736,7 +3736,7 @@
       "BCrypt.Net-Next >= 4.1.0",
       "CsvHelper >= 33.1.0",
       "Google.Cloud.AIPlatform.V1 >= 3.71.0",
-      "Microsoft.AspNetCore.SignalR >= 1.2.9",
+      "Microsoft.AspNetCore.SignalR >= 1.2.10",
       "Microsoft.Extensions.Logging.Abstractions >= 8.0.2",
       "Microsoft.ML >= 5.0.0",
       "MongoDB.Driver >= 3.8.0",
@@ -3808,7 +3808,7 @@
           },
           "Microsoft.AspNetCore.SignalR": {
             "target": "Package",
-            "version": "[1.2.9, )"
+            "version": "[1.2.10, )"
           },
           "Microsoft.Extensions.Logging.Abstractions": {
             "target": "Package",

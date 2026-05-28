@@ -3,16 +3,20 @@ using Microsoft.AspNetCore.Http;
 using SmartCityPulse.Data;
 using SmartCityPulse.Models;
 using MongoDB.Driver;
+using Microsoft.AspNetCore.SignalR;
+using SmartCityPulse.Hubs;
 
 namespace SmartCityPulse.Controllers
 {
     public class IncidentController : Controller
     {
         private readonly MongoDbContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public IncidentController(MongoDbContext context)
+        public IncidentController(MongoDbContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         // ==================== PUBLIC: Report Incident (Citizen/Public) ====================
@@ -35,6 +39,7 @@ namespace SmartCityPulse.Controllers
                 // Save citizen ID if logged in
                 var userId = HttpContext.Session.GetString("UserId");
                 var userRole = HttpContext.Session.GetString("UserRole");
+                var userName = HttpContext.Session.GetString("UserName");
 
                 if (!string.IsNullOrEmpty(userId))
                 {
@@ -43,9 +48,23 @@ namespace SmartCityPulse.Controllers
 
                 await _context.Incidents.InsertOneAsync(incident);
 
+                // Send real-time notification to department
+                try
+                {
+                    await _hubContext.Clients.Group(incident.Department)
+                        .SendAsync("ReceiveNotification",
+                            "🚨 New Incident Reported",
+                            $"{incident.Title} at {incident.Location}",
+                            DateTime.Now);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Notification error: {ex.Message}");
+                }
+
                 TempData["SuccessMessage"] = "✅ Incident reported successfully! Your report has been submitted.";
 
-                // ✅ Redirect based on user role
+                // Redirect based on user role
                 if (userRole == "Citizen")
                 {
                     return RedirectToAction("Index", "Citizen");
@@ -124,6 +143,20 @@ namespace SmartCityPulse.Controllers
             };
 
             await _context.Incidents.InsertOneAsync(emergencyIncident);
+
+            // Send emergency notification to all departments
+            try
+            {
+                await _hubContext.Clients.All
+                    .SendAsync("ReceiveNotification",
+                        "🚨 EMERGENCY SOS",
+                        $"Emergency alert from {userName}. Immediate assistance required!",
+                        DateTime.Now);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Emergency notification error: {ex.Message}");
+            }
 
             TempData["SuccessMessage"] = "🚨 Emergency alert sent! Authorities have been notified.";
 
