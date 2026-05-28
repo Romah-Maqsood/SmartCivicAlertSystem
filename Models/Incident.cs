@@ -1,57 +1,59 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using MongoDB.Driver;
+using SmartCityPulse.Models;
+using SmartCityPulse.Data;
 
-namespace SmartCityPulse.Models
+namespace SmartCityPulse.Controllers
 {
-    public class Incident
+    public class IncidentController : Controller
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
+        private readonly MongoDbContext _context;
 
-        [BsonElement("title")]
-        public string Title { get; set; } = string.Empty;
+        public IncidentController(MongoDbContext context)
+        {
+            _context = context;
+        }
 
-        [BsonElement("description")]
-        public string Description { get; set; } = string.Empty;
+        // ==================== PUBLIC: Report Incident ====================
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
 
-        [BsonElement("location")]
-        public string Location { get; set; } = string.Empty;
+        [HttpPost]
+        public async Task<IActionResult> Create(Incident incident)
+        {
+            if (ModelState.IsValid)
+            {
+                incident.ReportedAt = DateTime.UtcNow;
+                incident.UpdatedAt = DateTime.UtcNow;
+                incident.Status = "Open";
 
-        [BsonElement("latitude")]
-        public double? Latitude { get; set; }
+                // ✅ Store the logged-in citizen's ID (if any)
+                var userId = HttpContext.Session.GetString("UserId");
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    incident.ReportedBy = userId;
+                }
 
-        [BsonElement("longitude")]
-        public double? Longitude { get; set; }
+                await _context.Incidents.InsertOneAsync(incident);
 
-        [BsonElement("severity")]
-        public string Severity { get; set; } = "Medium";
+                TempData["SuccessMessage"] = "✅ Incident reported successfully!";
+                return RedirectToAction("Index", "Home");
+            }
+            return View(incident);
+        }
 
-        [BsonElement("status")]
-        public string Status { get; set; } = "Open";
-
-        [BsonElement("department")]
-        public string Department { get; set; } = string.Empty;  // ✅ SIRF YAHI
-
-        [BsonElement("reportedBy")]
-        public string ReportedBy { get; set; } = string.Empty;
-
-        [BsonElement("reportedAt")]
-        public DateTime ReportedAt { get; set; } = DateTime.UtcNow;
-
-        [BsonElement("updatedAt")]
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        [BsonElement("comments")]
-        public List<IncidentComment> Comments { get; set; } = new();
-
-
-    }
-
-    public class IncidentComment
-    {
-        public string Text { get; set; } = string.Empty;
-        public string Author { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        // ==================== PUBLIC: Incident List (optional) ====================
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var incidents = await _context.Incidents.Find(_ => true)
+                .SortByDescending(i => i.ReportedAt)
+                .ToListAsync();
+            return View(incidents);
+        }
     }
 }
