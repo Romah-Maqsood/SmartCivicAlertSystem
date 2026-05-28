@@ -144,6 +144,7 @@
             font-weight: 500;
             transition: all 0.2s ease;
             border-radius: 10px;
+            position: relative;
         }
 
         .nav-item i {
@@ -159,6 +160,20 @@
         .nav-item.active {
             background: #EFF6FF;
             color: #2563EB;
+        }
+
+        .notification-badge {
+            position: absolute;
+            right: 16px;
+            top: 8px;
+            background: #EF4444;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            min-width: 18px;
+            text-align: center;
         }
 
         .nav-footer {
@@ -217,7 +232,10 @@
             margin-left: 72px;
         }
 
-        .welcome-header {
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 28px;
         }
 
@@ -237,6 +255,180 @@
             font-size: 13px;
             color: #6B7280;
             margin-top: 6px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-container {
+            position: relative;
+        }
+
+        .notification-bell {
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            padding: 8px;
+            transition: transform 0.2s ease;
+        }
+
+        .notification-bell:hover {
+            transform: scale(1.05);
+        }
+
+        .notification-bell i {
+            font-size: 22px;
+            color: #6B7280;
+        }
+
+        .notification-bell.has-notification i {
+            color: #2563EB;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            width: 380px;
+            max-height: 450px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .notification-header {
+            padding: 15px 18px;
+            border-bottom: 1px solid #EAECF0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1A1F36;
+        }
+
+        .mark-all-read {
+            background: none;
+            border: none;
+            color: #2563EB;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .notification-list {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 14px 18px;
+            border-bottom: 1px solid #F0F2F5;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .notification-item:hover {
+            background: #F9FAFB;
+            transform: translateX(-2px);
+        }
+
+        .notification-item.unread {
+            background: #EFF6FF;
+            border-left: 3px solid #2563EB;
+        }
+
+        .notification-item.critical {
+            background: #FEF2F2;
+            border-left: 3px solid #DC2626;
+        }
+
+        .notification-item.high {
+            background: #FEF3C7;
+            border-left: 3px solid #F59E0B;
+        }
+
+        .notification-item.medium {
+            background: #E0E7FF;
+            border-left: 3px solid #2563EB;
+        }
+
+        .notification-item.low {
+            background: #DCFCE7;
+            border-left: 3px solid #10B981;
+        }
+
+        .notification-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1A1F36;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 12px;
+            color: #6B7280;
+            margin-bottom: 6px;
+        }
+
+        .notification-time {
+            font-size: 10px;
+            color: #9CA3AF;
+        }
+
+        .empty-notifications {
+            padding: 40px 20px;
+            text-align: center;
+            color: #9CA3AF;
+        }
+
+        .empty-notifications i {
+            font-size: 40px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .notification-footer {
+            padding: 12px 18px;
+            border-top: 1px solid #EAECF0;
+            text-align: center;
+        }
+
+        .notification-footer a {
+            color: #2563EB;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #FFFFFF;
+            padding: 8px 16px;
+            border-radius: 40px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+
+        .user-profile i {
+            color: #2563EB;
+            font-size: 18px;
+        }
+
+        .user-profile span {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1A1F36;
         }
 
         .stats-grid {
@@ -484,6 +676,17 @@
             font-size: 11px;
         }
 
+        @@keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         @@media (max-width: 1024px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -512,6 +715,10 @@
             .stats-grid {
                 grid-template-columns: 1fr;
             }
+            .notification-dropdown {
+                width: 320px;
+                right: -60px;
+            }
         }
     </style>
 </head>
@@ -532,8 +739,9 @@
                 <a href="/Operator/Dashboard" class="nav-item active">
                     <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
                 </a>
-                <a href="/Operator/Incidents" class="nav-item">
+                <a href="/Operator/Incidents" class="nav-item" id="incidentsNavLink">
                     <i class="fas fa-list-alt"></i> <span>Incidents</span>
+                    <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
                 </a>
                 <a href="/Operator/CreateIncident" class="nav-item">
                     <i class="fas fa-plus-circle"></i> <span>Create Incident</span>
@@ -553,9 +761,38 @@
         </div>
 
         <div class="main-content">
-            <div class="welcome-header">
-                <h1><i class="fas fa-hand-wave"></i> Welcome back, @operatorName!</h1>
-                <p>@dept Department Dashboard — Monitor and manage incidents in real-time</p>
+            <div class="topbar">
+                <div class="welcome-header">
+                    <h1><i class="fas fa-hand-wave"></i> Welcome back, @operatorName!</h1>
+                    <p>@dept Department Dashboard — Monitor and manage incidents in real-time</p>
+                </div>
+                <div class="topbar-right">
+                    <div class="notification-container">
+                        <button class="notification-bell" id="notificationBell">
+                            <i class="fas fa-bell"></i>
+                            <span id="notificationDropdownBadge" class="notification-badge" style="display: none; position: absolute; top: 0; right: 0;">0</span>
+                        </button>
+                        <div id="notificationDropdown" class="notification-dropdown" style="display: none;">
+                            <div class="notification-header">
+                                <h3><i class="fas fa-bell" style="color: #2563EB;"></i> Notifications</h3>
+                                <button class="mark-all-read" id="markAllRead">Mark all as read</button>
+                            </div>
+                            <div id="notificationList" class="notification-list">
+                                <div class="empty-notifications">
+                                    <i class="fas fa-bell-slash"></i>
+                                    No new notifications
+                                </div>
+                            </div>
+                            <div class="notification-footer">
+                                <a href="/Operator/Incidents">View all incidents →</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-profile">
+                        <i class="fas fa-user-circle"></i>
+                        <span>@operatorName</span>
+                    </div>
+                </div>
             </div>
 
             <div class="stats-grid">
@@ -564,7 +801,7 @@
                         <span class="stat-label">New Today</span>
                         <i class="fas fa-calendar-day"></i>
                     </div>
-                    <div class="stat-value">@ViewBag.NewToday</div>
+                    <div class="stat-value" id="newTodayValue">@ViewBag.NewToday</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-header">
@@ -649,7 +886,7 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="recentIncidentsTableBody">
                             @if (!Model.RecentIncidents.Any())
                             {
                                 <tr>
@@ -689,13 +926,17 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    
     <script>
+        // Sidebar Toggle
         const sidebar = document.getElementById('sidebar');
         const toggleBtn = document.getElementById('toggleSidebar');
         toggleBtn.addEventListener('click', function() {
             sidebar.classList.toggle('collapsed');
         });
 
+        // Charts
         const trendCtx = document.getElementById('trendChart').getContext('2d');
         new Chart(trendCtx, {
             type: 'line',
@@ -766,6 +1007,228 @@
                 }
             }
         });
+
+        // Notification System
+        let notifications = [];
+        let notificationCount = 0;
+        
+        const notificationBell = document.getElementById('notificationBell');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        const notificationList = document.getElementById('notificationList');
+        const notificationDropdownBadge = document.getElementById('notificationDropdownBadge');
+        const sidebarNotificationBadge = document.getElementById('notificationBadge');
+        
+        notificationBell.addEventListener('click', function(e) {
+            e.stopPropagation();
+            notificationDropdown.style.display = notificationDropdown.style.display === 'none' ? 'block' : 'none';
+            renderNotifications();
+            markAllAsSeen();
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (!document.querySelector('.notification-container')?.contains(e.target)) {
+                notificationDropdown.style.display = 'none';
+            }
+        });
+        
+        function addNotification(title, message, time, severity = 'medium') {
+            const notification = {
+                id: Date.now(),
+                title: title,
+                message: message,
+                time: time,
+                severity: severity,
+                read: false,
+                timestamp: new Date()
+            };
+            notifications.unshift(notification);
+            updateNotificationBadge();
+            renderNotifications();
+            showPopupNotification(title, message, time, severity);
+        }
+        
+        function updateNotificationBadge() {
+            const unreadCount = notifications.filter(n => !n.read).length;
+            notificationCount = unreadCount;
+            
+            if (unreadCount > 0) {
+                notificationDropdownBadge.style.display = 'inline';
+                notificationDropdownBadge.innerText = unreadCount > 9 ? '9+' : unreadCount;
+                sidebarNotificationBadge.style.display = 'inline';
+                sidebarNotificationBadge.innerText = unreadCount > 9 ? '9+' : unreadCount;
+                notificationBell.classList.add('has-notification');
+            } else {
+                notificationDropdownBadge.style.display = 'none';
+                sidebarNotificationBadge.style.display = 'none';
+                notificationBell.classList.remove('has-notification');
+            }
+        }
+        
+        function markAllAsSeen() {
+            notifications.forEach(n => n.read = true);
+            updateNotificationBadge();
+            renderNotifications();
+        }
+        
+        document.getElementById('markAllRead')?.addEventListener('click', function() {
+            markAllAsSeen();
+        });
+        
+        function renderNotifications() {
+            if (notifications.length === 0) {
+                notificationList.innerHTML = `
+                    <div class="empty-notifications">
+                        <i class="fas fa-bell-slash"></i>
+                        No new notifications
+                    </div>
+                `;
+                return;
+            }
+            
+            notificationList.innerHTML = notifications.map(n => `
+                <div class="notification-item ${!n.read ? 'unread' : ''} ${getSeverityClass(n.severity)}" onclick="markAsRead(${n.id})">
+                    <div class="notification-title">${escapeHtml(n.title)}</div>
+                    <div class="notification-message">${escapeHtml(n.message)}</div>
+                    <div class="notification-time">${formatTime(n.time)}</div>
+                </div>
+            `).join('');
+        }
+        
+        function getSeverityClass(severity) {
+            switch(severity.toLowerCase()) {
+                case 'critical': return 'critical';
+                case 'high': return 'high';
+                case 'medium': return 'medium';
+                case 'low': return 'low';
+                default: return '';
+            }
+        }
+        
+        window.markAsRead = function(id) {
+            const notification = notifications.find(n => n.id === id);
+            if (notification) {
+                notification.read = true;
+                updateNotificationBadge();
+                renderNotifications();
+                window.location.href = '/Operator/Incidents';
+            }
+        };
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function formatTime(timeStr) {
+            const date = new Date(timeStr);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)} minutes ago`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)} hours ago`;
+            return date.toLocaleDateString();
+        }
+        
+        function showPopupNotification(title, message, time, severity) {
+            const popup = document.createElement('div');
+            let bgColor = '#FFFFFF';
+            let borderColor = '#2563EB';
+            
+            switch(severity.toLowerCase()) {
+                case 'critical':
+                    bgColor = '#FEF2F2';
+                    borderColor = '#DC2626';
+                    break;
+                case 'high':
+                    bgColor = '#FEF3C7';
+                    borderColor = '#F59E0B';
+                    break;
+                case 'medium':
+                    bgColor = '#E0E7FF';
+                    borderColor = '#2563EB';
+                    break;
+                case 'low':
+                    bgColor = '#DCFCE7';
+                    borderColor = '#10B981';
+                    break;
+            }
+            
+            popup.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 320px;
+                background: ${bgColor};
+                border-left: 4px solid ${borderColor};
+                border-radius: 12px;
+                padding: 14px;
+                margin-bottom: 12px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                animation: slideIn 0.3s ease;
+                cursor: pointer;
+                z-index: 1001;
+            `;
+            
+            popup.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <strong style="color: #1A1F36; font-size: 13px;">${escapeHtml(title)}</strong>
+                        <p style="margin: 4px 0; font-size: 11px; color: #6B7280;">${escapeHtml(message)}</p>
+                        <small style="color: #9CA3AF; font-size: 10px;">${formatTime(time)}</small>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; cursor: pointer; color: #9CA3AF;">✕</button>
+                </div>
+            `;
+            
+            document.body.appendChild(popup);
+            
+            setTimeout(() => {
+                if (popup.parentElement) popup.remove();
+            }, 5000);
+            
+            popup.onclick = (e) => {
+                if (e.target.tagName !== 'BUTTON') {
+                    window.location.href = '/Operator/Incidents';
+                }
+            };
+        }
+        
+        // SignalR Connection
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub")
+            .build();
+        
+        connection.start()
+            .then(() => {
+                console.log("SignalR connected!");
+                connection.invoke("JoinDepartment", "@dept");
+            })
+            .catch(err => console.error("SignalR error:", err));
+        
+        connection.on("ReceiveNotification", (title, message, time) => {
+            console.log("New notification:", title);
+            let severity = 'medium';
+            if (title.includes('Critical') || title.includes('EMERGENCY')) severity = 'critical';
+            else if (title.includes('High')) severity = 'high';
+            else if (title.includes('Low')) severity = 'low';
+            
+            addNotification(title, message, time, severity);
+            
+            const newTodayElement = document.getElementById('newTodayValue');
+            if (newTodayElement) {
+                let currentValue = parseInt(newTodayElement.innerText) || 0;
+                newTodayElement.innerText = currentValue + 1;
+            }
+        });
+        
+        // Check for new incidents every 30 seconds
+        setInterval(function() {
+            fetch('/Operator/GetNewIncidentsCount')
+                .then(res => res.json())
+                .catch(err => console.error('Error:', err));
+        }, 30000);
     </script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 using SmartCityPulse.Data;
+using SmartCityPulse.Hubs;  // ✅ ADD THIS LINE
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,9 @@ app.UseRouting();
 
 app.UseSession();
 app.UseAuthorization();
+
+// ✅ ADD THIS - SignalR Hub Mapping (Notification ke liye)
+app.MapHub<NotificationHub>("/notificationHub");
 
 // ✅ Route Configuration - Fixed (No duplicates)
 app.MapControllerRoute(

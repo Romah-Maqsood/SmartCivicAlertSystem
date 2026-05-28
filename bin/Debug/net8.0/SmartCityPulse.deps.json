@@ -11,7 +11,7 @@
           "BCrypt.Net-Next": "4.1.0",
           "CsvHelper": "33.1.0",
           "Google.Cloud.AIPlatform.V1": "3.71.0",
-          "Microsoft.AspNetCore.SignalR": "1.2.9",
+          "Microsoft.AspNetCore.SignalR": "1.2.10",
           "Microsoft.Extensions.Logging.Abstractions": "8.0.2",
           "Microsoft.ML": "5.0.0",
           "MongoDB.Driver": "3.8.0",
@@ -258,7 +258,7 @@
           "System.Net.WebSockets.WebSocketProtocol": "5.1.0"
         }
       },
-      "Microsoft.AspNetCore.SignalR/1.2.9": {
+      "Microsoft.AspNetCore.SignalR/1.2.10": {
         "dependencies": {
           "Microsoft.AspNetCore.Http.Connections": "1.2.0"
         }
@@ -905,12 +905,12 @@
       "path": "microsoft.aspnetcore.http.connections/1.2.0",
       "hashPath": "microsoft.aspnetcore.http.connections.1.2.0.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.SignalR/1.2.9": {
+    "Microsoft.AspNetCore.SignalR/1.2.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-stJwCxfcXqY982p+4dRzlK1Qv2ISrpJrVRzUWvr9PximZXBMSYFVCtOPy9LI2WsjHH/zEL4jSh3Qn2fYZomyKg==",
-      "path": "microsoft.aspnetcore.signalr/1.2.9",
-      "hashPath": "microsoft.aspnetcore.signalr.1.2.9.nupkg.sha512"
+      "sha512": "sha512-zN8T1jA4M/ogenvqfH1fCW1zY4UbUfi7wkUSa0k5uAJJhIgjpF6enIf2MVfcFf8saMJLm2Qwqyuj37aF6SZPkQ==",
+      "path": "microsoft.aspnetcore.signalr/1.2.10",
+      "hashPath": "microsoft.aspnetcore.signalr.1.2.10.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/9.0.4": {
       "type": "package",
