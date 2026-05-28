@@ -24,67 +24,27 @@
             color: #1A1F36;
         }
 
-        .navbar {
-            background: #FFFFFF;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #EAECF0;
-        }
-
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1A1F36;
-            text-decoration: none;
-        }
-
-            .navbar-brand span {
-                color: #2563EB;
-            }
-
-        .container {
-            max-width: 1000px;
-            margin: 1rem auto;
-            padding: 0 2rem;
-        }
-
-        .top-bar {
-            background: #FFFFFF;
-            border-radius: 16px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #EAECF0;
-        }
-
-        .page-title h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .btn-back {
-            background: #2563EB;
-            color: white;
-            padding: 0.5rem 1.25rem;
-            border-radius: 40px;
-            text-decoration: none;
-            font-size: 0.875rem;
+        .notifications-container {
+            padding: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .notification-card {
             background: #FFFFFF;
             border-radius: 16px;
-            padding: 1rem 1.5rem;
+            padding: 1rem 1.25rem;
             margin-bottom: 0.75rem;
             border: 1px solid #EAECF0;
             display: flex;
             align-items: center;
             gap: 1rem;
+            transition: all 0.3s ease;
         }
+
+            .notification-card:hover {
+                border-color: #2563EB;
+            }
 
         .notification-icon {
             width: 40px;
@@ -113,6 +73,7 @@
         .notification-time {
             font-size: 0.75rem;
             color: #6B7280;
+            margin-top: 0.25rem;
         }
 
         .status-badge {
@@ -121,7 +82,6 @@
             border-radius: 20px;
             font-size: 0.7rem;
             font-weight: 500;
-            margin-top: 0.25rem;
         }
 
         .status-resolved {
@@ -147,85 +107,55 @@
             border: 1px solid #EAECF0;
         }
 
-        @@media (max-width: 768px) {
-            .container {
-                padding: 0 1rem;
+            .no-data i {
+                font-size: 3rem;
+                color: #94A3B8;
+                margin-bottom: 1rem;
             }
 
-            .top-bar {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
+        @@media (max-width: 768px) {
+            .notifications-container {
+                padding: 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="/Citizen/Index" class="navbar-brand">SMART CIVIC <span>ALERT</span></a>
-        <a href="/Account/Logout" style="color: #6B7280;"><i class="fas fa-sign-out-alt"></i> Logout</a>
-    </nav>
-
-    <div class="container">
-        <div class="top-bar">
-            <div class="page-title">
-                <h1><i class="fas fa-bell" style="color: #2563EB;"></i> Notifications</h1>
-            </div>
-            <a href="/Citizen/Index" class="btn-back"><i class="fas fa-arrow-left"></i> Back</a>
-        </div>
-
+    <div class="notifications-container">
         <div id="notificationsList">
             <div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>
         </div>
     </div>
 
     <script>
-               
-
-
-
-
-                async function loadNotifications() {
+        async function loadNotifications() {
             try {
                 const response = await fetch('/Citizen/GetNotifications');
                 const notifications = await response.json();
                 const container = document.getElementById('notificationsList');
 
                 if (!notifications || notifications.length === 0) {
-                    container.innerHTML = `<div class="no-data"><i class="fas fa-bell-slash" style="font-size: 3rem;"></i><h3 style="margin-top: 1rem;">No notifications</h3><p>You have no new notifications at this time.</p></div>`;
+                    container.innerHTML = `<div class="no-data"><i class="fas fa-bell-slash"></i><h3 style="margin-top: 1rem;">No notifications</h3><p>You have no new notifications.</p></div>`;
                     return;
                 }
 
                 container.innerHTML = notifications.map(n => `
-                    <div class="notification-card" onclick="markAsRead('${n.id}')">
-                        <div class="notification-icon">
-                            <i class="fas ${n.status === 'Resolved' ? 'fa-check-circle' : (n.status === 'In Progress' ? 'fa-spinner fa-pulse' : 'fa-info-circle')}"></i>
-                        </div>
+                    <div class="notification-card">
+                        <div class="notification-icon"><i class="fas ${n.status === 'Resolved' ? 'fa-check-circle' : (n.status === 'In Progress' ? 'fa-spinner fa-pulse' : 'fa-info-circle')}"></i></div>
                         <div class="notification-content">
                             <div class="notification-title">${escapeHtml(n.title)}</div>
                             <div>${escapeHtml(n.message)}</div>
-                            <div class="notification-time"><i class="far fa-clock"></i> ${new Date(n.createdAt).toLocaleString()}</div>
+                            <div class="notification-time"><i class="far fa-clock"></i> ${new Date(n.updatedAt).toLocaleString()}</div>
                         </div>
-                        <a href="/Citizen/Details/${n.incidentId}" style="color: #2563EB;"><i class="fas fa-arrow-right"></i></a>
+                        <a href="/Citizen/Details/${n.id}" style="color: #2563EB;"><i class="fas fa-arrow-right"></i></a>
                     </div>
                 `).join('');
             } catch (error) {
-                console.error(error);
                 document.getElementById('notificationsList').innerHTML = `<div class="no-data"><i class="fas fa-exclamation-triangle" style="font-size: 3rem;"></i><p>Error loading notifications.</p></div>`;
             }
         }
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function markAsRead(id) {
-            fetch(`/Citizen/MarkNotificationAsRead/${id}`, { method: 'POST' })
-                .then(() => loadNotifications());
-        }
+        function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
         loadNotifications();
     </script>

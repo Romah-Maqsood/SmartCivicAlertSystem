@@ -239,7 +239,7 @@ namespace SmartCityPulse.Controllers
 
             var userId = HttpContext.Session.GetString("UserId");
 
-            // Get incidents that have status changes (status is not Open or updated recently)
+            // Get incidents that have status changes
             var notifications = await _context.Incidents
                 .Find(i => i.ReportedBy == userId && (i.Status != "Open" || i.UpdatedAt > DateTime.UtcNow.AddDays(-1)))
                 .SortByDescending(i => i.UpdatedAt)
@@ -291,18 +291,30 @@ namespace SmartCityPulse.Controllers
             var userId = HttpContext.Session.GetString("UserId");
             var incidents = await _context.Incidents.Find(i => i.ReportedBy == userId).ToListAsync();
 
-            var html = @"<html><head><style>body{font-family:Arial;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #ddd;padding:8px;}th{background-color:#f2f2f2;}</style></head><body>
-                        <h1>My Incident Reports</h1>
-                        <table><thead>汽<th>ID</th><th>Title</th><th>Location</th><th>Severity</th><th>Status</th><th>Date</th></thead><tbody>";
+            var html = @"<html><head><style>
+                body{font-family:Arial; margin:20px;}
+                h1{color:#333;}
+                table{border-collapse:collapse;width:100%;margin-top:20px;}
+                th,td{border:1px solid #ddd;padding:8px;text-align:left;}
+                th{background-color:#f2f2f2;}
+                </style></head><body>
+                <h1>My Incident Reports</h1>
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Title</th><th>Location</th><th>Severity</th><th>Status</th><th>Date</th></thead>
+                    <tbody>";
 
             foreach (var i in incidents)
             {
                 html += $"<tr><td>{i.Id}</td><td>{i.Title}</td><td>{i.Location}</td><td>{i.Severity}</td><td>{i.Status}</td><td>{i.ReportedAt:yyyy-MM-dd}</td></tr>";
             }
 
-            html += @"</tbody></table></body></html>";
+            html += @"</tbody>
+                </table>
+                </body></html>";
 
-            return File(System.Text.Encoding.UTF8.GetBytes(html), "application/pdf", "IncidentReports.pdf");
+            var bytes = System.Text.Encoding.UTF8.GetBytes(html);
+            return File(bytes, "application/pdf", $"IncidentReports_{DateTime.Now:yyyyMMdd}.pdf");
         }
 
         [HttpGet]
@@ -319,7 +331,8 @@ namespace SmartCityPulse.Controllers
                 csv += $"{i.Id},{i.Title},{i.Location},{i.Severity},{i.Status},{i.ReportedAt:yyyy-MM-dd}\n";
             }
 
-            return File(System.Text.Encoding.UTF8.GetBytes(csv), "text/csv", "IncidentReports.csv");
+            var bytes = System.Text.Encoding.UTF8.GetBytes(csv);
+            return File(bytes, "text/csv", $"IncidentReports_{DateTime.Now:yyyyMMdd}.csv");
         }
 
         // ==================== PROFILE MANAGEMENT ====================
@@ -471,14 +484,43 @@ namespace SmartCityPulse.Controllers
             TempData["SuccessMessage"] = "Emergency alert sent! Authorities have been notified.";
             return RedirectToAction("Index");
         }
+
+        // ==================== MARK NOTIFICATION AS READ ====================
         [HttpPost]
         public async Task<IActionResult> MarkNotificationAsRead(string id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest();
+            }
+
             await _context.Notifications.UpdateOneAsync(
                 n => n.Id == id,
                 Builders<Notification>.Update.Set(n => n.IsRead, true)
             );
             return Ok();
         }
+        [HttpGet]
+        public IActionResult Reports()
+        {
+            if (!IsCitizen())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var userId = HttpContext.Session.GetString("UserId");
+
+            // Get counts for stats
+            var totalIncidents = _context.Incidents.CountDocuments(i => i.ReportedBy == userId);
+            var resolvedIncidents = _context.Incidents.CountDocuments(i => i.ReportedBy == userId && i.Status == "Resolved");
+            var pendingIncidents = _context.Incidents.CountDocuments(i => i.ReportedBy == userId && i.Status != "Resolved");
+
+            ViewBag.TotalIncidents = (int)totalIncidents;
+            ViewBag.ResolvedIncidents = (int)resolvedIncidents;
+            ViewBag.PendingIncidents = (int)pendingIncidents;
+
+            return View();
+        }
+
     }
 }

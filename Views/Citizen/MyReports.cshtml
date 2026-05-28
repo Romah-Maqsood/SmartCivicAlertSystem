@@ -1,6 +1,8 @@
-﻿@{
+﻿@model IEnumerable<SmartCityPulse.Models.Incident>
+
+@{
     Layout = null;
-    ViewData["Title"] = "Download Reports";
+    ViewData["Title"] = "My Reports";
 }
 
 <!DOCTYPE html>
@@ -24,6 +26,7 @@
             color: #1A1F36;
         }
 
+        /* Navbar */
         .navbar {
             background: #FFFFFF;
             padding: 1rem 2rem;
@@ -31,6 +34,7 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #EAECF0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
         }
 
         .navbar-brand {
@@ -38,137 +42,367 @@
             font-weight: 700;
             color: #1A1F36;
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
+
+            .navbar-brand i {
+                color: #2563EB;
+            }
 
             .navbar-brand span {
                 color: #2563EB;
             }
 
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-            text-align: center;
+        .navbar-logout {
+            color: #6B7280;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
         }
 
-        .top-bar {
-            background: #FFFFFF;
-            border-radius: 16px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 2rem;
+            .navbar-logout:hover {
+                color: #DC2626;
+            }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Header Actions */
+        .header-actions {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid #EAECF0;
-        }
-
-        .page-title h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             background: #2563EB;
             color: white;
-            padding: 0.5rem 1.25rem;
+            padding: 0.625rem 1.25rem;
             border-radius: 40px;
             text-decoration: none;
             font-size: 0.875rem;
-        }
-
-        .cards {
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .card {
-            background: #FFFFFF;
-            border-radius: 20px;
-            padding: 2rem;
-            text-align: center;
-            width: 250px;
-            border: 1px solid #EAECF0;
-            cursor: pointer;
+            font-weight: 500;
             transition: all 0.3s ease;
         }
 
-            .card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+            .btn-back:hover {
+                background: #1D4ED8;
+                transform: translateY(-1px);
             }
 
-            .card i {
-                font-size: 3rem;
-                margin-bottom: 1rem;
-            }
-
-            .card h3 {
-                font-size: 1.25rem;
-                margin-bottom: 0.5rem;
-            }
-
-            .card p {
-                font-size: 0.875rem;
-                color: #6B7280;
-                margin-bottom: 1rem;
-            }
-
-        .btn-download {
-            background: #2563EB;
+        .btn-new {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #10B981;
             color: white;
-            padding: 0.5rem 1.25rem;
+            padding: 0.625rem 1.25rem;
             border-radius: 40px;
             text-decoration: none;
             font-size: 0.875rem;
-            display: inline-block;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
 
+            .btn-new:hover {
+                background: #059669;
+                transform: translateY(-1px);
+            }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+            .page-header h1 {
+                font-size: 1.75rem;
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+                .page-header h1 i {
+                    color: #2563EB;
+                }
+
+            .page-header p {
+                color: #6B7280;
+                font-size: 0.875rem;
+            }
+
+        /* Stats Summary Row */
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-summary-card {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #EAECF0;
+        }
+
+        .stat-summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2563EB;
+        }
+
+        .stat-summary-label {
+            font-size: 0.7rem;
+            color: #6B7280;
+            margin-top: 0.25rem;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: #FFFFFF;
+            border-radius: 20px;
+            overflow-x: auto;
+            border: 1px solid #EAECF0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        .incident-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .incident-table th {
+                text-align: left;
+                padding: 1rem;
+                color: #6B7280;
+                font-size: 0.75rem;
+                font-weight: 500;
+                border-bottom: 1px solid #EAECF0;
+                background: #F8FAFC;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .incident-table td {
+                padding: 1rem;
+                font-size: 0.8125rem;
+                color: #1A1F36;
+                border-bottom: 1px solid #EAECF0;
+            }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .status-resolved {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        .status-progress {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-open {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .severity-critical {
+            color: #DC2626;
+            font-weight: 600;
+        }
+
+        .severity-high {
+            color: #F97316;
+            font-weight: 600;
+        }
+
+        .severity-medium {
+            color: #EAB308;
+            font-weight: 600;
+        }
+
+        .severity-low {
+            color: #10B981;
+            font-weight: 600;
+        }
+
+        .btn-view {
+            color: #2563EB;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-weight: 500;
+        }
+
+            .btn-view:hover {
+                text-decoration: underline;
+            }
+
+        /* No Data */
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: #6B7280;
+        }
+
+            .no-data i {
+                font-size: 3rem;
+                color: #94A3B8;
+                margin-bottom: 1rem;
+            }
+
+        /* Responsive */
         @@media (max-width: 768px) {
             .container {
                 padding: 0 1rem;
+                margin: 1rem auto;
             }
 
-            .top-bar {
+            .header-actions {
                 flex-direction: column;
-                gap: 1rem;
-                text-align: center;
+                align-items: flex-start;
+            }
+
+            .stats-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .incident-table th,
+            .incident-table td {
+                padding: 0.5rem;
+                font-size: 0.7rem;
             }
         }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <a href="/Citizen/Index" class="navbar-brand">SMART CIVIC <span>ALERT</span></a>
-        <a href="/Account/Logout" style="color: #6B7280;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <a href="/Citizen/Index" class="navbar-brand">
+            <i class="fas fa-city"></i> SMART CIVIC <span>ALERT</span>
+        </a>
+        <a href="/Account/Logout" class="navbar-logout">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
     </nav>
 
     <div class="container">
-        <div class="top-bar">
-            <div class="page-title"><h1><i class="fas fa-download" style="color: #2563EB;"></i> Download Reports</h1></div>
-            <a href="/Citizen/Index" class="btn-back"><i class="fas fa-arrow-left"></i> Back</a>
+        <div class="header-actions">
+            <a href="/Citizen/Index" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <a href="/Incident/Create" class="btn-new">
+                <i class="fas fa-plus-circle"></i> Report New Incident
+            </a>
         </div>
 
-        <div class="cards">
-            <div class="card" onclick="downloadPDF()">
-                <i class="fas fa-file-pdf" style="color: #DC2626;"></i>
-                <h3>PDF Report</h3>
-                <p>Download formatted PDF document</p>
-                <button class="btn-download"><i class="fas fa-download"></i> Download PDF</button>
+        <div class="page-header">
+            <h1><i class="fas fa-clipboard-list"></i> My Incident Reports</h1>
+            <p>View and track all incidents you have reported</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="stats-summary">
+            <div class="stat-summary-card">
+                <div class="stat-summary-value">@Model.Count()</div>
+                <div class="stat-summary-label">Total Reports</div>
             </div>
-            <div class="card" onclick="downloadCSV()">
-                <i class="fas fa-file-excel" style="color: #10B981;"></i>
-                <h3>CSV Report</h3>
-                <p>Download CSV for Excel</p>
-                <button class="btn-download"><i class="fas fa-download"></i> Download CSV</button>
+            <div class="stat-summary-card">
+                <div class="stat-summary-value">@Model.Count(i => i.Status == "Resolved")</div>
+                <div class="stat-summary-label">Resolved</div>
             </div>
+            <div class="stat-summary-card">
+                <div class="stat-summary-value">@Model.Count(i => i.Status == "Open" || i.Status == "In Progress")</div>
+                <div class="stat-summary-label">Active</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            @if (Model != null && Model.Any())
+            {
+                <table class="incident-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Location</th>
+                            <th>Severity</th>
+                            <th>Status</th>
+                            <th>Reported On</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var incident in Model)
+                        {
+                            <tr>
+                                <td>
+                                    #@(incident.Id?.Length >= 6 ? incident.Id.Substring(0, 6) : incident.Id)
+                                </td>
+                                <td>
+                                    @incident.Title
+                                </td>
+                                <td>
+                                    @incident.Location
+                                </td>
+                                <td class="severity-@(incident.Severity?.ToLower())">
+                                    @incident.Severity
+                                </td>
+                                <td>
+                                    <span class="status-badge status-@(incident.Status?.ToLower().Replace(" ", ""))">
+                                        @incident.Status
+                                    </span>
+                                </td>
+                                <td>
+                                    @incident.ReportedAt.ToString("MMM dd, yyyy")
+                                </td>
+                                <td>
+                                    <a href="/Citizen/Details/@incident.Id" class="btn-view">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="no-data">
+                    <i class="fas fa-folder-open"></i>
+                    <h3>No reports found</h3>
+                    <p>You haven't reported any incidents yet.</p>
+                    <a href="/Incident/Create" class="btn-new" style="margin-top: 1rem; display: inline-block;">
+                        <i class="fas fa-plus-circle"></i> Report Your First Incident
+                    </a>
+                </div>
+            }
         </div>
     </div>
-
-    <script>
-        function downloadPDF() { window.location.href = '/Citizen/DownloadPDF'; }
-        function downloadCSV() { window.location.href = '/Citizen/DownloadCSV'; }
-    </script>
 </body>
 </html>
