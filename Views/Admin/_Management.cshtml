@@ -1,0 +1,71 @@
+<!-- INCIDENTS SECTION -->
+<div id="incidentsSection" class="hide">
+    <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-list-alt"></i> All Incidents</h2>
+    </div>
+    <div class="filter-bar">
+        <select id="statusFilter">
+            <option value="">All Status</option>
+            <option value="Open">Open</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+        </select>
+        <select id="severityFilter">
+            <option value="">All Severity</option>
+            <option value="Critical">Critical</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+        </select>
+        <button class="btn-primary btn-sm" onclick="loadAllIncidents()"><i class="fas fa-filter"></i> Filter</button>
+        <button class="btn-ghost btn-sm" onclick="clearFilters()"><i class="fas fa-times"></i> Clear</button>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th><th>Location</th><th>Department</th>
+                    <th>Severity</th><th>Status</th><th>Reported At</th><th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="allIncidentsTable">
+                <tr><td colspan="7"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- OPERATORS SECTION -->
+<div id="operatorsSection" class="hide">
+    <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-users-cog"></i> Operators Management</h2>
+        <button class="btn-primary" onclick="openAddOperatorModal()"><i class="fas fa-plus"></i> Add Operator</button>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr><th>Name</th><th>Email</th><th>Phone</th><th>Department</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="operatorsTable">
+                <tr><td colspan="5"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- CITIZENS SECTION -->
+<div id="citizensSection" class="hide">
+    <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-user"></i> Citizens Management</h2>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="citizensTable">
+                <tr><td colspan="5"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
