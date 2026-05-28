@@ -20,6 +20,7 @@
             --text-primary: #1A1F36;
             --text-secondary: #6B7280;
             --blue: #2563EB;
+            --blue-dark: #1D4ED8;
             --blue-light: #EFF6FF;
             --red: #DC2626;
             --green: #10B981;
@@ -27,6 +28,7 @@
             --radius-card: 16px;
             --radius-btn: 40px;
             --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-hover: 0 8px 24px rgba(37,99,235,0.12);
             --transition: all 0.2s ease;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -44,18 +46,33 @@
             width: 100%;
             max-width: 900px;
         }
-        .back-link {
+
+        /* Back button – outlined style */
+        .btn-back {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            color: var(--blue);
-            text-decoration: none;
+            gap: 7px;
+            padding: 9px 18px;
+            border-radius: var(--radius-btn);
+            font-size: 13px;
             font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 24px;
+            text-decoration: none;
+            cursor: pointer;
             transition: var(--transition);
+            margin-bottom: 24px;
+            background: white;
+            color: var(--blue);
+            border: 1.5px solid var(--blue);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
         }
-        .back-link:hover { text-decoration: underline; }
+        .btn-back:hover {
+            background: var(--blue);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(37,99,235,0.25);
+        }
+        .btn-back i { font-size: 12px; }
+
         .detail-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -107,6 +124,11 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 16px;
+            transition: var(--transition);
+        }
+        .info-block:hover {
+            border-color: #D1D5DB;
+            background: white;
         }
         .info-label {
             font-size: 11px;
@@ -142,41 +164,37 @@
             gap: 8px;
         }
         .section-title i { color: var(--blue); }
-        .citizen-card {
-            background: #F9FAFB;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
+
+        /* Citizen info – displayed exactly like incident detail blocks */
+        .citizen-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
-        .citizen-name { font-size: 15px; font-weight: 700; }
-        .citizen-meta { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
-        .unknown-citizen { color: var(--text-secondary); font-style: italic; font-size: 14px; }
-        .btn-primary {
-            background: var(--blue);
-            color: white;
-            padding: 9px 18px;
-            border-radius: var(--radius-btn);
-            font-size: 13px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            text-decoration: none;
+
+        .loading-text { color: var(--text-secondary); font-size: 14px; }
+        .error-text { color: var(--red); font-size: 14px; }
+        .unknown-citizen {
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 14px;
+            padding: 12px 0;
         }
-        .btn-primary:hover { background: #1D4ED8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
+
         @@media (max-width: 768px) {
             body { padding: 1rem; }
-            .detail-grid { grid-template-columns: 1fr; }
+            .detail-grid, .citizen-grid { grid-template-columns: 1fr; }
             .description-block { grid-column: span 1; }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <a href="/Admin/Index" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    <!-- Beautiful outlined Back button -->
+    <button class="btn-back" onclick="goBack()">
+        <i class="fas fa-arrow-left"></i> Back
+    </button>
+
     <div class="detail-card">
         <div class="detail-header">
             <div>
@@ -191,6 +209,7 @@
                 </div>
             </div>
         </div>
+
         <div class="detail-grid">
             <div class="info-block">
                 <div class="info-label"><i class="fas fa-map-marker-alt"></i> Location</div>
@@ -213,18 +232,26 @@
                 <div class="description-text">@(Model.Description ?? "No description provided.")</div>
             </div>
         </div>
+
+        <!-- Reporter Section – same info‑block style -->
         <div class="citizen-section">
             <div class="section-title"><i class="fas fa-user"></i> Reported By</div>
-            <!-- Citizen info will be loaded here by JavaScript -->
-            <div id="citizenInfoContainer">
-                <p style="color: var(--text-secondary);">Loading reporter information...</p>
+            <div id="citizenInfoContainer" class="loading-text">
+                <i class="fas fa-spinner fa-spin"></i> Loading reporter information...
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Fetch citizen details after page load
+    function goBack() {
+        if (document.referrer) {
+            window.history.back();
+        } else {
+            window.location.href = '/Admin/Index';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', async function() {
         const container = document.getElementById('citizenInfoContainer');
         try {
@@ -235,18 +262,31 @@
             const data = await response.json();
 
             if (data.citizen) {
+                // Display citizen in a 2‑column grid just like incident detail
                 container.innerHTML = `
-                    <div class="citizen-card">
-                        <div class="citizen-name">${escapeHtml(data.citizen.name)}</div>
-                        <div class="citizen-meta"><i class="fas fa-envelope"></i> ${escapeHtml(data.citizen.email)}</div>
-                        <div class="citizen-meta"><i class="fas fa-phone"></i> ${escapeHtml(data.citizen.phone || 'N/A')}</div>
-                        <div class="citizen-meta"><i class="fas fa-user-tag"></i> Role: ${escapeHtml(data.citizen.role)}</div>
+                    <div class="citizen-grid">
+                        <div class="info-block">
+                            <div class="info-label"><i class="fas fa-user"></i> Name</div>
+                            <div class="info-value">${escapeHtml(data.citizen.name)}</div>
+                        </div>
+                        <div class="info-block">
+                            <div class="info-label"><i class="fas fa-envelope"></i> Email</div>
+                            <div class="info-value">${escapeHtml(data.citizen.email)}</div>
+                        </div>
+                        <div class="info-block">
+                            <div class="info-label"><i class="fas fa-phone"></i> Phone</div>
+                            <div class="info-value">${escapeHtml(data.citizen.phone || 'N/A')}</div>
+                        </div>
+                        <div class="info-block">
+                            <div class="info-label"><i class="fas fa-user-tag"></i> Role</div>
+                            <div class="info-value">${escapeHtml(data.citizen.role)}</div>
+                        </div>
                     </div>`;
             } else {
                 container.innerHTML = '<div class="unknown-citizen"><i class="fas fa-user-slash"></i> Unknown Citizen (Reported without login)</div>';
             }
         } catch (err) {
-            container.innerHTML = '<p style="color: var(--red);">Could not load reporter info.</p>';
+            container.innerHTML = '<div class="error-text"><i class="fas fa-exclamation-circle"></i> Could not load reporter information.</div>';
             console.error(err);
         }
     });
