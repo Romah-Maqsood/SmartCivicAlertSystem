@@ -93,6 +93,9 @@
         .empty-state i { font-size: 48px; margin-bottom: 16px; display: block; }
         .count-badge { background: #2563EB; color: white; padding: 2px 10px; border-radius: 20px; font-size: 12px; margin-left: 8px; }
         .fir-number { font-family: monospace; font-weight: 600; color: #2563EB; background: #EFF6FF; padding: 2px 6px; border-radius: 6px; font-size: 11px; }
+        .fire-type-badge { background: #FEE2E2; color: #DC2626; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 500; }
+        .rescue-type-badge { background: #D1FAE5; color: #10B981; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 500; }
+        .police-type-badge { background: #DBEAFE; color: #2563EB; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 500; }
         @@media (max-width: 768px) {
             .sidebar { width: 100%; position: relative; height: auto; }
             .main-content { margin-left: 0; padding: 20px; }
@@ -149,30 +152,68 @@
                         <option value="Medium" selected="@(ViewBag.SelectedSeverity == "Medium")">Medium</option>
                         <option value="Low" selected="@(ViewBag.SelectedSeverity == "Low")">Low</option>
                     </select>
+                    
                     @if (dept == "Police")
                     {
                         <select name="caseType">
                             <option value="">All Case Types</option>
-                            <option value="Theft" selected="@(ViewBag.SelectedCaseType == "Theft")">Theft (چوری)</option>
-                            <option value="Robbery" selected="@(ViewBag.SelectedCaseType == "Robbery")">Robbery (ڈکیتی)</option>
-                            <option value="Accident" selected="@(ViewBag.SelectedCaseType == "Accident")">Accident (حادثہ)</option>
-                            <option value="Assault" selected="@(ViewBag.SelectedCaseType == "Assault")">Assault (حملہ)</option>
-                            <option value="Missing Person" selected="@(ViewBag.SelectedCaseType == "Missing Person")">Missing Person (گمشدگی)</option>
+                            <option value="Theft" selected="@(ViewBag.SelectedCaseType == "Theft")">Theft</option>
+                            <option value="Robbery" selected="@(ViewBag.SelectedCaseType == "Robbery")">Robbery</option>
+                            <option value="Accident" selected="@(ViewBag.SelectedCaseType == "Accident")">Accident</option>
+                            <option value="Assault" selected="@(ViewBag.SelectedCaseType == "Assault")">Assault</option>
+                            <option value="Missing Person" selected="@(ViewBag.SelectedCaseType == "Missing Person")">Missing Person</option>
                         </select>
                     }
+                    
+                    @if (dept == "Fire")
+                    {
+                        <select name="fireType">
+                            <option value="">All Fire Types</option>
+                            <option value="Building Fire" selected="@(ViewBag.SelectedFireType == "Building Fire")">Building Fire</option>
+                            <option value="Vehicle Fire" selected="@(ViewBag.SelectedFireType == "Vehicle Fire")">Vehicle Fire</option>
+                            <option value="Forest Fire" selected="@(ViewBag.SelectedFireType == "Forest Fire")">Forest Fire</option>
+                            <option value="Electrical Fire" selected="@(ViewBag.SelectedFireType == "Electrical Fire")">Electrical Fire</option>
+                            <option value="Gas Leak" selected="@(ViewBag.SelectedFireType == "Gas Leak")">Gas Leak</option>
+                            <option value="Industrial Fire" selected="@(ViewBag.SelectedFireType == "Industrial Fire")">Industrial Fire</option>
+                        </select>
+                    }
+                    
+                    @if (dept == "Rescue")
+                    {
+                        <select name="emergencyType">
+                            <option value="">All Emergency Types</option>
+                            <option value="Cardiac Arrest" selected="@(ViewBag.SelectedEmergencyType == "Cardiac Arrest")">Cardiac Arrest</option>
+                            <option value="Accident Injury" selected="@(ViewBag.SelectedEmergencyType == "Accident Injury")">Accident Injury</option>
+                            <option value="Burns" selected="@(ViewBag.SelectedEmergencyType == "Burns")">Burns</option>
+                            <option value="Drowning" selected="@(ViewBag.SelectedEmergencyType == "Drowning")">Drowning</option>
+                            <option value="Fall Injury" selected="@(ViewBag.SelectedEmergencyType == "Fall Injury")">Fall Injury</option>
+                            <option value="Childbirth" selected="@(ViewBag.SelectedEmergencyType == "Childbirth")">Childbirth</option>
+                        </select>
+                    }
+                    
                     <button type="submit" class="btn-filter"><i class="fas fa-filter"></i> Apply Filter</button>
                 </form>
                 <a href="/Operator/CreateIncident" class="btn-primary" style="margin-left:auto;"><i class="fas fa-plus"></i> New Incident</a>
             </div>
 
             <div class="table-container">
-                <table>
+                <table class="incident-table">
                     <thead>
                         <tr>
                             @if (dept == "Police")
                             {
                                 <th>FIR #</th>
                                 <th>Case Type</th>
+                            }
+                            @if (dept == "Fire")
+                            {
+                                <th>Fire Type</th>
+                                <th>Fire Status</th>
+                            }
+                            @if (dept == "Rescue")
+                            {
+                                <th>Emergency Type</th>
+                                <th>Patient Condition</th>
                             }
                             <th>Title</th>
                             <th>Location</th>
@@ -186,12 +227,12 @@
                         @if (!Model.Any())
                         {
                             <tr>
-                                <td colspan="8">
+                                <td colspan="10">
                                     <div class="empty-state">
                                         <i class="fas fa-inbox"></i>
                                         No incidents found
                                     </div>
-                                 </td>
+                                </td>
                             </tr>
                         }
                         else
@@ -202,7 +243,30 @@
                                     @if (dept == "Police")
                                     {
                                         <td><span class="fir-number">@i.FIRNumber</span></td>
-                                        <td>@i.CaseType</td>
+                                        <td><span class="police-type-badge"><i class="fas fa-folder"></i> @i.CaseType</span></td>
+                                    }
+                                    @if (dept == "Fire")
+                                    {
+                                        <td><span class="fire-type-badge"><i class="fas fa-fire"></i> @i.FireType</span></td>
+                                        <td>@i.FireStatus</td>
+                                    }
+                                    @if (dept == "Rescue")
+                                    {
+                                        <td><span class="rescue-type-badge"><i class="fas fa-truck-medical"></i> @i.EmergencyType</span></td>
+                                        <td>
+                                            @if (i.PatientCondition == "Critical")
+                                            {
+                                                <span style="color:#DC2626;">🔴 Critical</span>
+                                            }
+                                            else if (i.PatientCondition == "Serious")
+                                            {
+                                                <span style="color:#F97316;">🟠 Serious</span>
+                                            }
+                                            else
+                                            {
+                                                <span style="color:#10B981;">🟢 Stable</span>
+                                            }
+                                        </td>
                                     }
                                     <td><strong>@i.Title</strong></td>
                                     <td><i class="fas fa-map-marker-alt" style="color:#2563EB; margin-right:6px;"></i>@i.Location</td>
@@ -212,7 +276,7 @@
                                             var sc = i.Status == "Open" ? "status-open" : i.Status == "In Progress" ? "status-inprogress" : "status-resolved";
                                         }
                                         <span class="@sc">@i.Status</span>
-                                     </td>
+                                    </td>
                                     <td>@i.ReportedAt.ToString("dd MMM yyyy")</td>
                                     <td><a href="/Operator/IncidentDetail/@i.Id" class="btn-detail"><i class="fas fa-eye"></i> View</a></td>
                                 </tr>

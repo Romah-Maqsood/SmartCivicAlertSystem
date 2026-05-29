@@ -21,8 +21,6 @@
         .sidebar { width: 260px; background: #FFFFFF; border-right: 1px solid #EAECF0; position: fixed; height: 100vh; display: flex; flex-direction: column; transition: all 0.3s; z-index: 100; }
         .sidebar.collapsed { width: 72px; }
         .sidebar.collapsed .logo h2, .sidebar.collapsed .nav-item span, .sidebar.collapsed .footer-item span { display: none; }
-        .sidebar.collapsed .nav-item, .sidebar.collapsed .footer-item { justify-content: center; padding: 12px 0; }
-        .sidebar.collapsed .nav-item i, .sidebar.collapsed .footer-item i { margin: 0; font-size: 20px; }
         .sidebar-header { padding: 20px 16px; border-bottom: 1px solid #EAECF0; display: flex; justify-content: space-between; align-items: center; }
         .logo { display: flex; align-items: center; gap: 8px; }
         .logo i { font-size: 24px; color: #2563EB; }
@@ -37,15 +35,12 @@
         .nav-item.active { background: #EFF6FF; color: #2563EB; }
         .nav-footer { padding: 16px 12px; border-top: 1px solid #EAECF0; }
         .footer-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; color: #5A6A7F; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 10px; }
-        .footer-item:hover { background: #F1F5F9; color: #2563EB; }
         .footer-item.logout { color: #DC2626; }
-        .footer-item.logout:hover { background: #FEF2F2; }
         .dept-info { padding: 8px 16px; margin: 0 12px 12px 12px; background: #EFF6FF; border-radius: 10px; display: flex; align-items: center; gap: 8px; font-size: 12px; color: #2563EB; }
         .main-content { margin-left: 260px; flex: 1; padding: 24px 32px; background: #E8EDF5; transition: margin-left 0.3s; min-height: 100vh; }
         .sidebar.collapsed ~ .main-content { margin-left: 72px; }
         .page-header { margin-bottom: 24px; }
         .page-header h1 { font-size: 22px; font-weight: 700; color: #1A1F36; }
-        .page-header h1 i { color: #2563EB; margin-right: 8px; }
         .page-header p { font-size: 13px; color: #6B7280; margin-top: 6px; }
         .back-link { display: inline-flex; align-items: center; gap: 8px; color: #6B7280; text-decoration: none; font-size: 13px; margin-bottom: 24px; }
         .back-link:hover { color: #2563EB; }
@@ -63,12 +58,12 @@
         textarea { resize: vertical; min-height: 100px; }
         .form-actions { display: flex; gap: 16px; margin-top: 28px; }
         .btn-submit { background: #2563EB; color: white; border: none; padding: 12px 32px; border-radius: 40px; font-size: 14px; font-weight: 600; cursor: pointer; }
-        .btn-submit:hover { background: #1D4ED8; transform: translateY(-1px); }
         .btn-cancel { background: #F1F5F9; color: #6B7280; border: none; padding: 12px 28px; border-radius: 40px; font-size: 14px; font-weight: 500; text-decoration: none; }
-        .btn-cancel:hover { background: #E2E8F0; color: #1A1F36; }
-        .police-section { margin-top: 24px; padding-top: 24px; border-top: 2px solid #EAECF0; }
-        .section-badge { background: #EFF6FF; color: #2563EB; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; margin-bottom: 16px; }
-        .alert-error { background: #FEF2F2; border: 1px solid #FEE2E2; color: #DC2626; padding: 12px 20px; border-radius: 12px; margin-bottom: 20px; }
+        .dept-section { margin-top: 24px; padding-top: 24px; border-top: 2px solid #EAECF0; }
+        .section-badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; margin-bottom: 16px; }
+        .fire-badge { background: #FEE2E2; color: #DC2626; }
+        .police-badge { background: #DBEAFE; color: #2563EB; }
+        .rescue-badge { background: #D1FAE5; color: #10B981; }
         @@media (max-width: 768px) {
             .sidebar { width: 100%; position: relative; height: auto; }
             .main-content { margin-left: 0; padding: 20px; }
@@ -100,38 +95,67 @@
             </div>
             <a href="/Operator/Incidents" class="back-link"><i class="fas fa-arrow-left"></i> Back to Incidents</a>
 
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert-error"><i class="fas fa-exclamation-circle"></i> @TempData["Error"]</div>
-            }
-
             <div class="card">
                 <div class="card-title"><i class="fas fa-clipboard-list"></i> Incident Details</div>
                 <form method="post" action="/Operator/CreateIncident">
                     <div class="dept-info-card"><i class="fas fa-building"></i> This incident will be assigned to: <strong>@dept Department</strong></div>
                     
                     <div class="form-grid">
-                        <div class="form-group full"><label>Title <span>*</span></label><input type="text" name="Title" placeholder="e.g. Market Fire in Gulshan" required /></div>
-                        <div class="form-group full"><label>Description <span>*</span></label><textarea name="Description" placeholder="Describe the incident in detail..." required></textarea></div>
-                        <div class="form-group full"><label>Location <span>*</span></label><input type="text" name="Location" placeholder="e.g. Gulshan Chowrangi, Karachi" required /></div>
+                        <div class="form-group full"><label>Title <span>*</span></label><input type="text" name="Title" required /></div>
+                        <div class="form-group full"><label>Description <span>*</span></label><textarea name="Description" required></textarea></div>
+                        <div class="form-group full"><label>Location <span>*</span></label><input type="text" name="Location" required /></div>
                         <div class="form-group"><label>Severity <span>*</span></label><select name="Severity" required><option value="Low">Low</option><option value="Medium" selected>Medium</option><option value="High">High</option><option value="Critical">Critical</option></select></div>
-                        <div class="form-group"><label>Latitude</label><input type="text" name="Latitude" placeholder="e.g. 24.8607" /></div>
-                        <div class="form-group"><label>Longitude</label><input type="text" name="Longitude" placeholder="e.g. 67.0011" /></div>
+                        <div class="form-group"><label>Latitude</label><input type="text" name="Latitude" /></div>
+                        <div class="form-group"><label>Longitude</label><input type="text" name="Longitude" /></div>
                     </div>
 
+                    <!-- Police Section -->
                     @if (dept == "Police")
                     {
-                        <div class="police-section">
-                            <div class="section-badge"><i class="fas fa-gavel"></i> Police Case Details</div>
+                        <div class="dept-section">
+                            <div class="section-badge police-badge"><i class="fas fa-gavel"></i> Police Case Details</div>
                             <div class="form-grid">
-                                <div class="form-group"><label>Case Type</label><select name="CaseType"><option value="">Select Case Type</option><option value="Theft">Theft (چوری)</option><option value="Robbery">Robbery (ڈکیتی)</option><option value="Accident">Accident (حادثہ)</option><option value="Assault">Assault (حملہ)</option><option value="Missing Person">Missing Person (گمشدگی)</option></select></div>
-                                <div class="form-group"><label>Complainant Name</label><input type="text" name="ComplainantName" placeholder="Person reporting the case" /></div>
-                                <div class="form-group"><label>Complainant Phone</label><input type="text" name="ComplainantPhone" placeholder="Contact number" /></div>
-                                <div class="form-group"><label>Complainant CNIC</label><input type="text" name="ComplainantCNIC" placeholder="CNIC (Optional)" /></div>
-                                <div class="form-group"><label>Suspect Name</label><input type="text" name="SuspectName" placeholder="If known" /></div>
-                                <div class="form-group"><label>Suspect Description</label><textarea name="SuspectDescription" placeholder="Physical appearance, clothes, height" rows="2"></textarea></div>
-                                <div class="form-group"><label>Vehicle Number</label><input type="text" name="VehicleNumber" placeholder="e.g., ABC-1234" /></div>
-                                <div class="form-group"><label>Assigned Officer</label><input type="text" name="AssignedOfficer" placeholder="Investigating officer name" /></div>
+                                <div class="form-group"><label>Case Type</label><select name="CaseType"><option value="Theft">Theft</option><option value="Robbery">Robbery</option><option value="Accident">Accident</option><option value="Assault">Assault</option><option value="Missing Person">Missing Person</option></select></div>
+                                <div class="form-group"><label>Complainant Name</label><input type="text" name="ComplainantName" /></div>
+                                <div class="form-group"><label>Complainant Phone</label><input type="text" name="ComplainantPhone" /></div>
+                                <div class="form-group"><label>Suspect Name</label><input type="text" name="SuspectName" /></div>
+                                <div class="form-group"><label>Suspect Description</label><textarea name="SuspectDescription" rows="2"></textarea></div>
+                                <div class="form-group"><label>Vehicle Number</label><input type="text" name="VehicleNumber" /></div>
+                                <div class="form-group"><label>Assigned Officer</label><input type="text" name="AssignedOfficer" /></div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Fire Section -->
+                    @if (dept == "Fire")
+                    {
+                        <div class="dept-section">
+                            <div class="section-badge fire-badge"><i class="fas fa-fire"></i> Fire Details</div>
+                            <div class="form-grid">
+                                <div class="form-group"><label>Fire Type</label><select name="FireType"><option value="Building Fire">Building Fire</option><option value="Vehicle Fire">Vehicle Fire</option><option value="Forest Fire">Forest Fire</option><option value="Electrical Fire">Electrical Fire</option><option value="Gas Leak">Gas Leak</option></select></div>
+                                <div class="form-group"><label>Fire Source</label><select name="FireSource"><option value="Kitchen">Kitchen</option><option value="Electrical">Electrical</option><option value="Gas">Gas</option><option value="Chemical">Chemical</option></select></div>
+                                <div class="form-group"><label>Fire Trucks</label><input type="number" name="FireTrucksDispatched" min="1" max="10" value="2" /></div>
+                                <div class="form-group"><label>Firefighters</label><input type="number" name="FirefightersCount" min="2" max="50" value="8" /></div>
+                                <div class="form-group"><label>Fire Status</label><select name="FireStatus"><option value="Dispatched">Dispatched</option><option value="En Route">En Route</option><option value="On Scene">On Scene</option><option value="Fighting Fire">Fighting Fire</option><option value="Fire Controlled">Fire Controlled</option><option value="Fire Extinguished">Fire Extinguished</option><option value="Resolved">Resolved</option></select></div>
+                                <div class="form-group"><label>Evacuation</label><select name="IsEvacuationNeeded"><option value="false">No</option><option value="true">Yes - Evacuate</option></select></div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Rescue Section -->
+                    @if (dept == "Rescue")
+                    {
+                        <div class="dept-section">
+                            <div class="section-badge rescue-badge"><i class="fas fa-truck-medical"></i> Rescue Details</div>
+                            <div class="form-grid">
+                                <div class="form-group"><label>Emergency Type</label><select name="EmergencyType"><option value="Cardiac Arrest">Cardiac Arrest</option><option value="Accident Injury">Accident Injury</option><option value="Burns">Burns</option><option value="Drowning">Drowning</option><option value="Fall Injury">Fall Injury</option><option value="Childbirth">Childbirth</option></select></div>
+                                <div class="form-group"><label>Patient Condition</label><select name="PatientCondition"><option value="Critical">Critical</option><option value="Serious">Serious</option><option value="Stable">Stable</option></select></div>
+                                <div class="form-group"><label>Ambulances</label><input type="number" name="AmbulancesDispatched" min="1" max="5" value="1" /></div>
+                                <div class="form-group"><label>Paramedics</label><input type="number" name="ParamedicsCount" min="1" max="10" value="2" /></div>
+                                <div class="form-group"><label>Hospital</label><input type="text" name="DestinationHospital" placeholder="Hospital name" /></div>
+                                <div class="form-group"><label>Rescue Status</label><select name="RescueStatus"><option value="Ambulance Dispatched">Ambulance Dispatched</option><option value="En Route">En Route</option><option value="On Scene">On Scene</option><option value="Transporting">Transporting to Hospital</option><option value="Arrived at Hospital">Arrived at Hospital</option><option value="Resolved">Resolved</option></select></div>
+                                <div class="form-group"><label>ETA (minutes)</label><input type="number" name="EstimatedArrivalMinutes" min="1" max="60" value="10" /></div>
+                                <div class="form-group"><label>Oxygen Needed</label><select name="IsOxygenNeeded"><option value="false">No</option><option value="true">Yes</option></select></div>
                             </div>
                         </div>
                     }
