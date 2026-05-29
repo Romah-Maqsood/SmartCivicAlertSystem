@@ -1220,5 +1220,6 @@
         document.getElementById('confirmSos').addEventListener('click', () => window.location.href = '/Citizen/CreateEmergency');
         window.addEventListener('click', e => { if (e.target === sosModal) sosModal.classList.remove('show'); });
     </script>
+    @await Html.PartialAsync("_SignalRClient")
 </body>
 </html>

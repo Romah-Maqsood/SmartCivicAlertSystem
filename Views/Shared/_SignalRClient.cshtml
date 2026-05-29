@@ -1,0 +1,32 @@
+@{
+    string role = Context.Session.GetString("UserRole") ?? "";
+    string userId = Context.Session.GetString("UserId") ?? "";
+    string dept = Context.Session.GetString("UserDepartment") ?? "";
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.0/signalr.min.js"></script>
+<script>
+    (function() {
+        var role = '@role';
+        var userId = '@userId';
+        var dept = '@dept';
+
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub")
+            .build();
+
+        connection.on("ReceiveNotification", function(notification) {
+            // Admin dashboard mein addNotification function defined hai
+            if (typeof addNotification === 'function') {
+                addNotification(notification);
+            }
+        });
+
+        connection.start().then(function() {
+            console.log("SignalR connected – role: " + role);
+            if (role === "Admin") {
+                connection.invoke("JoinGroup", "Admin").catch(console.error);
+            }
+            // ... baki groups
+        }).catch(console.error);
+    })();
+</script>
