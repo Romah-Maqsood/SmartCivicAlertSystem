@@ -10,7 +10,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+    <title>My Reports - Smart Civic Alert</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -21,167 +21,79 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: #E8EDF5;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: transparent;
             color: #1A1F36;
         }
 
-        /* Navbar */
-        .navbar {
-            background: #FFFFFF;
-            padding: 1rem 2rem;
+        .reports-wrapper {
+            width: 100%;
+        }
+
+        .header-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #EAECF0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-        }
-
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1A1F36;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-            .navbar-brand i {
-                color: #2563EB;
-            }
-
-            .navbar-brand span {
-                color: #2563EB;
-            }
-
-        .navbar-logout {
-            color: #6B7280;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-            .navbar-logout:hover {
-                color: #DC2626;
-            }
-
-        /* Main Container */
-        .container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        /* Header Actions */
-        .header-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 28px;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 16px;
         }
 
-        .btn-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: #2563EB;
-            color: white;
-            padding: 0.625rem 1.25rem;
-            border-radius: 40px;
-            text-decoration: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-            .btn-back:hover {
-                background: #1D4ED8;
-                transform: translateY(-1px);
-            }
-
-        .btn-new {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: #10B981;
-            color: white;
-            padding: 0.625rem 1.25rem;
-            border-radius: 40px;
-            text-decoration: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-            .btn-new:hover {
-                background: #059669;
-                transform: translateY(-1px);
-            }
-
-        /* Page Header */
         .page-header {
-            margin-bottom: 2rem;
+            flex: 1;
         }
 
             .page-header h1 {
-                font-size: 1.75rem;
+                font-size: 22px;
                 font-weight: 700;
-                margin-bottom: 0.5rem;
+                color: #1A1F36;
                 display: flex;
                 align-items: center;
-                gap: 0.5rem;
+                gap: 10px;
             }
 
                 .page-header h1 i {
                     color: #2563EB;
+                    font-size: 24px;
                 }
 
             .page-header p {
+                font-size: 13px;
                 color: #6B7280;
-                font-size: 0.875rem;
+                margin-top: 6px;
             }
 
-        /* Stats Summary Row */
-        .stats-summary {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
+        .btn-new-incident {
+            background: #2563EB;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
         }
 
-        .stat-summary-card {
+            .btn-new-incident:hover {
+                background: #1D4ED8;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            }
+
+        .table-card {
             background: #FFFFFF;
             border-radius: 16px;
-            padding: 1rem;
-            text-align: center;
-            border: 1px solid #EAECF0;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
-        .stat-summary-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #2563EB;
-        }
-
-        .stat-summary-label {
-            font-size: 0.7rem;
-            color: #6B7280;
-            margin-top: 0.25rem;
-        }
-
-        /* Table Container */
-        .table-container {
-            background: #FFFFFF;
-            border-radius: 20px;
+        .table-responsive {
             overflow-x: auto;
-            border: 1px solid #EAECF0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
         }
 
         .incident-table {
@@ -191,39 +103,33 @@
 
             .incident-table th {
                 text-align: left;
-                padding: 1rem;
+                padding: 14px 12px;
                 color: #6B7280;
-                font-size: 0.75rem;
-                font-weight: 500;
+                font-size: 11px;
+                font-weight: 600;
                 border-bottom: 1px solid #EAECF0;
-                background: #F8FAFC;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
 
             .incident-table td {
-                padding: 1rem;
-                font-size: 0.8125rem;
+                padding: 14px 12px;
+                font-size: 13px;
                 color: #1A1F36;
-                border-bottom: 1px solid #EAECF0;
+                border-bottom: 1px solid #F0F2F5;
+            }
+
+            .incident-table tr:hover {
+                background: #F9FAFB;
             }
 
         .status-badge {
             display: inline-block;
-            padding: 0.25rem 0.75rem;
+            padding: 4px 12px;
             border-radius: 50px;
-            font-size: 0.7rem;
-            font-weight: 500;
-        }
-
-        .status-resolved {
-            background: #DCFCE7;
-            color: #166534;
-        }
-
-        .status-progress {
-            background: #FEF3C7;
-            color: #92400E;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: capitalize;
         }
 
         .status-open {
@@ -231,177 +137,203 @@
             color: #1E40AF;
         }
 
+        .status-in-progress {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-resolved {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
         .severity-critical {
+            background: #FEF2F2;
             color: #DC2626;
             font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 4px 12px 12px 4px;
+            border-left: 3px solid #DC2626;
+            display: inline-block;
+            font-size: 12px;
         }
 
         .severity-high {
-            color: #F97316;
+            background: #FFF7ED;
+            color: #EA580C;
             font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 4px 12px 12px 4px;
+            border-left: 3px solid #EA580C;
+            display: inline-block;
+            font-size: 12px;
         }
 
         .severity-medium {
-            color: #EAB308;
+            background: #FFFBEB;
+            color: #D97706;
             font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 4px 12px 12px 4px;
+            border-left: 3px solid #D97706;
+            display: inline-block;
+            font-size: 12px;
         }
 
         .severity-low {
-            color: #10B981;
+            background: #ECFDF5;
+            color: #059669;
             font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 4px 12px 12px 4px;
+            border-left: 3px solid #059669;
+            display: inline-block;
+            font-size: 12px;
         }
 
-        .btn-view {
+        .action-link {
             color: #2563EB;
             text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
             display: inline-flex;
             align-items: center;
-            gap: 0.25rem;
-            font-weight: 500;
+            gap: 5px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: none;
+            border: none;
         }
 
-            .btn-view:hover {
+            .action-link:hover {
+                color: #1D4ED8;
                 text-decoration: underline;
             }
 
-        /* No Data */
         .no-data {
             text-align: center;
-            padding: 3rem;
+            padding: 60px 20px;
             color: #6B7280;
         }
 
             .no-data i {
-                font-size: 3rem;
+                font-size: 48px;
                 color: #94A3B8;
-                margin-bottom: 1rem;
+                margin-bottom: 16px;
+                display: inline-block;
             }
 
-        /* Responsive */
         @@media (max-width: 768px) {
-            .container {
-                padding: 0 1rem;
-                margin: 1rem auto;
-            }
-
-            .header-actions {
+            .header-row {
                 flex-direction: column;
                 align-items: flex-start;
             }
 
-            .stats-summary {
-                grid-template-columns: 1fr;
+            .btn-new-incident {
+                white-space: normal;
+            }
+
+            .table-card {
+                padding: 12px;
             }
 
             .incident-table th,
             .incident-table td {
-                padding: 0.5rem;
-                font-size: 0.7rem;
+                padding: 10px 8px;
+                font-size: 11px;
             }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="/Citizen/Index" class="navbar-brand">
-            <i class="fas fa-city"></i> SMART CIVIC <span>ALERT</span>
-        </a>
-        <a href="/Account/Logout" class="navbar-logout">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </a>
-    </nav>
-
-    <div class="container">
-        <div class="header-actions">
-            <a href="/Citizen/Index" class="btn-back">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
-            </a>
-            <a href="/Incident/Create" class="btn-new">
+    <div class="reports-wrapper">
+        <div class="header-row">
+            <div class="page-header">
+                <h1>
+                    <i class="fas fa-clipboard-list"></i>
+                    My Incident Reports
+                </h1>
+                <p>View and track all incidents you have reported</p>
+            </div>
+            <button class="btn-new-incident" onclick="window.parent.loadViewFromChild('newincident', null)">
                 <i class="fas fa-plus-circle"></i> Report New Incident
-            </a>
+            </button>
         </div>
 
-        <div class="page-header">
-            <h1><i class="fas fa-clipboard-list"></i> My Incident Reports</h1>
-            <p>View and track all incidents you have reported</p>
-        </div>
-
-        <!-- Quick Stats -->
-        <div class="stats-summary">
-            <div class="stat-summary-card">
-                <div class="stat-summary-value">@Model.Count()</div>
-                <div class="stat-summary-label">Total Reports</div>
-            </div>
-            <div class="stat-summary-card">
-                <div class="stat-summary-value">@Model.Count(i => i.Status == "Resolved")</div>
-                <div class="stat-summary-label">Resolved</div>
-            </div>
-            <div class="stat-summary-card">
-                <div class="stat-summary-value">@Model.Count(i => i.Status == "Open" || i.Status == "In Progress")</div>
-                <div class="stat-summary-label">Active</div>
-            </div>
-        </div>
-
-        <div class="table-container">
-            @if (Model != null && Model.Any())
-            {
-                <table class="incident-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Title</th>
-                            <th>Location</th>
-                            <th>Severity</th>
-                            <th>Status</th>
-                            <th>Reported On</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var incident in Model)
-                        {
+        <div class="table-card">
+            <div class="table-responsive">
+                @if (Model != null && Model.Any())
+                {
+                    <table class="incident-table">
+                        <thead>
                             <tr>
-                                <td>
-                                    #@(incident.Id?.Length >= 6 ? incident.Id.Substring(0, 6) : incident.Id)
-                                </td>
-                                <td>
-                                    @incident.Title
-                                </td>
-                                <td>
-                                    @incident.Location
-                                </td>
-                                <td class="severity-@(incident.Severity?.ToLower())">
-                                    @incident.Severity
-                                </td>
-                                <td>
-                                    <span class="status-badge status-@(incident.Status?.ToLower().Replace(" ", ""))">
-                                        @incident.Status
-                                    </span>
-                                </td>
-                                <td>
-                                    @incident.ReportedAt.ToString("MMM dd, yyyy")
-                                </td>
-                                <td>
-                                    <a href="/Citizen/Details/@incident.Id" class="btn-view">
-                                        <i class="fas fa-eye"></i> View
-                                    </a>
-                                </td>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Location</th>
+                                <th>Severity</th>
+                                <th>Status</th>
+                                <th>Reported On</th>
+                                <th>Action</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <div class="no-data">
-                    <i class="fas fa-folder-open"></i>
-                    <h3>No reports found</h3>
-                    <p>You haven't reported any incidents yet.</p>
-                    <a href="/Incident/Create" class="btn-new" style="margin-top: 1rem; display: inline-block;">
-                        <i class="fas fa-plus-circle"></i> Report Your First Incident
-                    </a>
-                </div>
-            }
+                        </thead>
+                        <tbody>
+                            @foreach (var incident in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        #@(incident.Id?.Length >= 6 ? incident.Id.Substring(0, 6) : incident.Id)
+                                    </td>
+                                    <td>
+                                        @(incident.Title?.Length > 35 ? incident.Title.Substring(0, 32) + "..." : incident.Title)
+                                    </td>
+                                    <td>
+                                        @(incident.Location?.Length > 25 ? incident.Location.Substring(0, 22) + "..." : incident.Location)
+                                    </td>
+                                    <td>
+                                        <span class="severity-@(incident.Severity?.ToLower())">
+                                            <i class="fas
+                                                        @(incident.Severity?.ToLower() == "critical" ? "fa-exclamation-triangle" :
+                                                                                                 incident.Severity?.ToLower() == "high" ? "fa-arrow-up" :
+                                                                                                 incident.Severity?.ToLower() == "medium" ? "fa-minus" : "fa-arrow-down")">
+                                                                                                                                                                      </i>
+                                                                                                                                                                      @incident.Severity
+                                                                                                                                                                  </span>
+                                                                                                                                                              </td>
+                                                                                                                                                              <td>
+                                                                                                                                                                  <span class="status-badge status-@(incident.Status?.ToLower().Replace(" ", ""))">
+                                                                                                                                                                      <i class="fas
+                                                        @(incident.Status?.ToLower() == "open" ? "fa-circle" :
+                                                                                                 incident.Status?.ToLower() == "in progress" ? "fa-spinner fa-pulse" :
+                                                                                                 incident.Status?.ToLower() == "resolved" ? "fa-check-circle" : "fa-clock")">
+                                    </i>
+                                    @incident.Status
+                                </span>
+                            </td>
+                            <td>
+                                @incident.ReportedAt.ToString("MMM dd, yyyy")
+                            </td>
+                            <td>
+                                <button class="action-link" onclick="window.parent.loadViewFromChild('details', '@incident.Id')">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                            </td>
+                        </tr>
+                                                }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="no-data">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>No reports found</h3>
+                        <p>You haven't reported any incidents yet.</p>
+                        <button class="btn-new-incident" onclick="window.parent.loadViewFromChild('newincident', null)" style="display: inline-flex;">
+                            <i class="fas fa-plus-circle"></i> Report Your First Incident
+                        </button>
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </body>

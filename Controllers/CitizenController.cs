@@ -1,18 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using MongoDB.Driver;
-using SmartCityPulse.Models;
 using SmartCityPulse.Data;
+using SmartCityPulse.Hubs;
+using SmartCityPulse.Models;
 
 namespace SmartCityPulse.Controllers
 {
     public class CitizenController : Controller
     {
         private readonly MongoDbContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public CitizenController(MongoDbContext context)
+        public CitizenController(MongoDbContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext; // Add this line
         }
 
         // Check if user is citizen
@@ -122,39 +126,7 @@ namespace SmartCityPulse.Controllers
         }
 
         // ==================== INCIDENT DETAILS (JSON for AJAX) ====================
-        [HttpGet]
-        public async Task<IActionResult> GetIncidentJson(string id)
-        {
-            if (!IsCitizen())
-            {
-                return Unauthorized();
-            }
-
-            var userId = HttpContext.Session.GetString("UserId");
-            var incident = await _context.Incidents.Find(i => i.Id == id).FirstOrDefaultAsync();
-
-            if (incident == null)
-            {
-                return NotFound();
-            }
-
-            if (incident.ReportedBy != userId)
-            {
-                return Unauthorized();
-            }
-
-            return Json(new
-            {
-                id = incident.Id,
-                title = incident.Title,
-                description = incident.Description,
-                location = incident.Location,
-                severity = incident.Severity,
-                status = incident.Status,
-                reportedAt = incident.ReportedAt,
-                updatedAt = incident.UpdatedAt
-            });
-        }
+        
 
         // ==================== INCIDENT DETAILS VIEW ====================
         [HttpGet]
@@ -398,6 +370,182 @@ namespace SmartCityPulse.Controllers
         }
 
         // ==================== STATISTICS ====================
+        //[HttpGet]
+        //public async Task<IActionResult> Statistics()
+        //{
+        //    if (!IsCitizen())
+        //    {
+        //        return RedirectToAction("Login", "Account");
+        //    }
+
+        //    var userId = HttpContext.Session.GetString("UserId");
+
+        //    // Weekly data for chart (last 7 days)
+        //    var weeklyData = new List<int>();
+        //    for (int i = 6; i >= 0; i--)
+        //    {
+        //        var date = DateTime.UtcNow.Date.AddDays(-i);
+        //        var count = await _context.Incidents
+        //            .CountDocumentsAsync(inc => inc.ReportedBy == userId && inc.ReportedAt.Date == date);
+        //        weeklyData.Add((int)count);
+        //    }
+
+        //    // Severity counts
+        //    var criticalCount = await _context.Incidents
+        //        .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Critical");
+        //    var highCount = await _context.Incidents
+        //        .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "High");
+        //    var mediumCount = await _context.Incidents
+        //        .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Medium");
+        //    var lowCount = await _context.Incidents
+        //        .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Low");
+
+        //    // Status counts
+        //    var openCount = await _context.Incidents
+        //        .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Open");
+        //    var inProgressCount = await _context.Incidents
+        //        .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "In Progress");
+        //    var resolvedCount = await _context.Incidents
+        //        .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Resolved");
+
+        //    // Total incidents
+        //    var totalIncidents = await _context.Incidents
+        //        .CountDocumentsAsync(i => i.ReportedBy == userId);
+
+        //    ViewBag.WeeklyData = weeklyData;
+        //    ViewBag.CriticalIncidents = (int)criticalCount;
+        //    ViewBag.HighIncidents = (int)highCount;
+        //    ViewBag.MediumIncidents = (int)mediumCount;
+        //    ViewBag.LowIncidents = (int)lowCount;
+        //    ViewBag.OpenIncidents = (int)openCount;
+        //    ViewBag.InProgressIncidents = (int)inProgressCount;
+        //    ViewBag.ResolvedIncidents = (int)resolvedCount;
+        //    ViewBag.TotalIncidents = (int)totalIncidents;
+
+        //    return View();
+        //}
+
+        // ==================== CREATE EMERGENCY INCIDENT (SOS) ====================
+        // ==================== CREATE EMERGENCY INCIDENT (SOS) - ENHANCED ====================
+        [HttpGet]
+        public async Task<IActionResult> CreateEmergency()
+        {
+            var userId = HttpContext.Session.GetString("UserId");
+            var userName = HttpContext.Session.GetString("UserName");
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+
+            // Try to get GPS coordinates from browser (you can implement this with JavaScript)
+            // For now, we'll use a default message
+
+            var emergencyIncident = new Incident
+            {
+                Title = " EMERGENCY SOS - Immediate Assistance Required",
+                Description = $" EMERGENCY ALERT \n\nCitizen: {userName}\nContact: {userPhone ?? "Not provided"}\nEmail: {userEmail ?? "Not provided"}\n\n{userName} has requested immediate emergency assistance. Please dispatch emergency services to the reported location immediately.",
+                Location = "Emergency Location - Please contact citizen for exact location",
+                Severity = "Critical",
+                Status = "Open",
+                ReportedBy = userId,
+                ReportedByName = userName ?? "Citizen",
+                ReportedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                Department = "Emergency Response",
+                Comments = new List<IncidentComment>()
+            };
+
+            await _context.Incidents.InsertOneAsync(emergencyIncident);
+
+            // Send real-time SignalR notification to all operators
+            try
+            {
+                await _hubContext.Clients.All.SendAsync("ReceiveEmergencyAlert",
+                    " EMERGENCY SOS",
+                    $"CRITICAL: {userName} has sent an emergency SOS alert! Immediate action required.",
+                    DateTime.Now,
+                    emergencyIncident.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Emergency notification error: {ex.Message}");
+            }
+
+            TempData["SuccessMessage"] = " Emergency SOS alert sent successfully! Authorities have been notified and will respond immediately.";
+
+            return RedirectToAction("Index");
+        }
+
+        // ==================== MARK NOTIFICATION AS READ ====================
+        [HttpPost]
+        public async Task<IActionResult> MarkNotificationAsRead(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest();
+            }
+
+            await _context.Notifications.UpdateOneAsync(
+                n => n.Id == id,
+                Builders<Notification>.Update.Set(n => n.IsRead, true)
+            );
+            return Ok();
+        }
+        [HttpGet]
+        public IActionResult Reports()
+        {
+            if (!IsCitizen())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var userId = HttpContext.Session.GetString("UserId");
+
+            // Get counts for stats
+            var totalIncidents = _context.Incidents.CountDocuments(i => i.ReportedBy == userId);
+            var resolvedIncidents = _context.Incidents.CountDocuments(i => i.ReportedBy == userId && i.Status == "Resolved");
+            var pendingIncidents = _context.Incidents.CountDocuments(i => i.ReportedBy == userId && i.Status != "Resolved");
+
+            ViewBag.TotalIncidents = (int)totalIncidents;
+            ViewBag.ResolvedIncidents = (int)resolvedIncidents;
+            ViewBag.PendingIncidents = (int)pendingIncidents;
+
+            return View();
+        }
+        // Update the GetIncidentJson method to include ReportedByName
+        [HttpGet]
+        public async Task<IActionResult> GetIncidentJson(string id)
+        {
+            if (!IsCitizen())
+            {
+                return Unauthorized();
+            }
+
+            var userId = HttpContext.Session.GetString("UserId");
+            var incident = await _context.Incidents.Find(i => i.Id == id).FirstOrDefaultAsync();
+
+            if (incident == null)
+            {
+                return NotFound();
+            }
+
+            if (incident.ReportedBy != userId)
+            {
+                return Unauthorized();
+            }
+
+            return Json(new
+            {
+                id = incident.Id,
+                title = incident.Title,
+                description = incident.Description,
+                location = incident.Location,
+                severity = incident.Severity,
+                status = incident.Status,
+                reportedAt = incident.ReportedAt,
+                updatedAt = incident.UpdatedAt,
+                reportedByName = incident.ReportedByName  // Add this line
+            });
+        }
+        // ==================== STATISTICS ====================
         [HttpGet]
         public async Task<IActionResult> Statistics()
         {
@@ -440,6 +588,7 @@ namespace SmartCityPulse.Controllers
             var totalIncidents = await _context.Incidents
                 .CountDocumentsAsync(i => i.ReportedBy == userId);
 
+            // Set all ViewBag values
             ViewBag.WeeklyData = weeklyData;
             ViewBag.CriticalIncidents = (int)criticalCount;
             ViewBag.HighIncidents = (int)highCount;
@@ -453,74 +602,35 @@ namespace SmartCityPulse.Controllers
             return View();
         }
 
-        // ==================== CREATE EMERGENCY INCIDENT (SOS) ====================
+        // ==================== GET ALL INCIDENTS FOR REPORTS ====================
         [HttpGet]
-        public async Task<IActionResult> CreateEmergency()
+        public async Task<IActionResult> GetAllIncidentsForReports()
         {
             if (!IsCitizen())
             {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var userId = HttpContext.Session.GetString("UserId");
-            var userName = HttpContext.Session.GetString("UserName");
-
-            var emergencyIncident = new Incident
-            {
-                Title = "EMERGENCY SOS - Immediate Assistance Required",
-                Description = $"Emergency SOS alert raised by citizen {userName}. Immediate assistance required.",
-                Location = "Emergency Location",
-                Severity = "Critical",
-                Status = "Open",
-                ReportedBy = userId,
-                ReportedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                Department = "Emergency Response",
-                Comments = new List<IncidentComment>()
-            };
-
-            await _context.Incidents.InsertOneAsync(emergencyIncident);
-
-            TempData["SuccessMessage"] = "Emergency alert sent! Authorities have been notified.";
-            return RedirectToAction("Index");
-        }
-
-        // ==================== MARK NOTIFICATION AS READ ====================
-        [HttpPost]
-        public async Task<IActionResult> MarkNotificationAsRead(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                return BadRequest();
-            }
-
-            await _context.Notifications.UpdateOneAsync(
-                n => n.Id == id,
-                Builders<Notification>.Update.Set(n => n.IsRead, true)
-            );
-            return Ok();
-        }
-        [HttpGet]
-        public IActionResult Reports()
-        {
-            if (!IsCitizen())
-            {
-                return RedirectToAction("Login", "Account");
+                return Json(new { success = false, message = "Unauthorized" });
             }
 
             var userId = HttpContext.Session.GetString("UserId");
 
-            // Get counts for stats
-            var totalIncidents = _context.Incidents.CountDocuments(i => i.ReportedBy == userId);
-            var resolvedIncidents = _context.Incidents.CountDocuments(i => i.ReportedBy == userId && i.Status == "Resolved");
-            var pendingIncidents = _context.Incidents.CountDocuments(i => i.ReportedBy == userId && i.Status != "Resolved");
+            var incidents = await _context.Incidents
+                .Find(i => i.ReportedBy == userId)
+                .SortByDescending(i => i.ReportedAt)
+                .ToListAsync();
 
-            ViewBag.TotalIncidents = (int)totalIncidents;
-            ViewBag.ResolvedIncidents = (int)resolvedIncidents;
-            ViewBag.PendingIncidents = (int)pendingIncidents;
+            var incidentList = incidents.Select(i => new
+            {
+                id = i.Id,
+                title = i.Title,
+                description = i.Description,
+                location = i.Location,
+                severity = i.Severity,
+                status = i.Status,
+                reportedAt = i.ReportedAt,
+                updatedAt = i.UpdatedAt
+            });
 
-            return View();
+            return Json(new { success = true, incidents = incidentList });
         }
-
     }
 }
