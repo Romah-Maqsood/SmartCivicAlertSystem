@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
+using MongoDB.Bson;
 using SmartCityPulse.Models;
 using SmartCityPulse.Data;
 using System.Text;
@@ -32,27 +33,22 @@ namespace SmartCityPulse.Controllers
                 var todayStart = DateTime.UtcNow.Date;
                 var todayEnd = todayStart.AddDays(1);
 
-                // Count queries
                 var totalToday = await _context.Incidents
                     .CountDocumentsAsync(i => i.ReportedAt >= todayStart && i.ReportedAt < todayEnd);
-
                 var resolvedToday = await _context.Incidents
                     .CountDocumentsAsync(i => i.Status == "Resolved" && i.UpdatedAt >= todayStart && i.UpdatedAt < todayEnd);
-
                 var criticalIncidents = await _context.Incidents
                     .CountDocumentsAsync(i => i.Severity == "Critical" && i.Status != "Resolved");
-
                 var pendingIncidents = await _context.Incidents
                     .CountDocumentsAsync(i => i.Status == "Open" || i.Status == "In Progress");
-
                 var criticalPending = await _context.Incidents
                     .CountDocumentsAsync(i => i.Severity == "Critical" && (i.Status == "Open" || i.Status == "In Progress"));
 
                 var recentIncidents = await _context.Incidents.Find(_ => true)
                     .SortByDescending(i => i.ReportedAt).Limit(5).ToListAsync();
 
-                // ViewBag mein data pass karein
                 ViewBag.UserName = HttpContext.Session.GetString("UserName") ?? "Admin";
+                ViewBag.UserEmail = HttpContext.Session.GetString("UserEmail") ?? "admin@city.com";
                 ViewBag.TotalToday = totalToday;
                 ViewBag.ResolvedToday = resolvedToday;
                 ViewBag.CriticalIncidents = criticalIncidents;
@@ -92,7 +88,7 @@ namespace SmartCityPulse.Controllers
             }
         }
 
-        // ==================== INCIDENT DETAIL ====================
+        // ==================== INCIDENT DETAIL (FULL PAGE – optional) ====================
         [HttpGet]
         public async Task<IActionResult> IncidentDetail(string id)
         {
@@ -101,6 +97,62 @@ namespace SmartCityPulse.Controllers
             if (incident == null) return NotFound();
             ViewBag.UserName = HttpContext.Session.GetString("UserName") ?? "Admin";
             return View(incident);
+        }
+
+        // ==================== INCIDENT DETAIL JSON (used by modal) ====================
+        [HttpGet]
+        public async Task<IActionResult> GetIncidentDetailJson(string id)
+        {
+            if (!IsAdmin()) return Unauthorized();
+
+            var incident = await _context.Incidents.Find(i => i.Id == id).FirstOrDefaultAsync();
+            if (incident == null) return NotFound();
+
+            object? citizen = null;
+
+            if (!string.IsNullOrEmpty(incident.ReportedBy))
+            {
+                var filter = Builders<AppUser>.Filter.Eq("_id", new ObjectId(incident.ReportedBy));
+                var user = await _context.Users.Find(filter).FirstOrDefaultAsync();
+                if (user != null)
+                {
+                    citizen = new
+                    {
+                        name = user.Name,
+                        email = user.Email,
+                        phone = user.Phone,
+                        role = user.Role
+                    };
+                }
+                else
+                {
+                    var op = await _context.Operators.Find(filter).FirstOrDefaultAsync();
+                    if (op != null)
+                    {
+                        citizen = new
+                        {
+                            name = op.Name,
+                            email = op.Email,
+                            phone = op.Phone,
+                            role = op.Role
+                        };
+                    }
+                }
+            }
+
+            return Json(new
+            {
+                id = incident.Id,
+                title = incident.Title,
+                description = incident.Description,
+                location = incident.Location,
+                severity = incident.Severity,
+                status = incident.Status,
+                department = incident.Department,
+                reportedAt = incident.ReportedAt,
+                updatedAt = incident.UpdatedAt,
+                citizen = citizen
+            });
         }
 
         // ==================== OPERATOR MANAGEMENT ====================
@@ -384,5 +436,53 @@ namespace SmartCityPulse.Controllers
                 return StatusCode(500, $"PDF export failed: {ex.Message}");
             }
         }
+
+        // ==================== PROFILE UPDATE (PASSWORD CHANGE + NAME) ====================
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfile([FromBody] ProfileUpdateModel model)
+        {
+            if (!IsAdmin()) return Json(new { success = false, message = "Unauthorized" });
+            try
+            {
+                var userId = HttpContext.Session.GetString("UserId");
+                if (string.IsNullOrEmpty(userId)) return Json(new { success = false, message = "Session expired." });
+
+                var admin = await _context.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
+                if (admin == null) return Json(new { success = false, message = "Admin account not found." });
+
+                if (!string.IsNullOrEmpty(model.NewPassword))
+                {
+                    if (string.IsNullOrEmpty(model.CurrentPassword))
+                        return Json(new { success = false, message = "Current password is required." });
+
+                    // Plain text check – replace with proper hashing in production
+                    if (admin.PasswordHash != model.CurrentPassword)
+                        return Json(new { success = false, message = "Current password is incorrect." });
+
+                    admin.PasswordHash = model.NewPassword; // Should be hashed
+                }
+
+                if (!string.IsNullOrEmpty(model.Name))
+                    admin.Name = model.Name;
+
+                await _context.Users.ReplaceOneAsync(u => u.Id == userId, admin);
+
+                HttpContext.Session.SetString("UserName", admin.Name);
+
+                return Json(new { success = true, message = "Profile updated successfully!" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "UpdateProfile error");
+                return Json(new { success = false, message = "Server error: " + ex.Message });
+            }
+        }
+    }
+
+    public class ProfileUpdateModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string CurrentPassword { get; set; } = string.Empty;
+        public string NewPassword { get; set; } = string.Empty;
     }
 }

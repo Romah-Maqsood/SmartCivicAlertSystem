@@ -1,0 +1,184 @@
+<!-- ANALYTICS SECTION -->
+<div id="analyticsSection" class="hide">
+    <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-chart-line"></i> Analytics Dashboard</h2>
+    </div>
+    <div class="charts-grid">
+        <div class="chart-card">
+            <div class="chart-title"><i class="fas fa-building"></i> Department-wise Incidents</div>
+            <div class="chart-canvas-wrapper"><canvas id="deptChart"></canvas></div>
+            <div id="deptChartError" class="chart-error hide"></div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-title"><i class="fas fa-chart-bar"></i> Severity Overview</div>
+            <div class="chart-canvas-wrapper"><canvas id="analyticsSeverityChart"></canvas></div>
+            <div id="analyticsSeverityError" class="chart-error hide"></div>
+        </div>
+    </div>
+    <div class="chart-card" style="margin-top:20px;">
+        <div class="chart-title"><i class="fas fa-chart-area"></i> Weekly Trend — Total vs Resolved</div>
+        <div class="chart-canvas-wrapper"><canvas id="trendDetailChart"></canvas></div>
+        <div id="trendDetailError" class="chart-error hide"></div>
+    </div>
+</div>
+
+<!-- REPORTS SECTION -->
+<div id="reportsSection" class="hide">
+    <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-file-alt"></i> Generate Reports</h2>
+    </div>
+    <p style="color:var(--text-secondary); font-size:13px; margin-bottom:24px;">
+        Export filtered incident reports in CSV, JSON, or PDF format.
+    </p>
+
+    <!-- Custom Report -->
+    <div class="chart-card" style="margin-bottom:28px;">
+        <div class="chart-title"><i class="fas fa-sliders-h"></i> Custom Report</div>
+        <div class="report-form-grid">
+            <div class="form-group"><label>Start Date</label><input type="date" id="reportStartDate" /></div>
+            <div class="form-group"><label>End Date</label><input type="date" id="reportEndDate" /></div>
+            <div class="form-group">
+                <label>Department</label>
+                <select id="reportDepartment">
+                    <option value="">All Departments</option>
+                    <option value="Fire Department">Fire</option>
+                    <option value="Police Department">Police</option>
+                    <option value="Rescue Department">Rescue</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Severity</label>
+                <select id="reportSeverity">
+                    <option value="">All Severities</option>
+                    <option value="Critical">Critical</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <button class="btn-ghost" onclick="previewCount()"><i class="fas fa-eye"></i> Preview Count</button>
+            <span id="previewResult" class="preview-result"></span>
+            <!-- Download dropdown for custom report -->
+            <div class="download-dropdown">
+                <button class="btn-primary" onclick="toggleDownloadMenu()"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button>
+                <div class="download-menu" id="downloadMenu">
+                    <a href="#" onclick="downloadCustomReport('csv'); return false;"><i class="fas fa-file-csv"></i> CSV</a>
+                    <a href="#" onclick="downloadCustomReport('json'); return false;"><i class="fas fa-file-code"></i> JSON</a>
+                    <a href="#" onclick="downloadCustomReport('pdf'); return false;"><i class="fas fa-file-pdf"></i> PDF</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Presets -->
+    <h3 style="font-size:15px; font-weight:700; color:var(--text-primary); margin-bottom:14px;">Quick Presets</h3>
+    <div class="report-cards">
+        <!-- Today's Report -->
+        <div class="report-card">
+            <div class="rc-icon"><i class="fas fa-calendar-day"></i></div>
+            <h3>Today's Report</h3>
+            <p>All incidents reported today</p>
+            <div class="download-dropdown" style="display: inline-block; position: relative;">
+                <button class="btn-primary" onclick="toggleQuickMenu('today')"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button>
+                <div class="download-menu" id="quickMenu-today">
+                    <a href="#" onclick="downloadQuickReport('today','csv'); return false;"><i class="fas fa-file-csv"></i> CSV</a>
+                    <a href="#" onclick="downloadQuickReport('today','json'); return false;"><i class="fas fa-file-code"></i> JSON</a>
+                    <a href="#" onclick="downloadQuickReport('today','pdf'); return false;"><i class="fas fa-file-pdf"></i> PDF</a>
+                </div>
+            </div>
+        </div>
+        <!-- Weekly Report -->
+        <div class="report-card">
+            <div class="rc-icon"><i class="fas fa-calendar-week"></i></div>
+            <h3>Weekly Report</h3>
+            <p>Last 7 days summary</p>
+            <div class="download-dropdown" style="display: inline-block; position: relative;">
+                <button class="btn-primary" onclick="toggleQuickMenu('weekly')"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button>
+                <div class="download-menu" id="quickMenu-weekly">
+                    <a href="#" onclick="downloadQuickReport('weekly','csv'); return false;"><i class="fas fa-file-csv"></i> CSV</a>
+                    <a href="#" onclick="downloadQuickReport('weekly','json'); return false;"><i class="fas fa-file-code"></i> JSON</a>
+                    <a href="#" onclick="downloadQuickReport('weekly','pdf'); return false;"><i class="fas fa-file-pdf"></i> PDF</a>
+                </div>
+            </div>
+        </div>
+        <!-- Monthly Report -->
+        <div class="report-card">
+            <div class="rc-icon"><i class="fas fa-calendar-alt"></i></div>
+            <h3>Monthly Report</h3>
+            <p>Last 30 days overview</p>
+            <div class="download-dropdown" style="display: inline-block; position: relative;">
+                <button class="btn-primary" onclick="toggleQuickMenu('monthly')"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button>
+                <div class="download-menu" id="quickMenu-monthly">
+                    <a href="#" onclick="downloadQuickReport('monthly','csv'); return false;"><i class="fas fa-file-csv"></i> CSV</a>
+                    <a href="#" onclick="downloadQuickReport('monthly','json'); return false;"><i class="fas fa-file-code"></i> JSON</a>
+                    <a href="#" onclick="downloadQuickReport('monthly','pdf'); return false;"><i class="fas fa-file-pdf"></i> PDF</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p style="margin-top:20px; color:#94A3B8; text-align:center; font-size:12px;">
+        <i class="fas fa-info-circle"></i> PDF export requires iTextSharp. All other formats are available instantly.
+    </p>
+</div>
+
+<!-- NOTIFICATIONS SECTION -->
+<div id="notificationsSection" class="hide">
+    <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-bell"></i> Notifications</h2>
+    </div>
+    <div class="notification-list" id="notificationList"></div>
+</div>
+
+<script>
+    // Quick report download with format
+    function downloadQuickReport(type, format) {
+        const today = new Date().toISOString().split('T')[0];
+        let start, end = today;
+        if (type === 'today') start = today;
+        if (type === 'weekly') start = new Date(Date.now() - 7*86400000).toISOString().split('T')[0];
+        if (type === 'monthly') start = new Date(Date.now() - 30*86400000).toISOString().split('T')[0];
+
+        if (format === 'csv') {
+            window.open(`/Admin/ExportReport?startDate=${start}&endDate=${end}`, '_blank');
+        } else if (format === 'json') {
+            fetch(`/Admin/GetAllIncidentsJson?startDate=${start}&endDate=${end}`, { credentials: 'same-origin' })
+                .then(r => r.json())
+                .then(data => {
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `IncidentReport_${new Date().toISOString().slice(0,10)}.json`;
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                })
+                .catch(() => showToast('Error generating JSON report.', 'error'));
+        } else if (format === 'pdf') {
+            window.open(`/Admin/ExportPdfReport?startDate=${start}&endDate=${end}`, '_blank');
+        }
+        // Close the quick menu after download
+        const menu = document.getElementById('quickMenu-' + type);
+        if (menu) menu.style.display = 'none';
+    }
+
+    // Toggle quick preset dropdowns
+    function toggleQuickMenu(type) {
+        const menu = document.getElementById('quickMenu-' + type);
+        const isOpen = menu.style.display === 'block';
+        // Close all quick menus first
+        document.querySelectorAll('[id^="quickMenu-"]').forEach(m => m.style.display = 'none');
+        if (!isOpen) {
+            menu.style.display = 'block';
+        }
+        // Close when clicking outside
+        setTimeout(() => {
+            window.addEventListener('click', function closeQuick(e) {
+                if (!e.target.closest('.download-dropdown')) {
+                    menu.style.display = 'none';
+                    window.removeEventListener('click', closeQuick);
+                }
+            });
+        }, 10);
+    }
+</script>

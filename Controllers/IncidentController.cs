@@ -25,7 +25,6 @@ namespace SmartCityPulse.Controllers
         {
             return View(new Incident());
         }
-
         [HttpPost]
         public async Task<IActionResult> Create(Incident incident)
         {
@@ -39,7 +38,6 @@ namespace SmartCityPulse.Controllers
                 // Save citizen ID if logged in
                 var userId = HttpContext.Session.GetString("UserId");
                 var userRole = HttpContext.Session.GetString("UserRole");
-                var userName = HttpContext.Session.GetString("UserName");
 
                 if (!string.IsNullOrEmpty(userId))
                 {
@@ -48,29 +46,14 @@ namespace SmartCityPulse.Controllers
 
                 await _context.Incidents.InsertOneAsync(incident);
 
-                // Send real-time notification to department
-                try
-                {
-                    await _hubContext.Clients.Group(incident.Department)
-                        .SendAsync("ReceiveNotification",
-                            "🚨 New Incident Reported",
-                            $"{incident.Title} at {incident.Location}",
-                            DateTime.Now);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Notification error: {ex.Message}");
-                }
-
-                TempData["SuccessMessage"] = "✅ Incident reported successfully! Your report has been submitted.";
-
-                // Redirect based on user role
+                // ✅ Redirect with success parameter for toast message
                 if (userRole == "Citizen")
                 {
-                    return RedirectToAction("Index", "Citizen");
+                    return RedirectToAction("Create", "Incident", new { success = true });
                 }
                 else
                 {
+                    TempData["SuccessMessage"] = "✅ Incident reported successfully!";
                     return RedirectToAction("Index", "Home");
                 }
             }

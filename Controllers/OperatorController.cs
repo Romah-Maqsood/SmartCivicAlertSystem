@@ -34,7 +34,13 @@ namespace SmartCityPulse.Controllers
             return HttpContext.Session.GetString("UserName") ?? "Operator";
         }
 
-        // ==================== DASHBOARD WITH ANALYTICS ====================
+        private string GenerateFIRNumber()
+        {
+            var random = new Random().Next(1000, 9999);
+            return $"FIR/{DateTime.Now:yyyyMMdd}/{random}";
+        }
+
+        // ==================== DASHBOARD ====================
         public async Task<IActionResult> Dashboard()
         {
             if (!IsOperatorLoggedIn())
@@ -46,26 +52,19 @@ namespace SmartCityPulse.Controllers
             var filter = Builders<Incident>.Filter.Eq(i => i.Department, department);
             var incidents = await _context.Incidents.Find(filter).ToListAsync();
 
-            // Analytics Data
             var today = DateTime.UtcNow.Date;
-
             var newToday = incidents.Count(i => i.ReportedAt.Date == today && i.Status == "Open");
             var inProgress = incidents.Count(i => i.Status == "In Progress");
             var resolved = incidents.Count(i => i.Status == "Resolved");
             var total = incidents.Count;
-
-            // Severity Distribution
             var criticalCount = incidents.Count(i => i.Severity == "Critical");
             var highCount = incidents.Count(i => i.Severity == "High");
             var mediumCount = incidents.Count(i => i.Severity == "Medium");
             var lowCount = incidents.Count(i => i.Severity == "Low");
-
-            // Status Distribution for Pie Chart
             var openCount = incidents.Count(i => i.Status == "Open");
             var inProgressCount = incidents.Count(i => i.Status == "In Progress");
             var resolvedCount = incidents.Count(i => i.Status == "Resolved");
 
-            // Last 7 days trend
             var last7Days = new List<int>();
             for (int i = 6; i >= 0; i--)
             {
@@ -73,7 +72,6 @@ namespace SmartCityPulse.Controllers
                 last7Days.Add(incidents.Count(inc => inc.ReportedAt.Date == date));
             }
 
-            // Monthly Trend
             var monthlyData = new Dictionary<string, int>();
             for (int i = 5; i >= 0; i--)
             {
@@ -89,8 +87,6 @@ namespace SmartCityPulse.Controllers
             ViewBag.InProgress = inProgress;
             ViewBag.Resolved = resolved;
             ViewBag.Total = total;
-
-            // For Charts
             ViewBag.CriticalCount = criticalCount;
             ViewBag.HighCount = highCount;
             ViewBag.MediumCount = mediumCount;
@@ -116,7 +112,7 @@ namespace SmartCityPulse.Controllers
         }
 
         // ==================== ALL INCIDENTS ====================
-        public async Task<IActionResult> Incidents(string? status, string? severity)
+        public async Task<IActionResult> Incidents(string? status, string? severity, string? caseType)
         {
             if (!IsOperatorLoggedIn())
                 return RedirectToAction("Login", "Account");
@@ -131,6 +127,9 @@ namespace SmartCityPulse.Controllers
             if (!string.IsNullOrEmpty(severity))
                 filter &= filterBuilder.Eq(i => i.Severity, severity);
 
+            if (!string.IsNullOrEmpty(caseType) && department == "Police")
+                filter &= filterBuilder.Eq(i => i.CaseType, caseType);
+
             var incidents = await _context.Incidents.Find(filter)
                 .SortByDescending(i => i.ReportedAt)
                 .ToListAsync();
@@ -139,6 +138,7 @@ namespace SmartCityPulse.Controllers
             ViewBag.Department = department;
             ViewBag.SelectedStatus = status;
             ViewBag.SelectedSeverity = severity;
+            ViewBag.SelectedCaseType = caseType;
 
             return View(incidents);
         }
@@ -190,8 +190,24 @@ namespace SmartCityPulse.Controllers
 
             await _context.Incidents.UpdateOneAsync(i => i.Id == id, update);
 
-            TempData["Success"] = "Incident updated successfully!";
+            TempData["Success"] = "Status updated successfully!";
             return RedirectToAction("IncidentDetail", new { id });
+        }
+
+        // ==================== UPDATE INVESTIGATION STATUS ====================
+        [HttpPost]
+        public async Task<IActionResult> UpdateInvestigationStatus(string id, string investigationStatus)
+        {
+            if (!IsOperatorLoggedIn())
+                return Json(new { success = false });
+
+            var update = Builders<Incident>.Update
+                .Set(i => i.InvestigationStatus, investigationStatus)
+                .Set(i => i.UpdatedAt, DateTime.UtcNow);
+
+            await _context.Incidents.UpdateOneAsync(i => i.Id == id, update);
+
+            return Json(new { success = true });
         }
 
         // ==================== CREATE INCIDENT ====================
@@ -213,32 +229,42 @@ namespace SmartCityPulse.Controllers
             if (!IsOperatorLoggedIn())
                 return RedirectToAction("Login", "Account");
 
-            if (ModelState.IsValid)
+            // Set basic fields
+            model.Department = GetOperatorDepartment();
+            model.ReportedBy = GetOperatorName();
+            model.ReportedAt = DateTime.UtcNow;
+            model.UpdatedAt = DateTime.UtcNow;
+            model.Status = "Open";
+            model.Comments = new List<IncidentComment>
             {
-                model.Department = GetOperatorDepartment();
-                model.ReportedBy = GetOperatorName();
-                model.ReportedAt = DateTime.UtcNow;
-                model.UpdatedAt = DateTime.UtcNow;
-                model.Status = "Open";
-                model.Comments = new List<IncidentComment>
+                new IncidentComment
                 {
-                    new IncidentComment
-                    {
-                        Text = $"Incident reported by {GetOperatorName()}",
-                        Author = "System",
-                        CreatedAt = DateTime.UtcNow
-                    }
-                };
+                    Text = $"Incident reported by {GetOperatorName()}",
+                    Author = "System",
+                    CreatedAt = DateTime.UtcNow
+                }
+            };
 
+            // Police specific fields
+            if (model.Department == "Police")
+            {
+                model.FIRNumber = GenerateFIRNumber();
+                model.InvestigationStatus = "FIR Registered";
+            }
+
+            try
+            {
                 await _context.Incidents.InsertOneAsync(model);
-
                 TempData["Success"] = "Incident created successfully!";
                 return RedirectToAction("Incidents");
             }
-
-            ViewBag.OperatorName = GetOperatorName();
-            ViewBag.Department = GetOperatorDepartment();
-            return View(model);
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+                ViewBag.OperatorName = GetOperatorName();
+                ViewBag.Department = GetOperatorDepartment();
+                return View(model);
+            }
         }
 
         // ==================== ADD COMMENT ====================
