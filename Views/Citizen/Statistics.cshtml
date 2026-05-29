@@ -1,6 +1,6 @@
 ﻿@{
     Layout = null;
-    ViewData["Title"] = "Statistics";
+    ViewData["Title"] = "Incident Statistics";
 }
 
 <!DOCTYPE html>
@@ -8,7 +8,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+    <title>Incident Statistics - Smart Civic Alert</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,230 +20,491 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: #E8EDF5;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: transparent;
             color: #1A1F36;
         }
 
         /* Main Container */
         .statistics-container {
-            padding: 1.5rem;
-            height: 100vh;
-            overflow-y: auto;
+            width: 100%;
+            padding: 0;
         }
 
-            /* Custom Scrollbar */
-            .statistics-container::-webkit-scrollbar {
-                width: 6px;
-            }
-
-            .statistics-container::-webkit-scrollbar-track {
-                background: #E2E8F0;
-                border-radius: 10px;
-            }
-
-            .statistics-container::-webkit-scrollbar-thumb {
-                background: #94A3B8;
-                border-radius: 10px;
-            }
-
-                .statistics-container::-webkit-scrollbar-thumb:hover {
-                    background: #64748B;
-                }
-
-        .welcome-header {
-            margin-bottom: 1.5rem;
+        /* Page Header - Matches Dashboard Style */
+        .page-header {
+            margin-bottom: 28px;
         }
 
-            .welcome-header h1 {
-                font-size: 1.5rem;
+            .page-header h1 {
+                font-size: 22px;
                 font-weight: 700;
                 color: #1A1F36;
+                display: flex;
+                align-items: center;
+                gap: 10px;
             }
 
-                .welcome-header h1 i {
+                .page-header h1 i {
                     color: #2563EB;
-                    margin-right: 0.5rem;
+                    font-size: 24px;
                 }
 
-            .welcome-header p {
-                font-size: 0.875rem;
+            .page-header p {
+                font-size: 13px;
                 color: #6B7280;
-                margin-top: 0.25rem;
+                margin-top: 6px;
             }
 
-        /* Graphs Grid */
-        .graphs-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+        /* Stats Summary Cards - Small, Clean */
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
         }
 
-        .full-width-card {
+        .stat-card {
             background: #FFFFFF;
-            border-radius: 20px;
-            padding: 1.5rem;
+            border-radius: 16px;
+            padding: 16px 20px;
             border: 1px solid #EAECF0;
             transition: all 0.3s ease;
         }
 
-            .full-width-card:hover {
+            .stat-card:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             }
 
-        .card-header {
+            .stat-card .stat-icon {
+                width: 40px;
+                height: 40px;
+                background: #EFF6FF;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 12px;
+            }
+
+                .stat-card .stat-icon i {
+                    font-size: 20px;
+                    color: #2563EB;
+                }
+
+            .stat-card .stat-value {
+                font-size: 28px;
+                font-weight: 700;
+                color: #1A1F36;
+                margin-bottom: 4px;
+            }
+
+            .stat-card .stat-label {
+                font-size: 12px;
+                color: #6B7280;
+                font-weight: 500;
+            }
+
+        /* Chart Cards */
+        .chart-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid #EAECF0;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+
+            .chart-card:hover {
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+            }
+
+        .chart-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #EAECF0;
         }
 
-            .card-header h3 {
-                font-size: 1rem;
+            .chart-header h3 {
+                font-size: 15px;
                 font-weight: 600;
                 color: #1A1F36;
                 display: flex;
                 align-items: center;
-                gap: 0.5rem;
+                gap: 8px;
             }
 
-                .card-header h3 i {
+                .chart-header h3 i {
                     color: #2563EB;
+                    font-size: 16px;
                 }
 
-        .full-width-card canvas {
-            max-height: 300px;
+            .chart-header .insight-badge {
+                font-size: 11px;
+                background: #F1F5F9;
+                padding: 4px 10px;
+                border-radius: 20px;
+                color: #6B7280;
+            }
+
+        .chart-container {
+            position: relative;
+            height: 320px;
             width: 100%;
         }
 
+        /* Two Column Layout */
         .two-columns {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+            gap: 24px;
+            margin-bottom: 24px;
         }
 
-        .small-card {
+        .half-card {
             background: #FFFFFF;
             border-radius: 20px;
-            padding: 1.5rem;
+            padding: 24px;
             border: 1px solid #EAECF0;
             transition: all 0.3s ease;
         }
 
-            .small-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            .half-card:hover {
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
             }
 
-            .small-card canvas {
-                max-height: 250px;
-                width: 100%;
+            .half-card .chart-header {
+                margin-bottom: 20px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid #EAECF0;
             }
 
-        @@media (max-width: 1024px) {
-            .two-columns
+            .half-card .chart-container {
+                height: 280px;
+            }
 
-        {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
+        /* No Data State */
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            background: #FFFFFF;
+            border-radius: 20px;
+            border: 1px solid #EAECF0;
+            color: #6B7280;
         }
 
+            .no-data i {
+                font-size: 48px;
+                color: #94A3B8;
+                margin-bottom: 16px;
+                display: inline-block;
+            }
+
+            .no-data h3 {
+                font-size: 16px;
+                font-weight: 600;
+                margin-bottom: 8px;
+                color: #1A1F36;
+            }
+
+            .no-data p {
+                font-size: 13px;
+            }
+
+        /* Responsive */
+        @@media (max-width: 1024px) {
+            .stats-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-columns {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
         }
 
         @@media (max-width: 768px) {
-            .statistics-container
+            .stats-summary {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
 
-        {
-            padding: 1rem;
-        }
+            .chart-card {
+                padding: 18px;
+            }
 
+            .half-card {
+                padding: 18px;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="statistics-container">
-        <div class="welcome-header">
-            <h1><i class="fas fa-chart-line"></i> Incident Statistics</h1>
-            <p>Visual insights of your reported incidents</p>
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-chart-line"></i>
+                Incident Statistics
+            </h1>
+            <p>Visual insights and analytics of your reported incidents</p>
         </div>
 
-        <div class="graphs-grid">
-            <!-- Big Chart -->
-            <div class="full-width-card">
-                <div class="card-header">
-                    <h3><i class="fas fa-chart-line"></i> Incident Trends (Last 7 Days)</h3>
+        <!-- Quick Stats Summary -->
+        <div class="stats-summary">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-simple"></i>
                 </div>
-                <canvas id="trendChart"></canvas>
+                <div class="stat-value">@ViewBag.TotalIncidents</div>
+                <div class="stat-label">Total Incidents</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-circle-check"></i>
+                </div>
+                <div class="stat-value">@ViewBag.ResolvedIncidents</div>
+                <div class="stat-label">Resolved</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div class="stat-value">@ViewBag.InProgressIncidents</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-value">@ViewBag.OpenIncidents</div>
+                <div class="stat-label">Open</div>
+            </div>
+        </div>
+
+        @{
+            bool hasData = (ViewBag.TotalIncidents != null && ViewBag.TotalIncidents > 0);
+        }
+
+        @if (hasData)
+        {
+            <!-- Line Chart - Incident Trends -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>
+                        <i class="fas fa-chart-line"></i>
+                        Incident Trends
+                    </h3>
+                    <span class="insight-badge">Last 7 Days</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
             </div>
 
-            <!-- Two Small Charts -->
+            <!-- Two Column Charts -->
             <div class="two-columns">
-                <div class="small-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-chart-pie"></i> Severity Distribution</h3>
+                <!-- Severity Distribution - Pie Chart -->
+                <div class="half-card">
+                    <div class="chart-header">
+                        <h3>
+                            <i class="fas fa-chart-pie"></i>
+                            Severity Distribution
+                        </h3>
+                        <span class="insight-badge">By Priority</span>
                     </div>
-                    <canvas id="severityChart"></canvas>
+                    <div class="chart-container">
+                        <canvas id="severityChart"></canvas>
+                    </div>
                 </div>
-                <div class="small-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-chart-donut"></i> Status Distribution</h3>
+
+                <!-- Status Distribution - Doughnut Chart -->
+                <div class="half-card">
+                    <div class="chart-header">
+                        <h3>
+                            <i class="fas fa-chart-donut"></i>
+                            Status Distribution
+                        </h3>
+                        <span class="insight-badge">Current State</span>
                     </div>
-                    <canvas id="statusChart"></canvas>
+                    <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <!-- No Data State -->
+            <div class="no-data">
+                <i class="fas fa-chart-line"></i>
+                <h3>No Statistics Available</h3>
+                <p>You haven't reported any incidents yet. Start by reporting an incident to see statistics.</p>
+            </div>
+        }
     </div>
 
     <script>
-        const weeklyData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.WeeklyData ?? new int[] { 0, 0, 0, 0, 0, 0, 0 }));
-        const labels = ['6 days ago', '5 days ago', '4 days ago', '3 days ago', '2 days ago', 'Yesterday', 'Today'];
+        @if (hasData)
+        {
+                <text>
+                // Weekly Trend Data
+                const weeklyData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.WeeklyData ?? new int[] { 0, 0, 0, 0, 0, 0, 0 }));
+                const weekLabels = ['6 Days Ago', '5 Days Ago', '4 Days Ago', '3 Days Ago', '2 Days Ago', 'Yesterday', 'Today'];
 
-        new Chart(document.getElementById('trendChart'), {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Incidents Reported',
-                    data: weeklyData,
-                    borderColor: '#2563EB',
-                    backgroundColor: 'rgba(37, 99, 235, 0.05)',
-                    borderWidth: 2.5,
-                    fill: true,
-                    tension: 0.3,
-                    pointBackgroundColor: '#2563EB',
-                    pointBorderColor: '#FFFFFF',
-                    pointRadius: 4
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: true }
-        });
+                // Line Chart - Incident Trends
+                const trendCtx = document.getElementById('trendChart').getContext('2d');
+                new Chart(trendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: weekLabels,
+                        datasets: [{
+                            label: 'Incidents Reported',
+                            data: weeklyData,
+                            borderColor: '#2563EB',
+                            backgroundColor: 'rgba(37, 99, 235, 0.05)',
+                            borderWidth: 2.5,
+                            fill: true,
+                            tension: 0.3,
+                            pointBackgroundColor: '#2563EB',
+                            pointBorderColor: '#FFFFFF',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    font: { size: 11, family: 'Inter' },
+                                    boxWidth: 10,
+                                    usePointStyle: true
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: '#1A1F36',
+                                titleFont: { size: 12, family: 'Inter' },
+                                bodyFont: { size: 11, family: 'Inter' },
+                                padding: 8,
+                                cornerRadius: 8
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#EAECF0', drawBorder: false },
+                                ticks: { stepSize: 1, font: { size: 10 } }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { size: 10 } }
+                            }
+                        }
+                    }
+                });
 
-        new Chart(document.getElementById('severityChart'), {
-            type: 'pie',
-            data: {
-                labels: ['Critical', 'High', 'Medium', 'Low'],
-                datasets: [{
-                    data: [@ViewBag.CriticalIncidents, @ViewBag.HighIncidents, @ViewBag.MediumIncidents, @ViewBag.LowIncidents],
-                    backgroundColor: ['#DC2626', '#F97316', '#EAB308', '#10B981'],
-                    borderWidth: 0
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
-        });
+                // Severity Pie Chart
+                const severityCtx = document.getElementById('severityChart').getContext('2d');
+                new Chart(severityCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Critical', 'High', 'Medium', 'Low'],
+                        datasets: [{
+                            data: [@ViewBag.CriticalIncidents, @ViewBag.HighIncidents, @ViewBag.MediumIncidents, @ViewBag.LowIncidents],
+                            backgroundColor: ['#DC2626', '#F97316', '#EAB308', '#10B981'],
+                            borderWidth: 0,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: { size: 11, family: 'Inter' },
+                                    boxWidth: 10,
+                                    usePointStyle: true,
+                                    padding: 12
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: '#1A1F36',
+                                titleFont: { size: 12, family: 'Inter' },
+                                bodyFont: { size: 11, family: 'Inter' },
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.raw || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                        return `${label}: ${value} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
 
-        new Chart(document.getElementById('statusChart'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Open', 'In Progress', 'Resolved'],
-                datasets: [{
-                    data: [@ViewBag.OpenIncidents, @ViewBag.InProgressIncidents, @ViewBag.ResolvedIncidents],
-                    backgroundColor: ['#3B82F6', '#F59E0B', '#10B981'],
-                    borderWidth: 0
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
-        });
+                // Status Doughnut Chart
+                const statusCtx = document.getElementById('statusChart').getContext('2d');
+                new Chart(statusCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Open', 'In Progress', 'Resolved'],
+                        datasets: [{
+                            data: [@ViewBag.OpenIncidents, @ViewBag.InProgressIncidents, @ViewBag.ResolvedIncidents],
+                            backgroundColor: ['#3B82F6', '#F59E0B', '#10B981'],
+                            borderWidth: 0,
+                            hoverOffset: 8,
+                            cutout: '60%'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: { size: 11, family: 'Inter' },
+                                    boxWidth: 10,
+                                    usePointStyle: true,
+                                    padding: 12
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: '#1A1F36',
+                                titleFont: { size: 12, family: 'Inter' },
+                                bodyFont: { size: 11, family: 'Inter' },
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.raw || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                        return `${label}: ${value} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                </text>
+        }
     </script>
 </body>
 </html>

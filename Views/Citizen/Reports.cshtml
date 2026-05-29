@@ -1,0 +1,658 @@
+﻿@{
+    Layout = null;
+    ViewData["Title"] = "Download Reports";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Download Reports - Smart Civic Alert</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: transparent;
+            color: #1A1F36;
+        }
+
+        .reports-container {
+            width: 100%;
+            padding: 0;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+            .page-header h1 {
+                font-size: 22px;
+                font-weight: 700;
+                color: #1A1F36;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+                .page-header h1 i {
+                    color: #2563EB;
+                    font-size: 24px;
+                }
+
+            .page-header p {
+                font-size: 13px;
+                color: #6B7280;
+                margin-top: 6px;
+            }
+
+        /* Filter Section */
+        .filter-section {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #EAECF0;
+            margin-bottom: 24px;
+        }
+
+        .filter-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .filter-title i {
+                color: #2563EB;
+            }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+            .filter-group label {
+                display: block;
+                font-size: 12px;
+                font-weight: 500;
+                color: #6B7280;
+                margin-bottom: 6px;
+            }
+
+            .filter-group select,
+            .filter-group input {
+                width: 100%;
+                padding: 10px 12px;
+                border: 1.5px solid #EAECF0;
+                border-radius: 10px;
+                font-family: inherit;
+                font-size: 13px;
+                transition: all 0.2s ease;
+                background: #FFFFFF;
+            }
+
+                .filter-group select:focus,
+                .filter-group input:focus {
+                    outline: none;
+                    border-color: #2563EB;
+                }
+
+        .btn-filter {
+            background: #2563EB;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+            .btn-filter:hover {
+                background: #1D4ED8;
+                transform: translateY(-1px);
+            }
+
+        /* Download Buttons */
+        .download-section {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .btn-download {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-pdf {
+            background: #DC2626;
+            color: white;
+        }
+
+            .btn-pdf:hover {
+                background: #B91C1C;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            }
+
+        .btn-csv {
+            background: #10B981;
+            color: white;
+        }
+
+            .btn-csv:hover {
+                background: #059669;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            }
+
+        /* Table Container */
+        .table-container {
+            background: #FFFFFF;
+            border-radius: 16px;
+            border: 1px solid #EAECF0;
+            overflow-x: auto;
+        }
+
+        .incident-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .incident-table th {
+                text-align: left;
+                padding: 14px 12px;
+                background: #F8FAFC;
+                color: #6B7280;
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                border-bottom: 1px solid #EAECF0;
+            }
+
+            .incident-table td {
+                padding: 12px;
+                font-size: 13px;
+                color: #1A1F36;
+                border-bottom: 1px solid #F0F2F5;
+            }
+
+            .incident-table tr:hover {
+                background: #F9FAFB;
+            }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-open {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .status-in-progress {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-resolved {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        .severity-critical {
+            color: #DC2626;
+            font-weight: 600;
+        }
+
+        .severity-high {
+            color: #F97316;
+            font-weight: 600;
+        }
+
+        .severity-medium {
+            color: #EAB308;
+            font-weight: 600;
+        }
+
+        .severity-low {
+            color: #10B981;
+            font-weight: 600;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: #6B7280;
+        }
+
+            .no-data i {
+                font-size: 48px;
+                margin-bottom: 16px;
+                display: inline-block;
+                color: #94A3B8;
+            }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 60px;
+            color: #6B7280;
+        }
+
+            .loading-spinner i {
+                font-size: 40px;
+                margin-bottom: 16px;
+                display: inline-block;
+                color: #2563EB;
+            }
+
+        @@media (max-width: 768px) {
+            .filter-row {
+                flex-direction: column;
+            }
+
+            .download-section {
+                flex-direction: column;
+            }
+
+            .btn-filter {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="reports-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-download"></i>
+                Download Reports
+            </h1>
+            <p>Export your incident reports as PDF or CSV format for record keeping</p>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-title">
+                <i class="fas fa-sliders-h"></i> Filter Reports
+            </div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label><i class="fas fa-calendar"></i> From Date</label>
+                    <input type="date" id="fromDate">
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-calendar"></i> To Date</label>
+                    <input type="date" id="toDate">
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-chart-line"></i> Severity</label>
+                    <select id="severityFilter">
+                        <option value="all">All Severities</option>
+                        <option value="Critical">Critical</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-circle"></i> Status</label>
+                    <select id="statusFilter">
+                        <option value="all">All Status</option>
+                        <option value="Open">Open</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Resolved">Resolved</option>
+                    </select>
+                </div>
+                <button class="btn-filter" id="applyFilterBtn">
+                    <i class="fas fa-search"></i> Apply Filter
+                </button>
+            </div>
+        </div>
+
+        <!-- Download Buttons -->
+        <div class="download-section">
+            <button class="btn-download btn-pdf" id="downloadPdfBtn">
+                <i class="fas fa-file-pdf"></i> Download PDF Report
+            </button>
+            <button class="btn-download btn-csv" id="downloadCsvBtn">
+                <i class="fas fa-file-excel"></i> Download CSV / Excel
+            </button>
+        </div>
+
+        <!-- Reports Table -->
+        <div class="table-container">
+            <div id="tableContent">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading your reports...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allIncidents = [];
+
+        // Set default date range (last 30 days)
+        function setDefaultDates() {
+            const today = new Date();
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(today.getDate() - 30);
+
+            document.getElementById('toDate').value = today.toISOString().split('T')[0];
+            document.getElementById('fromDate').value = thirtyDaysAgo.toISOString().split('T')[0];
+        }
+
+        // Load incidents on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setDefaultDates();
+            loadIncidents();
+        });
+
+        function loadIncidents() {
+            fetch('/Citizen/GetAllIncidentsForReports')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.incidents) {
+                        allIncidents = data.incidents;
+                        const filtered = getFilteredIncidents();
+                        displayTable(filtered);
+                    } else {
+                        document.getElementById('tableContent').innerHTML = `
+                            <div class="no-data">
+                                <i class="fas fa-folder-open"></i>
+                                <p>No incidents found. Start by reporting an incident.</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('tableContent').innerHTML = `
+                        <div class="no-data">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>Error loading incidents. Please try again.</p>
+                        </div>
+                    `;
+                });
+        }
+
+        function getFilteredIncidents() {
+            let filtered = [...allIncidents];
+
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const severity = document.getElementById('severityFilter').value;
+            const status = document.getElementById('statusFilter').value;
+
+            if (fromDate) {
+                const from = new Date(fromDate);
+                from.setHours(0, 0, 0, 0);
+                filtered = filtered.filter(i => {
+                    const reportDate = new Date(i.reportedAt);
+                    return reportDate >= from;
+                });
+            }
+
+            if (toDate) {
+                const to = new Date(toDate);
+                to.setHours(23, 59, 59, 999);
+                filtered = filtered.filter(i => {
+                    const reportDate = new Date(i.reportedAt);
+                    return reportDate <= to;
+                });
+            }
+
+            if (severity !== 'all') {
+                filtered = filtered.filter(i => i.severity === severity);
+            }
+
+            if (status !== 'all') {
+                filtered = filtered.filter(i => i.status === status);
+            }
+
+            return filtered;
+        }
+
+        function displayTable(incidents) {
+            if (!incidents || incidents.length === 0) {
+                document.getElementById('tableContent').innerHTML = `
+                    <div class="no-data">
+                        <i class="fas fa-folder-open"></i>
+                        <p>No incidents match your filter criteria.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <table class="incident-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Location</th>
+                            <th>Severity</th>
+                            <th>Status</th>
+                            <th>Reported Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            incidents.forEach(incident => {
+                const shortId = incident.id.length > 6 ? incident.id.substring(0, 6) : incident.id;
+                const statusClass = incident.status.toLowerCase().replace(' ', '-');
+                const severityClass = incident.severity.toLowerCase();
+
+                let severityColor = '';
+                if (severityClass === 'critical') severityColor = 'severity-critical';
+                else if (severityClass === 'high') severityColor = 'severity-high';
+                else if (severityClass === 'medium') severityColor = 'severity-medium';
+                else severityColor = 'severity-low';
+
+                let statusClass2 = '';
+                if (incident.status === 'Open') statusClass2 = 'status-open';
+                else if (incident.status === 'In Progress') statusClass2 = 'status-in-progress';
+                else statusClass2 = 'status-resolved';
+
+                html += `
+                    <tr>
+                        <td>#${shortId}</td>
+                        <td>${escapeHtml(incident.title)}</td>
+                        <td>${escapeHtml(incident.location)}</td>
+                        <td class="${severityColor}">${incident.severity}</td>
+                        <td><span class="status-badge ${statusClass2}">${incident.status}</span></td>
+                        <td>${new Date(incident.reportedAt).toLocaleDateString()}</td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody> домаћинствима`;
+            document.getElementById('tableContent').innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Apply filter
+        document.getElementById('applyFilterBtn').addEventListener('click', function() {
+            const filtered = getFilteredIncidents();
+            displayTable(filtered);
+        });
+
+        // Download PDF
+        document.getElementById('downloadPdfBtn').addEventListener('click', function() {
+            const filtered = getFilteredIncidents();
+            if (filtered.length === 0) {
+                alert('No incidents to download. Please adjust your filters.');
+                return;
+            }
+
+            const fromDate = document.getElementById('fromDate').value || 'All';
+            const toDate = document.getElementById('toDate').value || 'All';
+            const severity = document.getElementById('severityFilter').value;
+            const status = document.getElementById('statusFilter').value;
+
+            let htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Incident Report</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; line-height: 1.6; }
+                        h1 { color: #2563EB; border-bottom: 2px solid #2563EB; padding-bottom: 10px; }
+                        .header { text-align: center; margin-bottom: 30px; }
+                        .report-info { background: #F8FAFC; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+                        .report-info p { margin: 5px 0; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+                        th { background-color: #2563EB; color: white; }
+                        tr:nth-child(even) { background-color: #f9f9f9; }
+                        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #666; border-top: 1px solid #ddd; padding-top: 15px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>Smart Civic Alert - Incident Report</h1>
+                        <p>Citizen Incident Report Export</p>
+                    </div>
+                    <div class="report-info">
+                        <p><strong>Report Generated:</strong> ${new Date().toLocaleString()}</p>
+                        <p><strong>Date Range:</strong> ${fromDate} to ${toDate}</p>
+                        <p><strong>Severity Filter:</strong> ${severity === 'all' ? 'All' : severity}</p>
+                        <p><strong>Status Filter:</strong> ${status === 'all' ? 'All' : status}</p>
+                        <p><strong>Total Incidents:</strong> ${filtered.length}</p>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Incident ID</th>
+                                <th>Title</th>
+                                <th>Location</th>
+                                <th>Severity</th>
+                                <th>Status</th>
+                                <th>Reported Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            filtered.forEach(incident => {
+                const shortId = incident.id.length > 8 ? incident.id.substring(0, 8) : incident.id;
+                htmlContent += `
+                    <tr>
+                        <td>${shortId}</td>
+                        <td>${escapeHtml(incident.title)}</td>
+                        <td>${escapeHtml(incident.location)}</td>
+                        <td>${incident.severity}</td>
+                        <td>${incident.status}</td>
+                        <td>${new Date(incident.reportedAt).toLocaleDateString()}</td>
+                    </tr>
+                `;
+            });
+
+            htmlContent += `
+                        </tbody>
+                    </table>
+                    <div class="footer">
+                        <p>Smart Civic Alert - Citizen Incident Report System</p>
+                        <p>This is an automatically generated report. For any queries, please contact support.</p>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob([htmlContent], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Incident_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        });
+
+        // Download CSV
+        document.getElementById('downloadCsvBtn').addEventListener('click', function() {
+            const filtered = getFilteredIncidents();
+            if (filtered.length === 0) {
+                alert('No incidents to download. Please adjust your filters.');
+                return;
+            }
+
+            const fromDate = document.getElementById('fromDate').value || 'All';
+            const toDate = document.getElementById('toDate').value || 'All';
+
+            let csvContent = "Incident ID,Title,Location,Severity,Status,Reported Date,Description\n";
+
+            filtered.forEach(incident => {
+                const row = [
+                    `"${incident.id.substring(0, 8)}"`,
+                    `"${(incident.title || '').replace(/"/g, '""')}"`,
+                    `"${(incident.location || '').replace(/"/g, '""')}"`,
+                    `"${incident.severity}"`,
+                    `"${incident.status}"`,
+                    `"${new Date(incident.reportedAt).toLocaleDateString()}"`,
+                    `"${(incident.description || '').replace(/"/g, '""')}"`
+                ].join(',');
+                csvContent += row + "\n";
+            });
+
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.setAttribute('download', `Incident_Report_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>

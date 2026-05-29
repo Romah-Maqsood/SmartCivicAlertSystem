@@ -36,6 +36,10 @@ namespace SmartCityPulse.Models
         [BsonElement("reportedBy")]
         public string ReportedBy { get; set; } = string.Empty;
 
+        // NEW FIELD - Store the reporter's name
+        [BsonElement("reportedByName")]
+        public string ReportedByName { get; set; } = string.Empty;
+
         [BsonElement("reportedAt")]
         public DateTime ReportedAt { get; set; } = DateTime.UtcNow;
 
@@ -79,8 +83,13 @@ namespace SmartCityPulse.Models
 
     public class IncidentComment
     {
+        [BsonElement("text")]
         public string Text { get; set; } = string.Empty;
+
+        [BsonElement("author")]
         public string Author { get; set; } = string.Empty;
+
+        [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
