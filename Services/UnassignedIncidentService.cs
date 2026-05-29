@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.SignalR;
+using MongoDB.Driver;                              // ← required for Find extension
 using SmartCityPulse.Data;
 using SmartCityPulse.Hubs;
 
@@ -25,7 +26,6 @@ namespace SmartCityPulse.Services
                     var db = scope.ServiceProvider.GetRequiredService<MongoDbContext>();
                     var hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<NotificationHub>>();
 
-                    // Critical ya SOS incidents jo 10 minute se "Open" hain
                     var threshold = DateTime.UtcNow.AddMinutes(-10);
                     var criticalUnassigned = await db.Incidents
                         .Find(i => (i.Severity == "Critical" || i.Title.Contains("SOS")) &&
@@ -35,8 +35,6 @@ namespace SmartCityPulse.Services
 
                     foreach (var inc in criticalUnassigned)
                     {
-                        // Only notify once – optional: add a field to avoid duplicate alerts
-                        // For simplicity, we send a notification every cycle; you can improve later
                         await NotificationService.SendAndSave(
                             db, hubContext,
                             "Unassigned Critical Incident",
@@ -46,9 +44,9 @@ namespace SmartCityPulse.Services
                         );
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    // Log if needed
+                    // Optionally log the error
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(2), stoppingToken);

@@ -9,7 +9,7 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.SignalR;
 using SmartCityPulse.Hubs;
-using SmartCityPulse.Services;                    // added for NotificationService
+using SmartCityPulse.Services;
 
 namespace SmartCityPulse.Controllers
 {
@@ -30,8 +30,6 @@ namespace SmartCityPulse.Controllers
         }
 
         private bool IsAdmin() => HttpContext.Session.GetString("UserRole") == "Admin";
-
-        // ---------- (removed old SendNotification helper) ----------
 
         // ==================== DASHBOARD ====================
         [HttpGet]
@@ -200,11 +198,11 @@ namespace SmartCityPulse.Controllers
                 newOperator.CreatedAt = DateTime.UtcNow;
                 await _context.Operators.InsertOneAsync(newOperator);
 
-                // ✅ Save + Send notification
+                // ✅ Clearer notification
                 await NotificationService.SendAndSave(
                     _context, _hubContext,
                     "Operator Added",
-                    $"Operator '{newOperator.Name}' ({newOperator.Department}) has been created.",
+                    $"Operator '{newOperator.Name}' ({newOperator.Department ?? "No Dept"}) was added at {DateTime.UtcNow:HH:mm}.",
                     "info", "medium",
                     targetRole: "Admin"
                 );
@@ -236,9 +234,6 @@ namespace SmartCityPulse.Controllers
                     existing.PasswordHash = updated.PasswordHash;
                 await _context.Operators.ReplaceOneAsync(o => o.Id == id, existing);
 
-                // (optional notification for update – uncomment if needed)
-                // await NotificationService.SendAndSave(_context, _hubContext, "Operator Updated", ...);
-
                 return Json(new { success = true, message = "Operator updated successfully!" });
             }
             catch (Exception ex)
@@ -260,11 +255,11 @@ namespace SmartCityPulse.Controllers
 
                 await _context.Operators.DeleteOneAsync(o => o.Id == delOp.Id);
 
-                // ✅ Save + Send notification
+                // ✅ Clearer notification
                 await NotificationService.SendAndSave(
                     _context, _hubContext,
                     "Operator Removed",
-                    $"Operator '{operatorName}' ({operatorDept}) has been deleted.",
+                    $"Operator '{operatorName}' ({operatorDept}) was removed at {DateTime.UtcNow:HH:mm}.",
                     "warning", "medium",
                     targetRole: "Admin"
                 );
@@ -515,7 +510,7 @@ namespace SmartCityPulse.Controllers
             }
         }
 
-        // ==================== GET NOTIFICATIONS (NEW) ====================
+        // ==================== GET NOTIFICATIONS ====================
         [HttpGet]
         public async Task<IActionResult> GetNotifications()
         {
@@ -526,6 +521,21 @@ namespace SmartCityPulse.Controllers
                 .Limit(50)
                 .ToListAsync();
             return Json(notifications);
+        }
+
+        // AdminController.cs mein yeh action add karein
+        [HttpPost]
+        public async Task<IActionResult> MarkNotificationRead(string id)
+        {
+            if (!IsAdmin()) return Unauthorized();
+
+            var notification = await _context.Notifications.Find(n => n.Id == id).FirstOrDefaultAsync();
+            if (notification == null) return NotFound();
+
+            notification.IsRead = !notification.IsRead;   // toggle
+            await _context.Notifications.ReplaceOneAsync(n => n.Id == id, notification);
+
+            return Json(new { success = true, isRead = notification.IsRead });
         }
     }
 

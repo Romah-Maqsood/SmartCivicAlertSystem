@@ -778,34 +778,53 @@ function renderNotifications() {
         return;
     }
     container.innerHTML = realNotifications.map(n => `
-        <div class="notification-item ${n.read ? '' : 'unread'}" onclick="markNotificationRead('${n.id}')">
+        <div class="notification-item ${n.read ? '' : 'unread'}">
             <div class="notif-icon"><i class="fas fa-bell"></i></div>
             <div class="notif-content">
                 <div class="notif-title">${n.title}</div>
                 <div class="notif-time">${n.time}</div>
             </div>
             <div class="notif-actions">
-                <button class="btn-ghost btn-sm" onclick="event.stopPropagation(); markNotificationRead('${n.id}')">
-                    <i class="fas ${n.read ? 'fa-envelope' : 'fa-envelope-open'}"></i> ${n.read ? 'Unread' : 'Read'}
+                <button class="btn-ghost btn-sm notif-toggle-btn"
+                        onclick="markNotificationRead('${n.id}')"
+                        style="display:flex; align-items:center; gap:6px;">
+                    <i class="fas ${n.read ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                    <span style="background:${n.read ? '#DCFCE7' : '#FEE2E2'}; color:${n.read ? '#166534' : '#991B1B'}; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700;">
+                        ${n.read ? 'Read' : 'Unread'}
+                    </span>
                 </button>
             </div>
         </div>
     `).join('');
 }
 
-function markNotificationRead(id) {
-    const n = realNotifications.find(x => x.id === id);
-    if (n) {
-        n.read = !n.read;
-        updateNotificationBadge();
-        renderNotifications();
+async function markNotificationRead(id) {
+    try {
+        const res = await fetch('/Admin/MarkNotificationRead', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'id=' + encodeURIComponent(id)
+        });
+        if (!res.ok) return;
+        const result = await res.json();
+        const n = realNotifications.find(x => x.id === id);
+        if (n) {
+            n.read = result.isRead;
+            updateNotificationBadge();
+            renderNotifications();
+        }
+    } catch (err) {
+        console.error(err);
     }
 }
 
 // Called from SignalR partial when a new notification arrives
 function addNotification(notification) {
     if (!realNotifications.some(n => n.id === notification.id)) {
-        realNotifications.unshift(notification);
+        realNotifications.unshift({
+            ...notification,
+            read: notification.read !== undefined ? notification.read : false
+        });
     }
     updateNotificationBadge();
     const notifSection = document.getElementById('notificationsSection');
@@ -814,7 +833,7 @@ function addNotification(notification) {
     }
 }
 
-// ✅ NEW: Load existing notifications from database
+// ✅ Load existing notifications from database on page load
 async function loadNotifications() {
     try {
         const res = await fetch('/Admin/GetNotifications');

@@ -5,7 +5,7 @@ using MongoDB.Driver;
 using SmartCityPulse.Data;
 using SmartCityPulse.Hubs;
 using SmartCityPulse.Models;
-using SmartCityPulse.Services;                     // ← added for NotificationService
+using SmartCityPulse.Services;
 
 namespace SmartCityPulse.Controllers
 {
@@ -20,11 +20,7 @@ namespace SmartCityPulse.Controllers
             _hubContext = hubContext;
         }
 
-        private bool IsCitizen()
-        {
-            var role = HttpContext.Session.GetString("UserRole");
-            return role == "Citizen";
-        }
+        private bool IsCitizen() => HttpContext.Session.GetString("UserRole") == "Citizen";
 
         // ==================== CITIZEN DASHBOARD ====================
         [HttpGet]
@@ -39,7 +35,6 @@ namespace SmartCityPulse.Controllers
             var myIncidents = await _context.Incidents
                 .Find(i => i.ReportedBy == userId)
                 .SortByDescending(i => i.ReportedAt).Limit(5).ToListAsync();
-
             var allIncidents = await _context.Incidents
                 .Find(i => i.ReportedBy == userId)
                 .SortByDescending(i => i.ReportedAt).ToListAsync();
@@ -87,7 +82,6 @@ namespace SmartCityPulse.Controllers
         public async Task<IActionResult> MyReports()
         {
             if (!IsCitizen()) return RedirectToAction("Login", "Account");
-
             var userId = HttpContext.Session.GetString("UserId");
             var incidents = await _context.Incidents
                 .Find(i => i.ReportedBy == userId)
@@ -100,7 +94,6 @@ namespace SmartCityPulse.Controllers
         public async Task<IActionResult> Details(string id)
         {
             if (!IsCitizen()) return RedirectToAction("Login", "Account");
-
             var userId = HttpContext.Session.GetString("UserId");
             var incident = await _context.Incidents.Find(i => i.Id == id).FirstOrDefaultAsync();
             if (incident == null) return NotFound();
@@ -279,12 +272,9 @@ namespace SmartCityPulse.Controllers
                     DateTime.Now,
                     emergencyIncident.Id);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Emergency notification error: {ex.Message}");
-            }
+            catch (Exception ex) { Console.WriteLine($"Emergency notification error: {ex.Message}"); }
 
-            // ✅ Save + Send notification to citizen
+            // ✅ Clearer notification to citizen
             await NotificationService.SendAndSave(
                 _context, _hubContext,
                 "Emergency Submitted",
@@ -293,11 +283,11 @@ namespace SmartCityPulse.Controllers
                 targetUserId: userId
             );
 
-            // ✅ Save + Send notification to Admin
+            // ✅ Clearer notification to Admin
             await NotificationService.SendAndSave(
                 _context, _hubContext,
                 "New Emergency SOS",
-                $"{userName} sent an emergency SOS.",
+                $"Citizen {userName} (ID: {userId}) raised an emergency SOS at {DateTime.UtcNow:HH:mm}. Location: {emergencyIncident.Location}.",
                 "critical", "high",
                 targetRole: "Admin"
             );
@@ -322,12 +312,9 @@ namespace SmartCityPulse.Controllers
         {
             if (!IsCitizen()) return RedirectToAction("Login", "Account");
             var userId = HttpContext.Session.GetString("UserId");
-            var totalIncidents = _context.Incidents.CountDocuments(i => i.ReportedBy == userId);
-            var resolvedIncidents = _context.Incidents.CountDocuments(i => i.ReportedBy == userId && i.Status == "Resolved");
-            var pendingIncidents = _context.Incidents.CountDocuments(i => i.ReportedBy == userId && i.Status != "Resolved");
-            ViewBag.TotalIncidents = (int)totalIncidents;
-            ViewBag.ResolvedIncidents = (int)resolvedIncidents;
-            ViewBag.PendingIncidents = (int)pendingIncidents;
+            ViewBag.TotalIncidents = (int)_context.Incidents.CountDocuments(i => i.ReportedBy == userId);
+            ViewBag.ResolvedIncidents = (int)_context.Incidents.CountDocuments(i => i.ReportedBy == userId && i.Status == "Resolved");
+            ViewBag.PendingIncidents = (int)_context.Incidents.CountDocuments(i => i.ReportedBy == userId && i.Status != "Resolved");
             return View();
         }
 
@@ -368,24 +355,16 @@ namespace SmartCityPulse.Controllers
                 weeklyData.Add((int)count);
             }
 
-            var criticalCount = await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Critical");
-            var highCount = await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "High");
-            var mediumCount = await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Medium");
-            var lowCount = await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Low");
-            var openCount = await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Open");
-            var inProgressCount = await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "In Progress");
-            var resolvedCount = await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Resolved");
-            var totalIncidents = await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId);
-
             ViewBag.WeeklyData = weeklyData;
-            ViewBag.CriticalIncidents = (int)criticalCount;
-            ViewBag.HighIncidents = (int)highCount;
-            ViewBag.MediumIncidents = (int)mediumCount;
-            ViewBag.LowIncidents = (int)lowCount;
-            ViewBag.OpenIncidents = (int)openCount;
-            ViewBag.InProgressIncidents = (int)inProgressCount;
-            ViewBag.ResolvedIncidents = (int)resolvedCount;
-            ViewBag.TotalIncidents = (int)totalIncidents;
+            ViewBag.CriticalIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Critical");
+            ViewBag.HighIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "High");
+            ViewBag.MediumIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Medium");
+            ViewBag.LowIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Low");
+            ViewBag.OpenIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Open");
+            ViewBag.InProgressIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "In Progress");
+            ViewBag.ResolvedIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Resolved");
+            ViewBag.TotalIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId);
+
             return View();
         }
 
@@ -394,9 +373,7 @@ namespace SmartCityPulse.Controllers
         {
             if (!IsCitizen()) return Json(new { success = false, message = "Unauthorized" });
             var userId = HttpContext.Session.GetString("UserId");
-            var incidents = await _context.Incidents
-                .Find(i => i.ReportedBy == userId)
-                .SortByDescending(i => i.ReportedAt).ToListAsync();
+            var incidents = await _context.Incidents.Find(i => i.ReportedBy == userId).SortByDescending(i => i.ReportedAt).ToListAsync();
             var incidentList = incidents.Select(i => new
             {
                 id = i.Id,

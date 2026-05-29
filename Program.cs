@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SmartCityPulse.Data;
 using SmartCityPulse.Hubs;
-
+using SmartCityPulse.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // MongoDB Context
@@ -13,6 +13,7 @@ builder.Services.AddSingleton<MongoDbContext>();
 // Add SignalR
 builder.Services.AddSignalR();
 builder.Services.AddHostedService<UnassignedIncidentService>();
+
 // Add Session support
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
