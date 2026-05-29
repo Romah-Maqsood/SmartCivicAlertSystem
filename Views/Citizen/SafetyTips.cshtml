@@ -24,161 +24,155 @@
             color: #1A1F36;
         }
 
-        .navbar {
-            background: #FFFFFF;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #EAECF0;
+        /* NO NAVBAR - NO BACK BUTTON */
+        .tips-container {
+            padding: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1A1F36;
-            text-decoration: none;
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
         }
 
-            .navbar-brand span {
-                color: #2563EB;
-            }
-
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        .top-bar {
-            background: #FFFFFF;
-            border-radius: 16px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #EAECF0;
-        }
-
-        .page-title h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .btn-back {
-            background: #2563EB;
-            color: white;
-            padding: 0.5rem 1.25rem;
-            border-radius: 40px;
-            text-decoration: none;
-            font-size: 0.875rem;
-        }
-
-        .tips-card {
+        .tip-card {
             background: #FFFFFF;
             border-radius: 20px;
-            padding: 2rem;
+            padding: 1.5rem;
             border: 1px solid #EAECF0;
-        }
-
-        .tip-item {
+            transition: all 0.3s ease;
             display: flex;
-            align-items: center;
             gap: 1rem;
-            padding: 1rem 0;
-            border-bottom: 1px solid #EAECF0;
         }
 
-            .tip-item:last-child {
-                border-bottom: none;
+            .tip-card:hover {
+                transform: translateY(-2px);
+                border-color: #2563EB;
             }
 
         .tip-icon {
-            width: 50px;
-            height: 50px;
-            background: #EFF6FF;
-            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%);
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
             .tip-icon i {
-                font-size: 1.5rem;
+                font-size: 1.75rem;
                 color: #2563EB;
             }
 
-        .tip-content h3 {
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
+        .tip-content {
+            flex: 1;
         }
 
-        .tip-content p {
-            font-size: 0.875rem;
-            color: #6B7280;
-        }
-
-        @@media (max-width: 768px) {
-            .container {
-                padding: 0 1rem;
+            .tip-content h3 {
+                font-size: 1.125rem;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
             }
 
-            .top-bar {
+            .tip-content p {
+                font-size: 0.875rem;
+                color: #6B7280;
+                line-height: 1.5;
+            }
+
+        .emergency-section {
+            margin-top: 2rem;
+            background: linear-gradient(135deg, #2563EB 0%, #8B5CF6 100%);
+            border-radius: 20px;
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+        }
+
+        .emergency-contacts {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .emergency-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.15);
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+        }
+
+            .emergency-item span {
+                font-weight: 600;
+            }
+
+        @@media (max-width: 768px) {
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tips-container {
+                padding: 1rem;
+            }
+
+            .emergency-contacts {
                 flex-direction: column;
-                gap: 1rem;
-                text-align: center;
+                align-items: center;
+                gap: 0.75rem;
             }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="/Citizen/Index" class="navbar-brand">SMART CIVIC <span>ALERT</span></a>
-        <a href="/Account/Logout" style="color: #6B7280;"><i class="fas fa-sign-out-alt"></i> Logout</a>
-    </nav>
-
-    <div class="container">
-        <div class="top-bar">
-            <div class="page-title"><h1><i class="fas fa-shield-alt" style="color: #2563EB;"></i> Safety Tips</h1></div>
-            <a href="/Citizen/Index" class="btn-back"><i class="fas fa-arrow-left"></i> Back</a>
-        </div>
-
-        <div class="tips-card">
-            <div class="tip-item">
+    <div class="tips-container">
+        <div class="tips-grid">
+            <div class="tip-card">
                 <div class="tip-icon"><i class="fas fa-phone-alt"></i></div>
-                <div class="tip-content">
-                    <h3>Emergency Helplines</h3>
-                    <p>Rescue 1122 | Police 15 | Fire 16 | Ambulance 115</p>
-                </div>
+                <div class="tip-content"><h3>Emergency Helplines</h3><p>Rescue 1122 | Police 15 | Fire 16 | Ambulance 115</p></div>
             </div>
-            <div class="tip-item">
+            <div class="tip-card">
                 <div class="tip-icon"><i class="fas fa-location-dot"></i></div>
-                <div class="tip-content">
-                    <h3>Share Your Location</h3>
-                    <p>Always share your exact location when reporting an incident for faster response.</p>
-                </div>
+                <div class="tip-content"><h3>Share Your Location</h3><p>Always share exact location when reporting for faster response.</p></div>
             </div>
-            <div class="tip-item">
+            <div class="tip-card">
                 <div class="tip-icon"><i class="fas fa-camera"></i></div>
-                <div class="tip-content">
-                    <h3>Take Photos</h3>
-                    <p>Take clear photos of the incident scene for better assessment by authorities.</p>
-                </div>
+                <div class="tip-content"><h3>Take Photos & Videos</h3><p>Clear visual evidence helps authorities assess quickly.</p></div>
             </div>
-            <div class="tip-item">
+            <div class="tip-card">
                 <div class="tip-icon"><i class="fas fa-clock"></i></div>
-                <div class="tip-content">
-                    <h3>Report Immediately</h3>
-                    <p>Report incidents as soon as possible to ensure quick response and resolution.</p>
-                </div>
+                <div class="tip-content"><h3>Report Immediately</h3><p>Don't wait. The sooner you report, the faster help arrives.</p></div>
             </div>
-            <div class="tip-item">
+            <div class="tip-card">
                 <div class="tip-icon"><i class="fas fa-id-card"></i></div>
-                <div class="tip-content">
-                    <h3>Keep ID Ready</h3>
-                    <p>Keep your CNIC or identification ready when reporting for verification purposes.</p>
-                </div>
+                <div class="tip-content"><h3>Keep ID Ready</h3><p>Have CNIC ready when reporting for verification.</p></div>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon"><i class="fas fa-heartbeat"></i></div>
+                <div class="tip-content"><h3>Stay Calm</h3><p>Staying calm helps provide accurate information to responders.</p></div>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon"><i class="fas fa-map"></i></div>
+                <div class="tip-content"><h3>Know Your Area</h3><p>Be familiar with landmarks and nearby emergency services.</p></div>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon"><i class="fas fa-medkit"></i></div>
+                <div class="tip-content"><h3>Basic First Aid</h3><p>Learning first aid can save lives while waiting for help.</p></div>
+            </div>
+        </div>
+        <div class="emergency-section">
+            <h3><i class="fas fa-exclamation-triangle"></i> Emergency Contacts</h3>
+            <div class="emergency-contacts">
+                <div class="emergency-item"><i class="fas fa-truck-medical"></i><span>Rescue 1122</span></div>
+                <div class="emergency-item"><i class="fas fa-shield-haltered"></i><span>Police 15</span></div>
+                <div class="emergency-item"><i class="fas fa-fire-extinguisher"></i><span>Fire 16</span></div>
+                <div class="emergency-item"><i class="fas fa-ambulance"></i><span>Ambulance 115</span></div>
             </div>
         </div>
     </div>

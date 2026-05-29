@@ -7,14 +7,13 @@ namespace SmartCityPulse.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }          // Auto-generated, nullable
+        public string? Id { get; set; }
 
-        public string? UserId { get; set; }      // Nullable
-        public string? IncidentId { get; set; }  // Nullable
-        public string? Title { get; set; }       // Nullable
-        public string? Status { get; set; }      // Nullable
-        public string? Message { get; set; }     // Nullable
-
+        public string? UserId { get; set; }
+        public string? IncidentId { get; set; }
+        public string? Title { get; set; }
+        public string? Status { get; set; }
+        public string? Message { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsRead { get; set; }
     }

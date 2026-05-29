@@ -1,0 +1,185 @@
+<!-- INCIDENTS SECTION -->
+<div id="incidentsSection" class="hide">
+    <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-list-alt"></i> All Incidents</h2>
+    </div>
+    <div class="filter-bar">
+        <select id="statusFilter">
+            <option value="">All Status</option>
+            <option value="Open">Open</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+        </select>
+        <select id="severityFilter">
+            <option value="">All Severity</option>
+            <option value="Critical">Critical</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+        </select>
+        <button class="btn-primary btn-sm" onclick="loadAllIncidents()"><i class="fas fa-filter"></i> Filter</button>
+        <button class="btn-ghost btn-sm" onclick="clearFilters()"><i class="fas fa-times"></i> Clear</button>
+    </div>
+
+    <!-- Incident List View -->
+    <div id="incidentListView">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th><th>Location</th><th>Department</th>
+                        <th>Severity</th><th>Status</th><th>Reported At</th><th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="allIncidentsTable">
+                    <tr><td colspan="7"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ========== INCIDENT DETAIL TOAST / POPUP ========== -->
+<div id="incidentToast" class="incident-toast-overlay" style="display:none;">
+    <div class="incident-toast-card">
+        <button class="incident-toast-close" onclick="closeIncidentToast()">
+            <i class="fas fa-times"></i>
+        </button>
+        <div id="incidentToastContent" class="incident-toast-body">
+            <!-- detail loaded via AJAX -->
+        </div>
+    </div>
+</div>
+
+<!-- Toast CSS (add this inside your existing <style> block) -->
+<style>
+    .incident-toast-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(17,24,39,0.35);
+        z-index: 999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(3px);
+    }
+    .incident-toast-card {
+        background: var(--bg-card);
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+        border: 1px solid var(--border);
+    }
+    .incident-toast-close {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(0,0,0,0.04);
+        border: none;
+        width: 30px; height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-secondary);
+        font-size: 14px;
+        transition: var(--transition);
+        z-index: 10;
+    }
+    .incident-toast-close:hover {
+        background: rgba(0,0,0,0.1);
+        color: var(--text-primary);
+    }
+    .incident-toast-body {
+        padding: 24px;
+    }
+</style>
+
+<!-- JavaScript for Toast Detail (replace old functions) -->
+<script>
+    async function viewIncidentDetail(incidentId) {
+        const toast = document.getElementById('incidentToast');
+        const content = document.getElementById('incidentToastContent');
+        content.innerHTML = '<p style="color:var(--text-secondary); text-align:center; padding:40px;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
+        toast.style.display = 'flex';
+
+        try {
+            const res = await fetch(`/Admin/GetIncidentDetailJson?id=${incidentId}`, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error('Incident not found');
+            const inc = await res.json();
+
+            const severityClass = `severity-${inc.severity.toLowerCase()}`;
+            const statusClass = `status-${inc.status.toLowerCase().replace(' ', '')}`;
+            const statusIcon = inc.status === 'Resolved' ? 'fa-check-circle' : 'fa-hourglass-half';
+
+            let citizenHtml = '';
+            if (inc.citizen) {
+                citizenHtml = `
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+                        <div class="pm-info-card"><div class="pm-info-label">Name</div><div class="pm-info-value">${escapeHtml(inc.citizen.name)}</div></div>
+                        <div class="pm-info-card"><div class="pm-info-label">Email</div><div class="pm-info-value">${escapeHtml(inc.citizen.email)}</div></div>
+                        <div class="pm-info-card"><div class="pm-info-label">Phone</div><div class="pm-info-value">${escapeHtml(inc.citizen.phone || 'N/A')}</div></div>
+                        <div class="pm-info-card"><div class="pm-info-label">Role</div><div class="pm-info-value">${escapeHtml(inc.citizen.role)}</div></div>
+                    </div>`;
+            } else {
+                citizenHtml = '<div class="unknown-citizen"><i class="fas fa-user-slash"></i> Unknown Citizen (Reported without login)</div>';
+            }
+
+            content.innerHTML = `
+                <div style="margin-bottom:16px;">
+                    <div style="font-size:18px; font-weight:800; color:var(--text-primary); margin-bottom:4px;">${escapeHtml(inc.title)}</div>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <span class="badge ${severityClass}">${inc.severity}</span>
+                        <span class="status-badge ${statusClass}"><i class="fas ${statusIcon}" style="font-size:10px;"></i> ${inc.status}</span>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px;">
+                    <div class="pm-info-card">
+                        <div class="pm-info-label"><i class="fas fa-map-marker-alt"></i> Location</div>
+                        <div class="pm-info-value">${escapeHtml(inc.location || 'Not specified')}</div>
+                    </div>
+                    <div class="pm-info-card">
+                        <div class="pm-info-label"><i class="fas fa-building"></i> Department</div>
+                        <div class="pm-info-value">${escapeHtml(inc.department || 'Unassigned')}</div>
+                    </div>
+                    <div class="pm-info-card">
+                        <div class="pm-info-label"><i class="fas fa-calendar-alt"></i> Reported At</div>
+                        <div class="pm-info-value">${new Date(inc.reportedAt).toLocaleString()}</div>
+                    </div>
+                    <div class="pm-info-card">
+                        <div class="pm-info-label"><i class="fas fa-clock"></i> Last Updated</div>
+                        <div class="pm-info-value">${new Date(inc.updatedAt).toLocaleString()}</div>
+                    </div>
+                    <div class="pm-info-card" style="grid-column:span 2;">
+                        <div class="pm-info-label"><i class="fas fa-align-left"></i> Description</div>
+                        <div class="pm-info-value" style="white-space:pre-wrap;">${escapeHtml(inc.description || 'No description provided.')}</div>
+                    </div>
+                </div>
+                <div style="border-top:1px solid var(--border); padding-top:12px;">
+                    <div class="pm-info-label" style="margin-bottom:6px;"><i class="fas fa-user"></i> Reported By</div>
+                    ${citizenHtml}
+                </div>`;
+
+            if (typeof logActivity === 'function') {
+                logActivity('view', 'Viewed Incident: ' + inc.title, 'Incident Toast');
+            }
+        } catch (err) {
+            content.innerHTML = `<p style="color:var(--red); text-align:center; padding:30px;"><i class="fas fa-exclamation-circle"></i> Error loading incident details.</p>`;
+            console.error(err);
+        }
+    }
+
+    function closeIncidentToast() {
+        document.getElementById('incidentToast').style.display = 'none';
+    }
+
+    // Close when clicking outside the card
+    document.getElementById('incidentToast').addEventListener('click', function(e) {
+        if (e.target === this) closeIncidentToast();
+    });
+</script>

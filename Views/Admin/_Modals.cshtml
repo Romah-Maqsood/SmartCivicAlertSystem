@@ -1,0 +1,180 @@
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ===== PROFILE MODAL (LIGHT THEME, NO LOGIN NOTIFICATIONS) ===== -->
+<div id="profileModal" class="profile-modal-overlay">
+    <div class="profile-modal-box">
+        <div class="pm-hero" style="background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);">
+            <button class="pm-hero-close" onclick="closeModal('profileModal')"><i class="fas fa-times"></i></button>
+            <div class="pm-hero-content">
+                <div class="pm-avatar-wrap">
+                    <div class="pm-avatar" id="pmAvatarLarge" style="color:#1A1F36; background: linear-gradient(135deg, #2563EB, #6366F1);">
+                        @{
+                            string uName = ViewBag.UserName as string ?? "Admin";
+                            char uInitial = uName.Length > 0 ? uName[0] : 'A';
+                        }
+                        @uInitial.ToString().ToUpper()
+                    </div>
+                    <div class="pm-avatar-edit" onclick="document.getElementById('avatarFileInput').click();" title="Change photo">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="previewAvatar(event)" />
+                </div>
+                <div class="pm-hero-info" style="color:#1A1F36;">
+                    <div class="pm-hero-name">@ViewBag.UserName</div>
+                    <div class="pm-hero-email" style="color:#4B5563;">@ViewBag.UserEmail</div>
+                    <div class="pm-hero-badges">
+                        <span class="pm-badge admin" style="background:#DBEAFE; color:#1E40AF; border-color:#BFDBFE;">Administrator</span>
+                        <span class="pm-badge online" style="background:#DCFCE7; color:#166534; border-color:#BBF7D0;">Online</span>
+                    </div>
+                </div>
+            </div>
+            <div class="pm-stats" style="background: rgba(255,255,255,0.6); border-top: 1px solid #E2E8F0;">
+                <div class="pm-stat" style="color:#1A1F36; border-right-color:#E2E8F0;">
+                    <div class="pm-stat-val" id="pmStatIncidents">@ViewBag.TotalToday</div>
+                    <div class="pm-stat-label">Today's Incidents</div>
+                </div>
+                <div class="pm-stat" style="color:#1A1F36; border-right-color:#E2E8F0;">
+                    <div class="pm-stat-val" id="pmStatOperators">—</div>
+                    <div class="pm-stat-label">Operators</div>
+                </div>
+                <div class="pm-stat" style="color:#1A1F36;">
+                    <div class="pm-stat-val">99.9%</div>
+                    <div class="pm-stat-label">Uptime</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pm-body">
+            <div class="pm-tabs">
+                <button class="pm-tab active" onclick="switchPmTab('overview',this)"><i class="fas fa-id-card"></i> Overview</button>
+                <button class="pm-tab" onclick="switchPmTab('edit',this)"><i class="fas fa-pen"></i> Edit Profile</button>
+                <button class="pm-tab" onclick="switchPmTab('security',this)"><i class="fas fa-lock"></i> Security</button>
+                <button class="pm-tab" onclick="switchPmTab('activity',this)"><i class="fas fa-history"></i> Activity</button>
+            </div>
+
+            <!-- Overview Panel -->
+            <div class="pm-panel active" id="pmPanel-overview">
+                <div class="pm-info-grid">
+                    <div class="pm-info-card"><div class="pm-info-label"><i class="fas fa-envelope"></i> Email</div><div class="pm-info-value" style="font-size:12px;">@ViewBag.UserEmail</div></div>
+                    <div class="pm-info-card"><div class="pm-info-label"><i class="fas fa-calendar-alt"></i> Account Created</div><div class="pm-info-value">@DateTime.UtcNow.ToString("dd MMM yyyy")</div></div>
+                    <div class="pm-info-card"><div class="pm-info-label"><i class="fas fa-circle" style="color:var(--green);"></i> Status</div><div class="pm-info-value online">Active</div></div>
+                    <div class="pm-info-card"><div class="pm-info-label"><i class="fas fa-clock"></i> Last Login</div><div class="pm-info-value">@DateTime.UtcNow.AddHours(-2).ToString("dd MMM, hh:mm tt")</div></div>
+                    <div class="pm-info-card"><div class="pm-info-label"><i class="fas fa-shield-alt"></i> Role</div><div class="pm-info-value">Administrator</div></div>
+                    <div class="pm-info-card"><div class="pm-info-label"><i class="fas fa-globe"></i> Timezone</div><div class="pm-info-value">PKT (UTC+5)</div></div>
+                </div>
+            </div>
+
+            <!-- Edit Profile Panel -->
+            <div class="pm-panel" id="pmPanel-edit">
+                <div class="pm-field-grid">
+                    <div class="pm-field"><label class="pm-label">Full Name</label><input type="text" class="pm-input" id="editName" placeholder="Full name" value="@ViewBag.UserName" /></div>
+                    <div class="pm-field"><label class="pm-label">Phone Number</label><input type="text" class="pm-input" id="editPhone" placeholder="+92 300 0000000" /></div>
+                    <div class="pm-field"><label class="pm-label">Department</label><input type="text" class="pm-input" id="editDept" placeholder="e.g. Command Center" /></div>
+                    <div class="pm-field"><label class="pm-label">Location</label><input type="text" class="pm-input" id="editLocation" placeholder="City, Country" /></div>
+                    <div class="pm-field full"><label class="pm-label">Bio</label><textarea class="pm-input" id="editBio" rows="3" placeholder="Brief description about your role..."></textarea></div>
+                </div>
+            </div>
+
+            <!-- Security Panel (login notifications removed) -->
+            <div class="pm-panel" id="pmPanel-security">
+                <div class="pm-field-grid single" style="margin-bottom:16px;">
+                    <div class="pm-field">
+                        <label class="pm-label">Current Password</label>
+                        <input type="password" class="pm-input" id="currentPassword" placeholder="Enter current password" />
+                    </div>
+                    <div class="pm-field">
+                        <label class="pm-label">New Password</label>
+                        <div class="pm-pw-wrap">
+                            <input type="password" class="pm-input" id="editPassword" placeholder="New password" oninput="checkPasswordStrength()" />
+                            <span class="pm-pw-eye" onclick="togglePwVisibility('editPassword',this)"><i class="fas fa-eye"></i></span>
+                        </div>
+                        <div class="pm-strength-bar"><div class="pm-strength-fill" id="pwStrengthFill"></div></div>
+                        <span class="pm-strength-text" id="pwStrengthText"></span>
+                        <div class="pm-pw-reqs">
+                            <div class="pm-pw-req" id="req-len"><i class="fas fa-circle" style="font-size:7px;"></i> 8+ chars</div>
+                            <div class="pm-pw-req" id="req-up"><i class="fas fa-circle" style="font-size:7px;"></i> Uppercase</div>
+                            <div class="pm-pw-req" id="req-num"><i class="fas fa-circle" style="font-size:7px;"></i> Number</div>
+                            <div class="pm-pw-req" id="req-sp"><i class="fas fa-circle" style="font-size:7px;"></i> Special</div>
+                        </div>
+                    </div>
+                    <div class="pm-field full">
+                        <label class="pm-label">Confirm New Password</label>
+                        <div class="pm-pw-wrap">
+                            <input type="password" class="pm-input" id="editPasswordConfirm" placeholder="Confirm new password" />
+                            <span class="pm-pw-eye" onclick="togglePwVisibility('editPasswordConfirm',this)"><i class="fas fa-eye"></i></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Sessions only -->
+                <div style="margin-top:14px;">
+                    <div style="font-size:11px; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">Active Sessions</div>
+                    <div class="pm-session">
+                        <div class="pm-session-icon"><i class="fas fa-desktop"></i></div>
+                        <div class="pm-session-info">
+                            <div class="pm-session-name" id="currentSessionName">Current browser</div>
+                            <div class="pm-session-meta" id="currentSessionMeta">Detecting session...</div>
+                        </div>
+                        <span class="pm-session-current">Current</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Panel -->
+            <div class="pm-panel" id="pmPanel-activity">
+                <div class="pm-activity" id="pmActivityList"></div>
+            </div>
+        </div>
+
+        <div class="pm-footer">
+            <div class="pm-footer-left"><i class="fas fa-shield-alt" style="color:#9CA3AF;"></i> Secured · Smart Civic Admin</div>
+            <div class="pm-footer-right">
+                <button class="btn-cancel" onclick="closeModal('profileModal')">Close</button>
+                <button class="btn-primary" onclick="saveProfile()"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div id="confirmModal" class="modal">
+    <div class="modal-content" style="width:420px; max-width:92%;">
+        <div class="delete-modal-body">
+            <div class="delete-modal-icon"><i class="fas fa-trash-alt"></i></div>
+            <h3>Delete Record?</h3>
+            <p id="confirmMessage">Are you sure you want to delete this record?</p>
+            <span class="delete-name-chip" id="deleteNameChip"></span>
+            <p style="font-size:12px; color:#94A3B8; margin-top:4px;">
+                <i class="fas fa-exclamation-circle"></i> This action is permanent and cannot be undone.
+            </p>
+            <div class="delete-modal-btns" style="margin-top:22px;">
+                <button class="btn-cancel-del" onclick="closeConfirmModal()"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn-confirm-del" id="confirmDeleteBtn"><i class="fas fa-trash-alt"></i> Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div id="operatorModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle">Add New Operator</h3>
+        <input type="hidden" id="entityType" value="operator" />
+        <input type="hidden" id="entityId" />
+        <input type="text"     id="opName"     placeholder="Full Name" />
+        <input type="email"    id="opEmail"    placeholder="Email Address" />
+        <input type="text"     id="opPhone"    placeholder="Phone Number" />
+        <select id="opDepartment">
+            <option value="">Select Department</option>
+            <option value="Fire">Fire Department</option>
+            <option value="Police">Police Department</option>
+            <option value="Rescue">Rescue Department</option>
+        </select>
+        <input type="password" id="opPassword" placeholder="Password (leave blank to keep unchanged)" />
+        <div class="modal-buttons">
+            <button class="btn-primary" onclick="saveEntity()"><i class="fas fa-save"></i> Save</button>
+            <button class="btn-cancel" onclick="closeModal('operatorModal')">Cancel</button>
+        </div>
+    </div>
+</div>
