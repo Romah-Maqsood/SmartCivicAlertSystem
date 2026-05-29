@@ -44,6 +44,37 @@ namespace SmartCityPulse.Models
 
         [BsonElement("comments")]
         public List<IncidentComment> Comments { get; set; } = new();
+
+        // Police Specific Fields
+        [BsonElement("firNumber")]
+        public string FIRNumber { get; set; } = string.Empty;
+
+        [BsonElement("caseType")]
+        public string CaseType { get; set; } = string.Empty;
+
+        [BsonElement("complainantName")]
+        public string ComplainantName { get; set; } = string.Empty;
+
+        [BsonElement("complainantPhone")]
+        public string ComplainantPhone { get; set; } = string.Empty;
+
+        [BsonElement("complainantCNIC")]
+        public string ComplainantCNIC { get; set; } = string.Empty;
+
+        [BsonElement("suspectName")]
+        public string SuspectName { get; set; } = string.Empty;
+
+        [BsonElement("suspectDescription")]
+        public string SuspectDescription { get; set; } = string.Empty;
+
+        [BsonElement("vehicleNumber")]
+        public string VehicleNumber { get; set; } = string.Empty;
+
+        [BsonElement("investigationStatus")]
+        public string InvestigationStatus { get; set; } = "FIR Registered";
+
+        [BsonElement("assignedOfficer")]
+        public string AssignedOfficer { get; set; } = string.Empty;
     }
 
     public class IncidentComment
