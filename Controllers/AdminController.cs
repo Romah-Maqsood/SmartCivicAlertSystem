@@ -88,7 +88,7 @@ namespace SmartCityPulse.Controllers
             }
         }
 
-        // ==================== INCIDENT DETAIL (FULL PAGE – still available but not used from modal) ====================
+        // ==================== INCIDENT DETAIL (FULL PAGE – optional) ====================
         [HttpGet]
         public async Task<IActionResult> IncidentDetail(string id)
         {
@@ -99,7 +99,7 @@ namespace SmartCityPulse.Controllers
             return View(incident);
         }
 
-        // ==================== INCIDENT DETAIL JSON (AJAX – used by modal) ====================
+        // ==================== INCIDENT DETAIL JSON (used by modal) ====================
         [HttpGet]
         public async Task<IActionResult> GetIncidentDetailJson(string id)
         {
@@ -447,30 +447,26 @@ namespace SmartCityPulse.Controllers
                 var userId = HttpContext.Session.GetString("UserId");
                 if (string.IsNullOrEmpty(userId)) return Json(new { success = false, message = "Session expired." });
 
-                // Find admin in Users collection (assuming admin is stored there)
                 var admin = await _context.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
                 if (admin == null) return Json(new { success = false, message = "Admin account not found." });
 
-                // Verify current password if trying to change password
                 if (!string.IsNullOrEmpty(model.NewPassword))
                 {
                     if (string.IsNullOrEmpty(model.CurrentPassword))
-                        return Json(new { success = false, message = "Current password is required to change password." });
+                        return Json(new { success = false, message = "Current password is required." });
 
-                    // Simple password check – adapt to your hashing method
-                    if (admin.PasswordHash != model.CurrentPassword) // Replace with proper hash comparison
+                    // Plain text check – replace with proper hashing in production
+                    if (admin.PasswordHash != model.CurrentPassword)
                         return Json(new { success = false, message = "Current password is incorrect." });
 
-                    admin.PasswordHash = model.NewPassword; // Should be hashed in real scenario
+                    admin.PasswordHash = model.NewPassword; // Should be hashed
                 }
 
-                // Update name
                 if (!string.IsNullOrEmpty(model.Name))
                     admin.Name = model.Name;
 
                 await _context.Users.ReplaceOneAsync(u => u.Id == userId, admin);
 
-                // Update session name if changed
                 HttpContext.Session.SetString("UserName", admin.Name);
 
                 return Json(new { success = true, message = "Profile updated successfully!" });
@@ -483,12 +479,10 @@ namespace SmartCityPulse.Controllers
         }
     }
 
-    // ==================== MODEL FOR PROFILE UPDATE ====================
     public class ProfileUpdateModel
     {
-        public string Name { get; set; }
-        public string CurrentPassword { get; set; }
-        public string NewPassword { get; set; }
-        // Add Phone, Department, etc. as needed
+        public string Name { get; set; } = string.Empty;
+        public string CurrentPassword { get; set; } = string.Empty;
+        public string NewPassword { get; set; } = string.Empty;
     }
 }
