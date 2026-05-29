@@ -27,7 +27,11 @@
     <div class="section-header">
         <h2 class="section-title"><i class="fas fa-file-alt"></i> Generate Reports</h2>
     </div>
-    <p style="color:var(--text-secondary); font-size:13px; margin-bottom:24px;">Export filtered incident reports in CSV, JSON, or PDF format.</p>
+    <p style="color:var(--text-secondary); font-size:13px; margin-bottom:24px;">
+        Export filtered incident reports in CSV, JSON, or PDF format.
+    </p>
+
+    <!-- Custom Report -->
     <div class="chart-card" style="margin-bottom:28px;">
         <div class="chart-title"><i class="fas fa-sliders-h"></i> Custom Report</div>
         <div class="report-form-grid">
@@ -56,6 +60,7 @@
         <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
             <button class="btn-ghost" onclick="previewCount()"><i class="fas fa-eye"></i> Preview Count</button>
             <span id="previewResult" class="preview-result"></span>
+            <!-- Download dropdown for custom report -->
             <div class="download-dropdown">
                 <button class="btn-primary" onclick="toggleDownloadMenu()"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button>
                 <div class="download-menu" id="downloadMenu">
@@ -66,25 +71,51 @@
             </div>
         </div>
     </div>
+
+    <!-- Quick Presets -->
     <h3 style="font-size:15px; font-weight:700; color:var(--text-primary); margin-bottom:14px;">Quick Presets</h3>
     <div class="report-cards">
+        <!-- Today's Report -->
         <div class="report-card">
             <div class="rc-icon"><i class="fas fa-calendar-day"></i></div>
             <h3>Today's Report</h3>
             <p>All incidents reported today</p>
-            <button class="btn-primary" onclick="downloadQuickReport('today')"><i class="fas fa-download"></i> Download CSV</button>
+            <div class="download-dropdown" style="display: inline-block; position: relative;">
+                <button class="btn-primary" onclick="toggleQuickMenu('today')"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button>
+                <div class="download-menu" id="quickMenu-today">
+                    <a href="#" onclick="downloadQuickReport('today','csv'); return false;"><i class="fas fa-file-csv"></i> CSV</a>
+                    <a href="#" onclick="downloadQuickReport('today','json'); return false;"><i class="fas fa-file-code"></i> JSON</a>
+                    <a href="#" onclick="downloadQuickReport('today','pdf'); return false;"><i class="fas fa-file-pdf"></i> PDF</a>
+                </div>
+            </div>
         </div>
+        <!-- Weekly Report -->
         <div class="report-card">
             <div class="rc-icon"><i class="fas fa-calendar-week"></i></div>
             <h3>Weekly Report</h3>
             <p>Last 7 days summary</p>
-            <button class="btn-primary" onclick="downloadQuickReport('weekly')"><i class="fas fa-download"></i> Download CSV</button>
+            <div class="download-dropdown" style="display: inline-block; position: relative;">
+                <button class="btn-primary" onclick="toggleQuickMenu('weekly')"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button>
+                <div class="download-menu" id="quickMenu-weekly">
+                    <a href="#" onclick="downloadQuickReport('weekly','csv'); return false;"><i class="fas fa-file-csv"></i> CSV</a>
+                    <a href="#" onclick="downloadQuickReport('weekly','json'); return false;"><i class="fas fa-file-code"></i> JSON</a>
+                    <a href="#" onclick="downloadQuickReport('weekly','pdf'); return false;"><i class="fas fa-file-pdf"></i> PDF</a>
+                </div>
+            </div>
         </div>
+        <!-- Monthly Report -->
         <div class="report-card">
             <div class="rc-icon"><i class="fas fa-calendar-alt"></i></div>
             <h3>Monthly Report</h3>
             <p>Last 30 days overview</p>
-            <button class="btn-primary" onclick="downloadQuickReport('monthly')"><i class="fas fa-download"></i> Download CSV</button>
+            <div class="download-dropdown" style="display: inline-block; position: relative;">
+                <button class="btn-primary" onclick="toggleQuickMenu('monthly')"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button>
+                <div class="download-menu" id="quickMenu-monthly">
+                    <a href="#" onclick="downloadQuickReport('monthly','csv'); return false;"><i class="fas fa-file-csv"></i> CSV</a>
+                    <a href="#" onclick="downloadQuickReport('monthly','json'); return false;"><i class="fas fa-file-code"></i> JSON</a>
+                    <a href="#" onclick="downloadQuickReport('monthly','pdf'); return false;"><i class="fas fa-file-pdf"></i> PDF</a>
+                </div>
+            </div>
         </div>
     </div>
     <p style="margin-top:20px; color:#94A3B8; text-align:center; font-size:12px;">
@@ -99,3 +130,55 @@
     </div>
     <div class="notification-list" id="notificationList"></div>
 </div>
+
+<script>
+    // Quick report download with format
+    function downloadQuickReport(type, format) {
+        const today = new Date().toISOString().split('T')[0];
+        let start, end = today;
+        if (type === 'today') start = today;
+        if (type === 'weekly') start = new Date(Date.now() - 7*86400000).toISOString().split('T')[0];
+        if (type === 'monthly') start = new Date(Date.now() - 30*86400000).toISOString().split('T')[0];
+
+        if (format === 'csv') {
+            window.open(`/Admin/ExportReport?startDate=${start}&endDate=${end}`, '_blank');
+        } else if (format === 'json') {
+            fetch(`/Admin/GetAllIncidentsJson?startDate=${start}&endDate=${end}`, { credentials: 'same-origin' })
+                .then(r => r.json())
+                .then(data => {
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `IncidentReport_${new Date().toISOString().slice(0,10)}.json`;
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                })
+                .catch(() => showToast('Error generating JSON report.', 'error'));
+        } else if (format === 'pdf') {
+            window.open(`/Admin/ExportPdfReport?startDate=${start}&endDate=${end}`, '_blank');
+        }
+        // Close the quick menu after download
+        const menu = document.getElementById('quickMenu-' + type);
+        if (menu) menu.style.display = 'none';
+    }
+
+    // Toggle quick preset dropdowns
+    function toggleQuickMenu(type) {
+        const menu = document.getElementById('quickMenu-' + type);
+        const isOpen = menu.style.display === 'block';
+        // Close all quick menus first
+        document.querySelectorAll('[id^="quickMenu-"]').forEach(m => m.style.display = 'none');
+        if (!isOpen) {
+            menu.style.display = 'block';
+        }
+        // Close when clicking outside
+        setTimeout(() => {
+            window.addEventListener('click', function closeQuick(e) {
+                if (!e.target.closest('.download-dropdown')) {
+                    menu.style.display = 'none';
+                    window.removeEventListener('click', closeQuick);
+                }
+            });
+        }, 10);
+    }
+</script>

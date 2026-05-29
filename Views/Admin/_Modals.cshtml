@@ -1,7 +1,7 @@
 <!-- TOAST CONTAINER -->
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- ===== ENHANCED PROFILE MODAL (SOFTER HEADER, CLEAN UI) ===== -->
+<!-- ===== PROFILE MODAL (LIGHT THEME, NO LOGIN NOTIFICATIONS) ===== -->
 <div id="profileModal" class="profile-modal-overlay">
     <div class="profile-modal-box">
         <div class="pm-hero" style="background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);">
@@ -10,10 +10,10 @@
                 <div class="pm-avatar-wrap">
                     <div class="pm-avatar" id="pmAvatarLarge" style="color:#1A1F36; background: linear-gradient(135deg, #2563EB, #6366F1);">
                         @{
-                            string name = ViewBag.UserName as string ?? "Admin";
-                            char initial = name.Length > 0 ? name[0] : 'A';
+                            string uName = ViewBag.UserName as string ?? "Admin";
+                            char uInitial = uName.Length > 0 ? uName[0] : 'A';
                         }
-                        @initial.ToString().ToUpper()
+                        @uInitial.ToString().ToUpper()
                     </div>
                     <div class="pm-avatar-edit" onclick="document.getElementById('avatarFileInput').click();" title="Change photo">
                         <i class="fas fa-camera"></i>
@@ -29,7 +29,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="pm-stats" style="background: rgba(255,255,255,0.6); border-top: 1px solid #E2E8F0;">
                 <div class="pm-stat" style="color:#1A1F36; border-right-color:#E2E8F0;">
                     <div class="pm-stat-val" id="pmStatIncidents">@ViewBag.TotalToday</div>
@@ -41,73 +40,43 @@
                 </div>
                 <div class="pm-stat" style="color:#1A1F36;">
                     <div class="pm-stat-val">99.9%</div>
-                    <div class="pm-stat-label">System Uptime</div>
+                    <div class="pm-stat-label">Uptime</div>
                 </div>
             </div>
         </div>
 
         <div class="pm-body">
             <div class="pm-tabs">
-                <button class="pm-tab active" onclick="switchPmTab('overview', this)"><i class="fas fa-id-card"></i> Overview</button>
-                <button class="pm-tab" onclick="switchPmTab('edit', this)"><i class="fas fa-pen"></i> Edit Profile</button>
-                <button class="pm-tab" onclick="switchPmTab('security', this)"><i class="fas fa-lock"></i> Security</button>
-                <button class="pm-tab" onclick="switchPmTab('activity', this)"><i class="fas fa-history"></i> Activity</button>
+                <button class="pm-tab active" onclick="switchPmTab('overview',this)"><i class="fas fa-id-card"></i> Overview</button>
+                <button class="pm-tab" onclick="switchPmTab('edit',this)"><i class="fas fa-pen"></i> Edit Profile</button>
+                <button class="pm-tab" onclick="switchPmTab('security',this)"><i class="fas fa-lock"></i> Security</button>
+                <button class="pm-tab" onclick="switchPmTab('activity',this)"><i class="fas fa-history"></i> Activity</button>
             </div>
 
+            <!-- Overview Panel -->
             <div class="pm-panel active" id="pmPanel-overview">
                 <div class="pm-info-grid">
-                    <div class="pm-info-card">
-                        <div class="pm-info-label"><i class="fas fa-envelope"></i> Email Address</div>
-                        <div class="pm-info-value" style="font-size:12px;">@ViewBag.UserEmail</div>
-                    </div>
-                    <div class="pm-info-card">
-                        <div class="pm-info-label"><i class="fas fa-calendar-alt"></i> Account Created</div>
-                        <div class="pm-info-value">@DateTime.UtcNow.ToString("dd MMM yyyy")</div>
-                    </div>
-                    <div class="pm-info-card">
-                        <div class="pm-info-label"><i class="fas fa-circle" style="color:#10B981;"></i> Account Status</div>
-                        <div class="pm-info-value online">Active</div>
-                    </div>
-                    <div class="pm-info-card">
-                        <div class="pm-info-label"><i class="fas fa-clock"></i> Last Login</div>
-                        <div class="pm-info-value">@DateTime.UtcNow.AddHours(-2).ToString("dd MMM, hh:mm tt")</div>
-                    </div>
-                    <div class="pm-info-card">
-                        <div class="pm-info-label"><i class="fas fa-shield-alt"></i> Role</div>
-                        <div class="pm-info-value">Administrator</div>
-                    </div>
-                    <div class="pm-info-card">
-                        <div class="pm-info-label"><i class="fas fa-globe"></i> Timezone</div>
-                        <div class="pm-info-value">PKT (UTC+5)</div>
-                    </div>
+                    <div class="pm-info-card"><div class="pm-info-label"><i class="fas fa-envelope"></i> Email</div><div class="pm-info-value" style="font-size:12px;">@ViewBag.UserEmail</div></div>
+                    <div class="pm-info-card"><div class="pm-info-label"><i class="fas fa-calendar-alt"></i> Account Created</div><div class="pm-info-value">@DateTime.UtcNow.ToString("dd MMM yyyy")</div></div>
+                    <div class="pm-info-card"><div class="pm-info-label"><i class="fas fa-circle" style="color:var(--green);"></i> Status</div><div class="pm-info-value online">Active</div></div>
+                    <div class="pm-info-card"><div class="pm-info-label"><i class="fas fa-clock"></i> Last Login</div><div class="pm-info-value">@DateTime.UtcNow.AddHours(-2).ToString("dd MMM, hh:mm tt")</div></div>
+                    <div class="pm-info-card"><div class="pm-info-label"><i class="fas fa-shield-alt"></i> Role</div><div class="pm-info-value">Administrator</div></div>
+                    <div class="pm-info-card"><div class="pm-info-label"><i class="fas fa-globe"></i> Timezone</div><div class="pm-info-value">PKT (UTC+5)</div></div>
                 </div>
             </div>
 
+            <!-- Edit Profile Panel -->
             <div class="pm-panel" id="pmPanel-edit">
                 <div class="pm-field-grid">
-                    <div class="pm-field">
-                        <label class="pm-label">Full Name</label>
-                        <input type="text" class="pm-input" id="editName" placeholder="Full name" value="@ViewBag.UserName" />
-                    </div>
-                    <div class="pm-field">
-                        <label class="pm-label">Phone Number</label>
-                        <input type="text" class="pm-input" id="editPhone" placeholder="+92 300 0000000" />
-                    </div>
-                    <div class="pm-field">
-                        <label class="pm-label">Department</label>
-                        <input type="text" class="pm-input" id="editDept" placeholder="e.g. Command Center" />
-                    </div>
-                    <div class="pm-field">
-                        <label class="pm-label">Location</label>
-                        <input type="text" class="pm-input" id="editLocation" placeholder="City, Country" />
-                    </div>
-                    <div class="pm-field full">
-                        <label class="pm-label">Bio</label>
-                        <textarea class="pm-input" id="editBio" rows="3" placeholder="Brief description about your role..."></textarea>
-                    </div>
+                    <div class="pm-field"><label class="pm-label">Full Name</label><input type="text" class="pm-input" id="editName" placeholder="Full name" value="@ViewBag.UserName" /></div>
+                    <div class="pm-field"><label class="pm-label">Phone Number</label><input type="text" class="pm-input" id="editPhone" placeholder="+92 300 0000000" /></div>
+                    <div class="pm-field"><label class="pm-label">Department</label><input type="text" class="pm-input" id="editDept" placeholder="e.g. Command Center" /></div>
+                    <div class="pm-field"><label class="pm-label">Location</label><input type="text" class="pm-input" id="editLocation" placeholder="City, Country" /></div>
+                    <div class="pm-field full"><label class="pm-label">Bio</label><textarea class="pm-input" id="editBio" rows="3" placeholder="Brief description about your role..."></textarea></div>
                 </div>
             </div>
 
+            <!-- Security Panel (login notifications removed) -->
             <div class="pm-panel" id="pmPanel-security">
                 <div class="pm-field-grid single" style="margin-bottom:16px;">
                     <div class="pm-field">
@@ -116,58 +85,52 @@
                     </div>
                     <div class="pm-field">
                         <label class="pm-label">New Password</label>
-                        <input type="password" class="pm-input" id="editPassword" placeholder="New password" oninput="checkPasswordStrength()" />
+                        <div class="pm-pw-wrap">
+                            <input type="password" class="pm-input" id="editPassword" placeholder="New password" oninput="checkPasswordStrength()" />
+                            <span class="pm-pw-eye" onclick="togglePwVisibility('editPassword',this)"><i class="fas fa-eye"></i></span>
+                        </div>
                         <div class="pm-strength-bar"><div class="pm-strength-fill" id="pwStrengthFill"></div></div>
                         <span class="pm-strength-text" id="pwStrengthText"></span>
-                    </div>
-                    <div class="pm-field">
-                        <label class="pm-label">Confirm New Password</label>
-                        <input type="password" class="pm-input" id="editPasswordConfirm" placeholder="Confirm new password" />
-                    </div>
-                </div>
-
-                <div class="pm-toggle-row">
-                    <div class="pm-toggle-left">
-                        <div class="pm-toggle-icon"><i class="fas fa-bell"></i></div>
-                        <div>
-                            <div class="pm-toggle-title">Login Notifications</div>
-                            <div class="pm-toggle-desc">Get notified on new login attempts</div>
+                        <div class="pm-pw-reqs">
+                            <div class="pm-pw-req" id="req-len"><i class="fas fa-circle" style="font-size:7px;"></i> 8+ chars</div>
+                            <div class="pm-pw-req" id="req-up"><i class="fas fa-circle" style="font-size:7px;"></i> Uppercase</div>
+                            <div class="pm-pw-req" id="req-num"><i class="fas fa-circle" style="font-size:7px;"></i> Number</div>
+                            <div class="pm-pw-req" id="req-sp"><i class="fas fa-circle" style="font-size:7px;"></i> Special</div>
                         </div>
                     </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggleLoginNotif" checked />
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <div class="pm-field full">
+                        <label class="pm-label">Confirm New Password</label>
+                        <div class="pm-pw-wrap">
+                            <input type="password" class="pm-input" id="editPasswordConfirm" placeholder="Confirm new password" />
+                            <span class="pm-pw-eye" onclick="togglePwVisibility('editPasswordConfirm',this)"><i class="fas fa-eye"></i></span>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- Active Sessions only -->
                 <div style="margin-top:14px;">
-                    <div style="font-size:12px; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">Active Sessions</div>
+                    <div style="font-size:11px; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">Active Sessions</div>
                     <div class="pm-session">
                         <div class="pm-session-icon"><i class="fas fa-desktop"></i></div>
                         <div class="pm-session-info">
                             <div class="pm-session-name" id="currentSessionName">Current browser</div>
-                            <div class="pm-session-meta" id="currentSessionMeta">Detecting...</div>
+                            <div class="pm-session-meta" id="currentSessionMeta">Detecting session...</div>
                         </div>
                         <span class="pm-session-current">Current</span>
                     </div>
                 </div>
             </div>
 
+            <!-- Activity Panel -->
             <div class="pm-panel" id="pmPanel-activity">
-                <div class="pm-activity" id="pmActivityList">
-                    <div style="text-align:center; padding:20px; color:var(--text-secondary);">No recent activity recorded.</div>
-                </div>
+                <div class="pm-activity" id="pmActivityList"></div>
             </div>
-
         </div>
 
         <div class="pm-footer">
-            <div class="pm-footer-left">
-                <i class="fas fa-shield-alt" style="color:var(--blue);"></i>
-                Last saved: just now
-            </div>
+            <div class="pm-footer-left"><i class="fas fa-shield-alt" style="color:#9CA3AF;"></i> Secured · Smart Civic Admin</div>
             <div class="pm-footer-right">
-                <button class="btn-cancel" onclick="closeModal('profileModal')">Cancel</button>
+                <button class="btn-cancel" onclick="closeModal('profileModal')">Close</button>
                 <button class="btn-primary" onclick="saveProfile()"><i class="fas fa-save"></i> Save Changes</button>
             </div>
         </div>
