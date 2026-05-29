@@ -8,7 +8,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+    <title>Notifications - Smart Civic Alert</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -19,145 +19,546 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: #E8EDF5;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: transparent;
             color: #1A1F36;
         }
 
-        .notifications-container {
-            padding: 1.5rem;
-            max-width: 800px;
-            margin: 0 auto;
+        .notifications-wrapper {
+            width: 100%;
+            padding: 0;
         }
 
-        .notification-card {
+        /* Page Header */
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+            .page-header h1 {
+                font-size: 22px;
+                font-weight: 700;
+                color: #1A1F36;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+                .page-header h1 i {
+                    color: #2563EB;
+                    font-size: 24px;
+                }
+
+            .page-header p {
+                font-size: 13px;
+                color: #6B7280;
+                margin-top: 6px;
+            }
+
+        /* Stats Summary */
+        .stats-summary {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .stat-badge {
             background: #FFFFFF;
-            border-radius: 16px;
-            padding: 1rem 1.25rem;
-            margin-bottom: 0.75rem;
+            border-radius: 40px;
+            padding: 8px 18px;
             border: 1px solid #EAECF0;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            transition: all 0.3s ease;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
         }
 
-            .notification-card:hover {
-                border-color: #2563EB;
+            .stat-badge i {
+                font-size: 14px;
             }
 
-        .notification-icon {
-            width: 40px;
-            height: 40px;
-            background: #EFF6FF;
+            .stat-badge .count {
+                font-weight: 700;
+                color: #2563EB;
+                margin-left: 4px;
+            }
+
+        /* Timeline Container */
+        .timeline-container {
+            position: relative;
+        }
+
+            /* Timeline Line */
+            .timeline-container::before {
+                content: '';
+                position: absolute;
+                left: 24px;
+                top: 20px;
+                bottom: 20px;
+                width: 2px;
+                background: linear-gradient(to bottom, #2563EB, #E2E8F0);
+                border-radius: 2px;
+            }
+
+        /* Notification Item */
+        .notification-item {
+            position: relative;
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            cursor: pointer;
+        }
+
+        /* Timeline Dot */
+        .timeline-dot {
+            width: 50px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dot {
+            width: 48px;
+            height: 48px;
+            background: #FFFFFF;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #EAECF0;
+            transition: all 0.3s ease;
         }
 
-            .notification-icon i {
-                color: #2563EB;
-                font-size: 1.25rem;
+        .notification-item:hover .dot {
+            transform: scale(1.05);
+            border-color: #2563EB;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .dot i {
+            font-size: 20px;
+        }
+
+        /* Status-specific dot colors */
+        .dot.open {
+            background: #EFF6FF;
+            border-color: #3B82F6;
+        }
+
+            .dot.open i {
+                color: #3B82F6;
             }
 
-        .notification-content {
+        .dot.in-progress {
+            background: #FFFBEB;
+            border-color: #F59E0B;
+        }
+
+            .dot.in-progress i {
+                color: #F59E0B;
+            }
+
+        .dot.resolved {
+            background: #ECFDF5;
+            border-color: #10B981;
+        }
+
+            .dot.resolved i {
+                color: #10B981;
+            }
+
+        .dot.critical {
+            background: #FEF2F2;
+            border-color: #EF4444;
+        }
+
+            .dot.critical i {
+                color: #EF4444;
+            }
+
+        /* Notification Card */
+        .notification-card {
             flex: 1;
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 16px 20px;
+            border: 1px solid #EAECF0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .notification-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 4px;
+                height: 100%;
+                background: #2563EB;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+        .notification-item:hover .notification-card {
+            transform: translateX(4px);
+            border-color: #2563EB;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+            .notification-item:hover .notification-card::before {
+                opacity: 1;
+            }
+
+        /* Card Content */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .notification-title {
+            font-size: 15px;
             font-weight: 600;
-            margin-bottom: 0.25rem;
+            color: #1A1F36;
+        }
+
+        .status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+            .status-chip.open {
+                background: #DBEAFE;
+                color: #1E40AF;
+            }
+
+            .status-chip.in-progress {
+                background: #FEF3C7;
+                color: #92400E;
+            }
+
+            .status-chip.resolved {
+                background: #DCFCE7;
+                color: #166534;
+            }
+
+        .notification-message {
+            font-size: 13px;
+            color: #6B7280;
+            line-height: 1.5;
+            margin-bottom: 12px;
         }
 
         .notification-time {
-            font-size: 0.75rem;
-            color: #6B7280;
-            margin-top: 0.25rem;
+            font-size: 11px;
+            color: #94A3B8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 0.2rem 0.5rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 500;
+            .notification-time i {
+                font-size: 11px;
+            }
+
+        /* Mark as read button */
+        .mark-read-btn {
+            background: none;
+            border: none;
+            color: #94A3B8;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.3s ease;
         }
 
-        .status-resolved {
-            background: #DCFCE7;
-            color: #166534;
-        }
+            .mark-read-btn:hover {
+                color: #2563EB;
+            }
 
-        .status-progress {
-            background: #FEF3C7;
-            color: #92400E;
-        }
-
-        .status-open {
-            background: #DBEAFE;
-            color: #1E40AF;
-        }
-
+        /* No Data State */
         .no-data {
             text-align: center;
-            padding: 60px;
+            padding: 60px 20px;
             background: #FFFFFF;
             border-radius: 20px;
             border: 1px solid #EAECF0;
         }
 
             .no-data i {
-                font-size: 3rem;
+                font-size: 48px;
                 color: #94A3B8;
-                margin-bottom: 1rem;
+                margin-bottom: 16px;
+                display: inline-block;
             }
 
-        @@media (max-width: 768px) {
-            .notifications-container {
-                padding: 1rem;
+            .no-data h3 {
+                font-size: 16px;
+                font-weight: 600;
+                margin-bottom: 8px;
+                color: #1A1F36;
             }
+
+            .no-data p {
+                font-size: 13px;
+                color: #6B7280;
+            }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: #FFFFFF;
+            border-radius: 20px;
+            border: 1px solid #EAECF0;
+        }
+
+            .loading-state i {
+                font-size: 40px;
+                color: #2563EB;
+                margin-bottom: 16px;
+                display: inline-block;
+            }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .timeline-container::before
+
+        {
+            left: 20px;
+        }
+
+        .timeline-dot {
+            width: 40px;
+        }
+
+        .dot {
+            width: 38px;
+            height: 38px;
+        }
+
+            .dot i {
+                font-size: 16px;
+            }
+
+        .notification-card {
+            padding: 12px 16px;
+        }
+
+        .notification-title {
+            font-size: 14px;
+        }
+
+        .notification-message {
+            font-size: 12px;
+        }
+
         }
     </style>
 </head>
 <body>
-    <div class="notifications-container">
+    <div class="notifications-wrapper">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-bell"></i>
+                Notifications
+            </h1>
+            <p>Stay updated with the latest status changes of your reported incidents</p>
+        </div>
+
+        <!-- Notifications List -->
         <div id="notificationsList">
-            <div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>
+            <div class="loading-state">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading your notifications...</p>
+            </div>
         </div>
     </div>
 
     <script>
+        let notificationsData = [];
+
         async function loadNotifications() {
             try {
                 const response = await fetch('/Citizen/GetNotifications');
+                if (!response.ok) throw new Error('Network response was not ok');
+
                 const notifications = await response.json();
+                notificationsData = notifications || [];
+
                 const container = document.getElementById('notificationsList');
 
-                if (!notifications || notifications.length === 0) {
-                    container.innerHTML = `<div class="no-data"><i class="fas fa-bell-slash"></i><h3 style="margin-top: 1rem;">No notifications</h3><p>You have no new notifications.</p></div>`;
+                if (!notificationsData || notificationsData.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-data">
+                            <i class="fas fa-bell-slash"></i>
+                            <h3>No Notifications</h3>
+                            <p>You don't have any notifications yet. When your incident status changes, you'll see them here.</p>
+                        </div>
+                    `;
                     return;
                 }
 
-                container.innerHTML = notifications.map(n => `
-                    <div class="notification-card">
-                        <div class="notification-icon"><i class="fas ${n.status === 'Resolved' ? 'fa-check-circle' : (n.status === 'In Progress' ? 'fa-spinner fa-pulse' : 'fa-info-circle')}"></i></div>
-                        <div class="notification-content">
-                            <div class="notification-title">${escapeHtml(n.title)}</div>
-                            <div>${escapeHtml(n.message)}</div>
-                            <div class="notification-time"><i class="far fa-clock"></i> ${new Date(n.updatedAt).toLocaleString()}</div>
+                // Calculate stats
+                const unreadCount = notificationsData.filter(n => !n.isRead).length;
+                const openCount = notificationsData.filter(n => n.status === 'Open').length;
+                const inProgressCount = notificationsData.filter(n => n.status === 'In Progress').length;
+                const resolvedCount = notificationsData.filter(n => n.status === 'Resolved').length;
+
+                // Build stats summary
+                const statsHtml = `
+                    <div class="stats-summary">
+                        <div class="stat-badge">
+                            <i class="fas fa-bell"></i>
+                            <span>Total <span class="count">${notificationsData.length}</span></span>
                         </div>
-                        <a href="/Citizen/Details/${n.id}" style="color: #2563EB;"><i class="fas fa-arrow-right"></i></a>
+                        <div class="stat-badge">
+                            <i class="fas fa-envelope"></i>
+                            <span>Unread <span class="count">${unreadCount}</span></span>
+                        </div>
+                        <div class="stat-badge">
+                            <i class="fas fa-circle" style="color: #3B82F6;"></i>
+                            <span>Open <span class="count">${openCount}</span></span>
+                        </div>
+                        <div class="stat-badge">
+                            <i class="fas fa-spinner" style="color: #F59E0B;"></i>
+                            <span>In Progress <span class="count">${inProgressCount}</span></span>
+                        </div>
+                        <div class="stat-badge">
+                            <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                            <span>Resolved <span class="count">${resolvedCount}</span></span>
+                        </div>
                     </div>
-                `).join('');
+                    <div class="timeline-container">
+                `;
+
+                // Build timeline items
+                let itemsHtml = '';
+                notificationsData.forEach((notification, index) => {
+                    let dotClass = 'dot';
+                    let iconClass = '';
+                    let statusClass = '';
+
+                    if (notification.status === 'Open') {
+                        dotClass += ' open';
+                        iconClass = 'fa-circle';
+                        statusClass = 'open';
+                    } else if (notification.status === 'In Progress') {
+                        dotClass += ' in-progress';
+                        iconClass = 'fa-spinner fa-pulse';
+                        statusClass = 'in-progress';
+                    } else if (notification.status === 'Resolved') {
+                        dotClass += ' resolved';
+                        iconClass = 'fa-check-circle';
+                        statusClass = 'resolved';
+                    } else {
+                        iconClass = 'fa-info-circle';
+                        statusClass = 'open';
+                    }
+
+                    // Get severity class for special icons
+                    if (notification.severity === 'Critical') {
+                        dotClass += ' critical';
+                        iconClass = 'fa-exclamation-triangle';
+                    }
+
+                    const formattedDate = new Date(notification.updatedAt).toLocaleString();
+                    const isLast = index === notificationsData.length - 1;
+
+                    itemsHtml += `
+                        <div class="notification-item" data-id="${notification.id}" data-status="${notification.status}">
+                            <div class="timeline-dot">
+                                <div class="${dotClass}">
+                                    <i class="fas ${iconClass}"></i>
+                                </div>
+                            </div>
+                            <div class="notification-card">
+                                <div class="card-header">
+                                    <span class="notification-title">${escapeHtml(notification.title)}</span>
+                                    <span class="status-chip ${statusClass}">
+                                        <i class="fas ${iconClass === 'fa-spinner fa-pulse' ? 'fa-spinner fa-pulse' : (iconClass === 'fa-check-circle' ? 'fa-check-circle' : 'fa-circle')}"></i>
+                                        ${notification.status}
+                                    </span>
+                                </div>
+                                <div class="notification-message">
+                                    ${escapeHtml(notification.message)}
+                                </div>
+                                <div class="notification-time">
+                                    <i class="far fa-clock"></i>
+                                    ${formattedDate}
+                                    <button class="mark-read-btn" onclick="markAsRead('${notification.id}', event)">
+                                        <i class="far fa-circle-check"></i> Mark as read
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = statsHtml + itemsHtml + `</div>`;
+
             } catch (error) {
-                document.getElementById('notificationsList').innerHTML = `<div class="no-data"><i class="fas fa-exclamation-triangle" style="font-size: 3rem;"></i><p>Error loading notifications.</p></div>`;
+                console.error('Error loading notifications:', error);
+                document.getElementById('notificationsList').innerHTML = `
+                    <div class="no-data">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error Loading Notifications</h3>
+                        <p>Unable to load your notifications. Please try again later.</p>
+                    </div>
+                `;
             }
         }
 
-        function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        async function markAsRead(notificationId, event) {
+            if (event) event.stopPropagation();
 
+            try {
+                const response = await fetch(`/Citizen/MarkNotificationAsRead/${notificationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    // Remove the mark as read button or update UI
+                    const button = event.target.closest('.mark-read-btn');
+                    if (button) {
+                        button.innerHTML = '<i class="fas fa-check-circle"></i> Read';
+                        button.disabled = true;
+                        button.style.opacity = '0.6';
+                        button.style.cursor = 'default';
+                    }
+                }
+            } catch (error) {
+                console.error('Error marking as read:', error);
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Auto-refresh notifications every 30 seconds
         loadNotifications();
+        setInterval(loadNotifications, 30000);
     </script>
 </body>
 </html>

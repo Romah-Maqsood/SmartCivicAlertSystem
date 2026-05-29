@@ -2,13 +2,14 @@
     Layout = null;
     ViewData["Title"] = "Report New Incident";
 }
+@model SmartCityPulse.Models.Incident
 
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+    <title>Report New Incident - Smart Civic Alert</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -20,14 +21,27 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #E8EDF5;
+            background: transparent;
             color: #1A1F36;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
+        /* Main Container - Centers the form in 75% area */
+        .form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* Wrapper - Controls form width */
+        .form-wrapper {
+            max-width: 650px;
+            width: 100%;
+            margin: 40px 0;
+        }
+
+        /* Toast Notification - Top Right Only */
         .toast-notification {
             position: fixed;
             top: 25px;
@@ -50,69 +64,107 @@
                 background: #EF4444;
             }
 
-        @@keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
+            .toast-notification.warning {
+                background: #F59E0B;
             }
 
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+        @@keyframes slideInRight {
+            from
+
+        {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
         }
 
         @@keyframes fadeOut {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from
 
-            to {
-                opacity: 0;
-                transform: translateX(100%);
-            }
+        {
+            opacity: 1;
+            transform: translateX(0);
         }
 
-        .form-container {
-            width: 100%;
-            max-width: 750px;
-            margin: 30px 20px;
+        to {
+            opacity: 0;
+            transform: translateX(100%);
         }
 
+        }
+
+        /* Back Button Container - Top Right */
+        .back-button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #FFFFFF;
+            color: #4B5563;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid #E5E7EB;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+            .btn-back:hover {
+                background: #F9FAFB;
+                border-color: #2563EB;
+                color: #2563EB;
+                transform: translateY(-1px);
+            }
+
+        /* Form Card */
         .form-card {
             background: #FFFFFF;
-            border-radius: 28px;
-            padding: 36px 40px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border-radius: 24px;
+            padding: 32px 36px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
             border: 1px solid #EAECF0;
         }
 
         .form-header {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #EAECF0;
         }
 
             .form-header i {
-                font-size: 52px;
+                font-size: 48px;
                 color: #2563EB;
                 margin-bottom: 12px;
             }
 
-            .form-header h1 {
-                font-size: 26px;
+            .form-header h2 {
+                font-size: 22px;
                 font-weight: 700;
                 color: #1A1F36;
-                margin-bottom: 8px;
+                margin-bottom: 6px;
             }
 
             .form-header p {
-                font-size: 14px;
+                font-size: 13px;
                 color: #6B7280;
             }
 
         .form-group {
-            margin-bottom: 22px;
+            margin-bottom: 20px;
         }
 
         .form-label {
@@ -130,11 +182,16 @@
                 font-size: 14px;
             }
 
+            .form-label .required {
+                color: #DC2626;
+                margin-left: 4px;
+            }
+
         .form-control {
             width: 100%;
             padding: 12px 16px;
             background: #FFFFFF;
-            border: 1px solid #EAECF0;
+            border: 1.5px solid #EAECF0;
             border-radius: 12px;
             font-family: inherit;
             font-size: 14px;
@@ -161,31 +218,10 @@
             background-position: right 16px center;
         }
 
-        .ai-suggest-btn {
-            background: #8B5CF6;
-            color: white;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-left: 8px;
-        }
-
-            .ai-suggest-btn:hover {
-                background: #7C3AED;
-                transform: translateY(-1px);
-            }
-
+        /* Department Group with AI Button */
         .department-group {
             display: flex;
             align-items: center;
-            flex-wrap: wrap;
             gap: 10px;
         }
 
@@ -193,6 +229,83 @@
                 flex: 1;
             }
 
+        .ai-suggest-btn {
+            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+            .ai-suggest-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+            }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: #2563EB;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+            .btn-submit:hover {
+                background: #1D4ED8;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            }
+
+            .btn-submit:disabled {
+                opacity: 0.7;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @@keyframes spin {
+            to
+
+        {
+            transform: rotate(360deg);
+        }
+
+        }
+
+        /* Location Group */
         .location-group {
             display: flex;
             gap: 10px;
@@ -220,7 +333,6 @@
 
             .btn-coordinates:hover {
                 background: #4B5563;
-                transform: translateY(-1px);
             }
 
         .coordinates-info {
@@ -244,193 +356,201 @@
                 color: #DC2626;
             }
 
+        @@media (max-width: 768px) {
+            .form-wrapper
+
+        {
+            margin: 20px;
+        }
+
+        .form-card {
+            padding: 24px;
+        }
+
         .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: 1fr;
+            gap: 0;
         }
 
-        .btn-group {
-            display: flex;
-            gap: 16px;
-            margin-top: 32px;
+        .location-group {
+            flex-direction: column;
         }
 
-        .btn-submit {
-            flex: 1;
-            background: #2563EB;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 40px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
+        .btn-coordinates {
+            padding: 10px;
             justify-content: center;
-            gap: 8px;
         }
 
-            .btn-submit:hover {
-                background: #1D4ED8;
-                transform: translateY(-1px);
-            }
+        .department-group {
+            flex-direction: column;
+        }
 
-        .btn-cancel {
-            flex: 1;
-            background: #F1F5F9;
-            color: #5A6A7F;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 40px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            text-align: center;
-            display: inline-flex;
-            align-items: center;
+        .ai-suggest-btn {
+            width: 100%;
             justify-content: center;
-            gap: 8px;
         }
 
-            .btn-cancel:hover {
-                background: #E2E8F0;
-            }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid white;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 0.6s linear infinite;
-        }
-
-        @@keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        @@media (max-width: 640px) {
-            .form-card {
-                padding: 24px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-
-            .form-container {
-                margin: 16px;
-            }
-
-            .location-group {
-                flex-direction: column;
-            }
-
-            .btn-coordinates {
-                padding: 10px;
-                justify-content: center;
-            }
         }
     </style>
 </head>
 <body>
     <div class="form-container">
-        <div class="form-card">
-            <div class="form-header">
-                <i class="fas fa-clipboard-list"></i>
-                <h1>Report New Incident</h1>
-                <p>Fill out the details below to submit your report</p>
+        <div class="form-wrapper">
+            <!-- Back Button - Top Right -->
+            <div class="back-button-container">
+                <button class="btn-back" id="backButton">
+                    <i class="fas fa-arrow-left"></i> Back to My Reports
+                </button>
             </div>
 
-            <form method="post" action="/Incident/Create" id="incidentForm">
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-heading"></i> Title
-                    </label>
-                    <input type="text" name="Title" id="Title" class="form-control" placeholder="e.g., Fire in Market, Car Accident, Theft Report" required />
+            <!-- Form Card -->
+            <div class="form-card">
+                <div class="form-header">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h2>Report New Incident</h2>
+                    <p>Fill out the details below to submit your report</p>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-align-left"></i> Description
-                    </label>
-                    <textarea name="Description" id="Description" class="form-control" placeholder="Describe the incident in detail..." required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-location-dot"></i> Location
-                    </label>
-                    <div class="location-group">
-                        <input type="text" name="Location" id="Location" class="form-control" placeholder="e.g., Gulshan Chowrangi, Karachi" required />
-                        <button type="button" class="btn-coordinates" id="getCoordinatesBtn">
-                            <i class="fas fa-map-pin"></i> Get Coordinates
-                        </button>
-                    </div>
-                    <div id="coordinatesInfo" class="coordinates-info">
-                        <i class="fas fa-info-circle"></i> Enter location and click "Get Coordinates"
-                    </div>
-                    <input type="hidden" name="Latitude" id="Latitude" />
-                    <input type="hidden" name="Longitude" id="Longitude" />
-                </div>
-
-                <div class="form-row">
+                <form id="incidentForm">
                     <div class="form-group">
                         <label class="form-label">
-                            <i class="fas fa-chart-line"></i> Severity
+                            <i class="fas fa-heading"></i> Title <span class="required">*</span>
                         </label>
-                        <select name="Severity" class="form-control" required>
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-                            <option value="Critical">Critical</option>
-                        </select>
+                        <input type="text" name="Title" id="Title" class="form-control" placeholder="e.g., Fire in Market, Car Accident, Theft Report" required />
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">
-                            <i class="fas fa-building"></i> Department
+                            <i class="fas fa-align-left"></i> Description <span class="required">*</span>
                         </label>
-                        <div class="department-group">
-                            <select name="Department" id="Department" class="form-control">
-                                <option value="Fire Department">Fire Department</option>
-                                <option value="Police Department">Police Department</option>
-                                <option value="Rescue/Medical">Rescue/Medical</option>
-                            </select>
-                            <button type="button" class="ai-suggest-btn" id="aiSuggestDeptBtn">
-                                <i class="fas fa-robot"></i> AI Suggest
+                        <textarea name="Description" id="Description" class="form-control" placeholder="Describe the incident in detail..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-location-dot"></i> Location <span class="required">*</span>
+                        </label>
+                        <div class="location-group">
+                            <input type="text" name="Location" id="Location" class="form-control" placeholder="e.g., Gulshan Chowrangi, Karachi" required />
+                            <button type="button" class="btn-coordinates" id="getCoordinatesBtn">
+                                <i class="fas fa-map-pin"></i> Get Coordinates
                             </button>
                         </div>
+                        <div id="coordinatesInfo" class="coordinates-info">
+                            <i class="fas fa-info-circle"></i> Enter location and click "Get Coordinates"
+                        </div>
+                        <input type="hidden" name="Latitude" id="Latitude" />
+                        <input type="hidden" name="Longitude" id="Longitude" />
                     </div>
-                </div>
 
-                <div class="btn-group">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-chart-line"></i> Severity <span class="required">*</span>
+                            </label>
+                            <select name="Severity" id="Severity" class="form-control" required>
+                                <option value="Low">Low</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="High">High</option>
+                                <option value="Critical">Critical</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-building"></i> Department
+                            </label>
+                            <div class="department-group">
+                                <select name="Department" id="Department" class="form-control">
+                                    <option value="Fire Department">Fire Department</option>
+                                    <option value="Police Department">Police Department</option>
+                                    <option value="Rescue/Medical">Rescue/Medical</option>
+                                    <option value="Emergency Response">Emergency Response</option>
+                                </select>
+                                <button type="button" class="ai-suggest-btn" id="aiSuggestDeptBtn">
+                                    <i class="fas fa-robot"></i> AI Suggest
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn-submit" id="submitBtn">
                         <i class="fas fa-paper-plane"></i> Submit Incident
                     </button>
-                    <a href="/Citizen/Index" class="btn-cancel">
-                        <i class="fas fa-times"></i> Cancel
-                    </a>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 
     <script>
-        // Get Coordinates Functionality
+        // ==================== AI DEPARTMENT SUGGESTION ====================
+        const aiSuggestBtn = document.getElementById('aiSuggestDeptBtn');
+        const titleInput = document.getElementById('Title');
+        const descInput = document.getElementById('Description');
+        const departmentSelect = document.getElementById('Department');
+
+        if (aiSuggestBtn) {
+            aiSuggestBtn.addEventListener('click', suggestDepartment);
+        }
+
+        function suggestDepartment() {
+            const title = titleInput.value.trim();
+            const description = descInput.value.trim();
+
+            if (!title && !description) {
+                showToast('Please enter title or description first', 'warning');
+                return;
+            }
+
+            aiSuggestBtn.innerHTML = '<span class="loading-spinner"></span> Analyzing...';
+            aiSuggestBtn.disabled = true;
+
+            setTimeout(() => {
+                const textToAnalyze = `${title} ${description}`;
+                let suggestedDepartment = "Fire Department";
+                let confidence = "Medium";
+                const lowerText = textToAnalyze.toLowerCase();
+
+                if (lowerText.includes('fire') || lowerText.includes('smoke') || lowerText.includes('gas') ||
+                    lowerText.includes('burn') || lowerText.includes('explosion') || lowerText.includes('leak') ||
+                    lowerText.includes('blast') || lowerText.includes('bomb')) {
+                    suggestedDepartment = "Fire Department";
+                    confidence = "High";
+                }
+                else if (lowerText.includes('theft') || lowerText.includes('robbery') || lowerText.includes('crime') ||
+                         lowerText.includes('stolen') || lowerText.includes('snatched') || lowerText.includes('murder') ||
+                         lowerText.includes('fight') || lowerText.includes('assault') || lowerText.includes('attack') ||
+                         lowerText.includes('harassment')) {
+                    suggestedDepartment = "Police Department";
+                    confidence = "High";
+                }
+                else if (lowerText.includes('accident') || lowerText.includes('injured') || lowerText.includes('medical') ||
+                         lowerText.includes('ambulance') || lowerText.includes('hurt') || lowerText.includes('bleeding') ||
+                         lowerText.includes('unconscious') || lowerText.includes('heart') || lowerText.includes('collapse') ||
+                         lowerText.includes('emergency')) {
+                    suggestedDepartment = "Rescue/Medical";
+                    confidence = "High";
+                }
+                else {
+                    if (lowerText.includes('road') || lowerText.includes('vehicle') || lowerText.includes('car') ||
+                        lowerText.includes('traffic')) {
+                        suggestedDepartment = "Rescue/Medical";
+                        confidence = "Medium";
+                    } else {
+                        suggestedDepartment = "Police Department";
+                        confidence = "Low";
+                    }
+                }
+
+                departmentSelect.value = suggestedDepartment;
+                showToast(`🤖 AI suggested: ${suggestedDepartment} (${confidence} confidence)`, 'success');
+
+                aiSuggestBtn.innerHTML = '<i class="fas fa-robot"></i> AI Suggest';
+                aiSuggestBtn.disabled = false;
+            }, 500);
+        }
+
+        // ==================== GET COORDINATES ====================
         const getCoordinatesBtn = document.getElementById('getCoordinatesBtn');
         const locationInput = document.getElementById('Location');
         const latitudeInput = document.getElementById('Latitude');
@@ -484,79 +604,19 @@
             }
         }
 
-        // AI Department Suggestion
-        const aiSuggestBtn = document.getElementById('aiSuggestDeptBtn');
-        const titleInput = document.getElementById('Title');
-        const descInput = document.getElementById('Description');
-        const departmentSelect = document.getElementById('Department');
-
-        if (aiSuggestBtn) {
-            aiSuggestBtn.addEventListener('click', suggestDepartment);
-        }
-
-        async function suggestDepartment() {
-            const title = titleInput.value.trim();
-            const description = descInput.value.trim();
-
-            if (!title && !description) {
-                showToast('Please enter title or description first', true);
-                return;
-            }
-
-            aiSuggestBtn.innerHTML = '<span class="loading-spinner"></span> Analyzing...';
-            aiSuggestBtn.disabled = true;
-
-            try {
-                const textToAnalyze = `${title} ${description}`;
-                let suggestedDepartment = "Fire Department";
-                let confidence = "Medium";
-                const lowerText = textToAnalyze.toLowerCase();
-
-                if (lowerText.includes('fire') || lowerText.includes('smoke') || lowerText.includes('gas') ||
-                    lowerText.includes('burn') || lowerText.includes('explosion') || lowerText.includes('leak')) {
-                    suggestedDepartment = "Fire Department";
-                    confidence = "High";
-                }
-                else if (lowerText.includes('theft') || lowerText.includes('robbery') || lowerText.includes('crime') ||
-                         lowerText.includes('stolen') || lowerText.includes('snatched') || lowerText.includes('murder') ||
-                         lowerText.includes('fight') || lowerText.includes('assault')) {
-                    suggestedDepartment = "Police Department";
-                    confidence = "High";
-                }
-                else if (lowerText.includes('accident') || lowerText.includes('injured') || lowerText.includes('medical') ||
-                         lowerText.includes('ambulance') || lowerText.includes('hurt') || lowerText.includes('bleeding') ||
-                         lowerText.includes('unconscious') || lowerText.includes('heart')) {
-                    suggestedDepartment = "Rescue/Medical";
-                    confidence = "High";
-                }
-                else {
-                    if (lowerText.includes('road') || lowerText.includes('vehicle') || lowerText.includes('car')) {
-                        suggestedDepartment = "Rescue/Medical";
-                        confidence = "Medium";
-                    } else {
-                        suggestedDepartment = "Police Department";
-                        confidence = "Low";
-                    }
-                }
-
-                departmentSelect.value = suggestedDepartment;
-                showToast(`AI suggested: ${suggestedDepartment} (${confidence} confidence)`, false);
-
-            } catch (error) {
-                showToast('Error analyzing incident. Please select manually.', true);
-            } finally {
-                aiSuggestBtn.innerHTML = '<i class="fas fa-robot"></i> AI Suggest';
-                aiSuggestBtn.disabled = false;
-            }
-        }
-
-        function showToast(message, isError = false) {
+        // ==================== TOAST NOTIFICATION ====================
+        function showToast(message, type = 'success') {
             const existingToast = document.querySelector('.toast-notification');
             if (existingToast) existingToast.remove();
 
             const toast = document.createElement('div');
-            toast.className = `toast-notification ${isError ? 'error' : ''}`;
-            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
+            toast.className = `toast-notification ${type}`;
+
+            let icon = 'fa-check-circle';
+            if (type === 'error') icon = 'fa-exclamation-triangle';
+            if (type === 'warning') icon = 'fa-exclamation-circle';
+
+            toast.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
             document.body.appendChild(toast);
 
             setTimeout(() => {
@@ -565,17 +625,99 @@
             }, 3000);
         }
 
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('success') === 'true') {
-                showToast('✅ Incident reported successfully! Your report has been submitted.');
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-            if (urlParams.get('error') === 'true') {
-                showToast('❌ Failed to report incident. Please try again.', true);
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-        };
+        // ==================== BACK BUTTON ====================
+        const backButton = document.getElementById('backButton');
+        if (backButton) {
+            backButton.addEventListener('click', function() {
+                if (window.parent && window.parent.loadViewFromChild) {
+                    window.parent.loadViewFromChild('myreports', null);
+                } else {
+                    window.location.href = '/Citizen/MyReports';
+                }
+            });
+        }
+
+        // ==================== FORM SUBMISSION ====================
+        const form = document.getElementById('incidentForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                // Validate required fields
+                const title = document.getElementById('Title').value.trim();
+                const description = document.getElementById('Description').value.trim();
+                const location = document.getElementById('Location').value.trim();
+
+                if (!title) {
+                    showToast('Please enter a title', 'warning');
+                    return;
+                }
+                if (!description) {
+                    showToast('Please enter a description', 'warning');
+                    return;
+                }
+                if (!location) {
+                    showToast('Please enter a location', 'warning');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="loading-spinner"></span> Submitting...';
+
+                // Create form data object
+                const incidentData = {
+                    Title: title,
+                    Description: description,
+                    Location: location,
+                    Latitude: latitudeInput.value ? parseFloat(latitudeInput.value) : null,
+                    Longitude: longitudeInput.value ? parseFloat(longitudeInput.value) : null,
+                    Severity: document.getElementById('Severity').value,
+                    Department: document.getElementById('Department').value,
+                    ReportedAt: new Date().toISOString()
+                };
+
+                try {
+                    const response = await fetch('/Incident/Create', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify(incidentData)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showToast('✅ Incident reported successfully! Your report has been submitted.', 'success');
+                        form.reset();
+                        latitudeInput.value = '';
+                        longitudeInput.value = '';
+                        coordinatesInfo.innerHTML = '<i class="fas fa-info-circle"></i> Enter location and click "Get Coordinates"';
+                        coordinatesInfo.className = 'coordinates-info';
+
+                        // Redirect back to My Reports after 2 seconds
+                        setTimeout(() => {
+                            if (window.parent && window.parent.loadViewFromChild) {
+                                window.parent.loadViewFromChild('myreports', null);
+                            } else {
+                                window.location.href = '/Citizen/MyReports';
+                            }
+                        }, 2000);
+                    } else {
+                        showToast(result.message || '❌ Failed to report incident. Please try again.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('❌ Network error. Please try again.', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Incident';
+                }
+            });
+        }
     </script>
 </body>
 </html>

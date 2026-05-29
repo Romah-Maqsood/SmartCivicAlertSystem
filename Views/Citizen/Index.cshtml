@@ -142,6 +142,7 @@
             font-weight: 500;
             transition: all 0.2s ease;
             border-radius: 10px;
+            cursor: pointer;
         }
 
             .nav-item i {
@@ -185,6 +186,7 @@
             font-weight: 500;
             border-radius: 10px;
             transition: all 0.2s ease;
+            cursor: pointer;
         }
 
             .footer-item:hover {
@@ -213,7 +215,6 @@
             margin-left: 72px;
         }
 
-        /* Welcome Header - Sirf Dashboard Mein */
         .welcome-header {
             margin-bottom: 28px;
         }
@@ -356,6 +357,7 @@
                 font-size: 11px;
                 color: #2563EB;
                 text-decoration: none;
+                cursor: pointer;
             }
 
         canvas {
@@ -490,6 +492,7 @@
             color: #2563EB;
             text-decoration: none;
             font-size: 11px;
+            cursor: pointer;
         }
 
         .critical-alert {
@@ -513,6 +516,27 @@
                 text-decoration: none;
                 font-size: 12px;
                 font-weight: 500;
+                cursor: pointer;
+            }
+
+        /* Dynamic Content Area */
+        .dynamic-content {
+            background: transparent;
+            min-height: 500px;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 60px;
+            background: #FFFFFF;
+            border-radius: 16px;
+            color: #6B7280;
+        }
+
+            .loading-spinner i {
+                font-size: 40px;
+                margin-bottom: 16px;
+                display: inline-block;
             }
 
         .chatbot-widget {
@@ -712,14 +736,6 @@
             font-weight: 500;
         }
 
-        .content-section {
-            display: none;
-        }
-
-            .content-section.active {
-                display: block;
-            }
-
         @@media (max-width: 1024px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -754,6 +770,104 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* Enhanced SOS Modal Styles */
+        .sos-modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 400px;
+            text-align: center;
+            animation: modalPopIn 0.3s ease;
+        }
+
+        @@keyframes modalPopIn {
+            from
+
+        {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        }
+
+        .sos-warning-icon {
+            width: 70px;
+            height: 70px;
+            background: #FEF2F2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px auto;
+        }
+
+            .sos-warning-icon i {
+                font-size: 35px;
+                color: #DC2626;
+            }
+
+        .sos-modal-content h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #DC2626;
+        }
+
+        .sos-modal-content p {
+            font-size: 13px;
+            color: #6B7280;
+            margin-bottom: 16px;
+        }
+
+        .sos-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .sos-confirm {
+            background: #DC2626;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+            .sos-confirm:hover {
+                background: #B91C1C;
+                transform: scale(1.02);
+            }
+
+        .sos-cancel {
+            background: #F1F5F9;
+            color: #1A1F36;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+            .sos-cancel:hover {
+                background: #E2E8F0;
+            }
     </style>
 </head>
 <body>
@@ -770,33 +884,33 @@
             </div>
 
             <div class="nav-menu">
-                <a href="#" class="nav-item active" data-page="dashboard">
+                <div class="nav-item active" data-page="dashboard">
                     <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
-                </a>
-                <a href="#" class="nav-item" data-page="myreports">
+                </div>
+                <div class="nav-item" data-page="myreports">
                     <i class="fas fa-file-alt"></i> <span>My Reports</span>
-                </a>
-                <a href="#" class="nav-item" data-page="statistics">
+                </div>
+                <div class="nav-item" data-page="statistics">
                     <i class="fas fa-chart-line"></i> <span>Statistics</span>
-                </a>
-                <a href="#" class="nav-item" data-page="notifications">
+                </div>
+                <div class="nav-item" data-page="notifications">
                     <i class="fas fa-bell"></i> <span>Notifications</span>
-                </a>
-                <a href="#" class="nav-item" data-page="reports">
+                </div>
+                <div class="nav-item" data-page="reports">
                     <i class="fas fa-download"></i> <span>Reports (PDF)</span>
-                </a>
-                <a href="#" class="nav-item sos" id="sosButton">
+                </div>
+                <div class="nav-item sos" id="sosButton">
                     <i class="fas fa-exclamation-triangle"></i> <span>SOS Emergency</span>
-                </a>
-                <a href="#" class="nav-item" data-page="safetytips">
+                </div>
+                <div class="nav-item" data-page="safetytips">
                     <i class="fas fa-shield-alt"></i> <span>Safety Tips</span>
-                </a>
+                </div>
             </div>
 
             <div class="nav-footer">
-                <a href="#" class="footer-item" data-page="profile">
+                <div class="footer-item" data-page="profile">
                     <i class="fas fa-user-circle"></i> <span>My Profile</span>
-                </a>
+                </div>
                 <a href="/Account/Logout" class="footer-item logout">
                     <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
                 </a>
@@ -804,8 +918,8 @@
         </div>
 
         <div class="main-content">
-            <!-- DASHBOARD SECTION - NO GREEN ALERT -->
-            <div id="dashboard-section" class="content-section active">
+            <!-- DASHBOARD VIEW -->
+            <div id="dashboard-view">
                 <div class="welcome-header">
                     <h1><i class="fas fa-hand-wave"></i> Welcome back, @ViewBag.UserName!</h1>
                     <p>Track your incidents, report issues, and stay updated.</p>
@@ -850,16 +964,16 @@
                     <div class="chart-card">
                         <div class="card-title">
                             <h3><i class="fas fa-chart-bar"></i> Incident Trends (Last 7 Days)</h3>
-                            <a href="#" data-page="myreports">View Details →</a>
+                            <div class="action-link" data-page="myreports">View Details →</div>
                         </div>
                         <canvas id="incidentChart"></canvas>
                     </div>
                     <div class="quick-action-card">
                         <h3><i class="fas fa-clipboard-list"></i> Report an incident?</h3>
                         <p>Your report will be routed to the right department instantly.</p>
-                        <a href="#" class="btn-report" data-page="newincident">
+                        <div class="btn-report" data-page="newincident">
                             <i class="fas fa-plus-circle"></i> New Incident
-                        </a>
+                        </div>
                     </div>
                 </div>
 
@@ -870,14 +984,14 @@
                             <i class="fas fa-exclamation-triangle"></i>
                             <strong>@ViewBag.CriticalIncidents critical incidents</strong> require immediate attention!
                         </div>
-                        <a href="#" data-page="myreports">View Details →</a>
+                        <div class="action-link" data-page="myreports">View Details →</div>
                     </div>
                 }
 
                 <div class="recent-card">
                     <div class="card-title">
                         <h3><i class="fas fa-history"></i> Recent Incidents</h3>
-                        <a href="#" data-page="myreports">View All →</a>
+                        <div class="action-link" data-page="myreports">View All →</div>
                     </div>
                     <div class="table-responsive">
                         <table class="incident-table">
@@ -894,7 +1008,7 @@
                                         <td class="severity-@(incident.Severity?.ToLower())">@incident.Severity</td>
                                         <td><span class="status-badge status-@(incident.Status?.ToLower())">@incident.Status</span></td>
                                         <td>@incident.ReportedAt.ToString("MMM dd")</td>
-                                        <td><a href="#" class="action-link" data-page="details" data-id="@incident.Id"><i class="fas fa-eye"></i> Track</a></td>
+                                        <td><div class="action-link" data-page="details" data-id="@incident.Id"><i class="fas fa-eye"></i> Track</div></td>
                                     </tr>
                                 }
                             </tbody>
@@ -903,100 +1017,8 @@
                 </div>
             </div>
 
-            <!-- MY REPORTS SECTION -->
-            <div id="myreports-section" class="content-section">
-                <div class="recent-card">
-                    <div class="card-title">
-                        <h3><i class="fas fa-file-alt"></i> All My Reports</h3>
-                        <a href="#" data-page="newincident">+ New Incident</a>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="incident-table">
-                            <thead>
-                                <tr><th>ID</th><th>Title</th><th>Location</th><th>Severity</th><th>Status</th><th>Date</th><th>Action</th></tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var incident in ViewBag.AllIncidents)
-                                {
-                                    <tr>
-                                        <td>#@(incident.Id?.Length >= 6 ? incident.Id.Substring(0, 6) : incident.Id)</td>
-                                        <td>@incident.Title</td>
-                                        <td>@incident.Location</td>
-                                        <td class="severity-@(incident.Severity?.ToLower())">@incident.Severity</td>
-                                        <td><span class="status-badge status-@(incident.Status?.ToLower())">@incident.Status</span></td>
-                                        <td>@incident.ReportedAt.ToString("MMM dd, yyyy")</td>
-                                        <td><a href="#" class="action-link" data-page="details" data-id="@incident.Id"><i class="fas fa-eye"></i> Track</a></td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div id="statistics-section" class="content-section">
-                <iframe src="/Citizen/Statistics" style="width: 100%; min-height: 600px; border: none; border-radius: 16px;"></iframe>
-            </div>
-            <!-- NOTIFICATIONS SECTION -->
-            <div id="notifications-section" class="content-section">
-                <div class="recent-card">
-                    <div class="card-title"><h3><i class="fas fa-bell"></i> Notifications</h3></div>
-                    <p style="color: #6B7280; text-align: center; padding: 40px;">No new notifications</p>
-                </div>
-            </div>
-
-            <!-- REPORTS SECTION -->
-            <div id="reports-section" class="content-section">
-                <div class="chart-card">
-                    <div class="card-title"><h3><i class="fas fa-download"></i> Download Reports</h3></div>
-                    <div style="display: flex; gap: 16px; justify-content: center; padding: 20px;">
-                        <button class="btn-report" onclick="alert('PDF download started')"><i class="fas fa-file-pdf"></i> Download PDF</button>
-                        <button class="btn-report" style="background: #10B981;" onclick="alert('CSV download started')"><i class="fas fa-file-excel"></i> Download CSV</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PROFILE SECTION -->
-            <div id="profile-section" class="content-section">
-                <div class="chart-card">
-                    <div class="card-title"><h3><i class="fas fa-user-circle"></i> My Profile</h3></div>
-                    <div style="padding: 20px;">
-                        <p><strong>Name:</strong> @ViewBag.UserName</p>
-                        <p><strong>Email:</strong> @ViewBag.UserEmail</p>
-                        <p><strong>Role:</strong> Citizen</p>
-                        <button class="btn-report" style="margin-top: 20px;" onclick="alert('Edit profile feature coming soon')">Edit Profile</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SAFETY TIPS SECTION -->
-            <div id="safetytips-section" class="content-section">
-                <div class="recent-card">
-                    <div class="card-title"><h3><i class="fas fa-shield-alt"></i> Safety Tips</h3></div>
-                    <div style="padding: 20px;">
-                        <ul style="list-style: none;">
-                            <li style="padding: 10px 0;"><i class="fas fa-phone" style="color: #2563EB;"></i> Emergency: Dial 1122 for Rescue, 15 for Police, 16 for Fire</li>
-                            <li style="padding: 10px 0;"><i class="fas fa-location-dot"></i> Always share your exact location when reporting an incident</li>
-                            <li style="padding: 10px 0;"><i class="fas fa-camera"></i> Take photos of the incident for better assessment</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- DETAILS SECTION -->
-            <div id="details-section" class="content-section">
-                <div class="chart-card" id="detailsContent">
-                    <div class="card-title"><h3><i class="fas fa-info-circle"></i> Incident Details</h3><a href="#" data-page="dashboard">← Back</a></div>
-                    <div style="padding: 20px; text-align: center;">Loading...</div>
-                </div>
-            </div>
-
-            <!-- NEW INCIDENT SECTION -->
-            <div id="newincident-section" class="content-section">
-                <div class="chart-card">
-                    <div class="card-title"><h3><i class="fas fa-plus-circle"></i> Report New Incident</h3><a href="#" data-page="dashboard">← Back</a></div>
-                    <iframe src="/Incident/Create" style="width: 100%; min-height: 500px; border: none; border-radius: 12px;"></iframe>
-                </div>
-            </div>
+            <!-- DYNAMIC CONTENT AREA -->
+            <div id="dynamic-content" style="display: none;"></div>
         </div>
     </div>
 
@@ -1017,14 +1039,28 @@
         <div class="chatbot-toggle" onclick="toggleChatbot()"><i class="fas fa-comment-dots"></i></div>
     </div>
 
+    <!-- SOS Modal - Enhanced Version -->
     <div id="sosModal" class="sos-modal">
         <div class="sos-modal-content">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h3>Emergency SOS!</h3>
-            <p>Are you sure you want to send an emergency alert?</p>
+            <div class="sos-warning-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3> EMERGENCY SOS ALERT </h3>
+            <p>You are about to send an <strong>EMERGENCY SOS</strong> alert. This will:</p>
+            <ul style="text-align: left; margin: 15px 0; padding-left: 20px; color: #6B7280; font-size: 13px;">
+                <li>✓ Notify emergency services immediately</li>
+                <li>✓ Create a CRITICAL priority incident</li>
+                <li>✓ Alert all departments in real-time</li>
+                <li>✓ Flag your report for immediate action</li>
+            </ul>
+            <p style="color: #DC2626; font-weight: 500;">Only use this in genuine emergencies!</p>
             <div class="sos-buttons">
-                <button class="sos-confirm" id="confirmSos">Send Alert</button>
-                <button class="sos-cancel" id="cancelSos">Cancel</button>
+                <button class="sos-confirm" id="confirmSos">
+                    <i class="fas fa-exclamation-triangle"></i> Send SOS Alert
+                </button>
+                <button class="sos-cancel" id="cancelSos">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
             </div>
         </div>
     </div>
@@ -1050,38 +1086,116 @@
             }
         });
 
-        document.querySelectorAll('[data-page]').forEach(link => {
-            link.addEventListener('click', function(e) {
+        // Function to load content dynamically - FIXED for Statistics
+        function loadContent(viewName, incidentId = null) {
+            const dashboardView = document.getElementById('dashboard-view');
+            const dynamicContent = document.getElementById('dynamic-content');
+
+            // Update active state in sidebar
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            const correspondingNav = document.querySelector(`.nav-item[data-page="${viewName}"]`);
+            if (correspondingNav) correspondingNav.classList.add('active');
+
+            if (viewName === 'dashboard') {
+                dashboardView.style.display = 'block';
+                dynamicContent.style.display = 'none';
+                dynamicContent.innerHTML = '';
+                return;
+            }
+
+            dashboardView.style.display = 'none';
+            dynamicContent.style.display = 'block';
+
+            // Show loading
+            dynamicContent.innerHTML = `
+                <div class="dynamic-content">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i><br />
+                        Loading...
+                    </div>
+                </div>
+            `;
+
+            let url = '';
+            if (viewName === 'details' && incidentId) {
+                url = `/Citizen/Details/${incidentId}`;
+            } else if (viewName === 'myreports') {
+                url = `/Citizen/MyReports`;
+            } else if (viewName === 'newincident') {
+                url = `/Incident/Create`;
+            } else if (viewName === 'statistics') {
+                url = `/Citizen/Statistics`;
+            } else if (viewName === 'notifications') {
+                url = `/Citizen/Notifications`;
+            } else if (viewName === 'reports') {
+                url = `/Citizen/Reports`;
+            } else if (viewName === 'safetytips') {
+                url = `/Citizen/SafetyTips`;
+            } else if (viewName === 'profile') {
+                url = `/Citizen/Profile`;
+            } else {
+                url = `/Citizen/${viewName}`;
+            }
+
+            console.log('Loading URL:', url);
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.text();
+                })
+                .then(html => {
+                    dynamicContent.innerHTML = `<div class="dynamic-content">${html}</div>`;
+
+                    // IMPORTANT: Execute all scripts in the loaded content to initialize charts
+                    const scripts = dynamicContent.querySelectorAll('script');
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        if (oldScript.src) {
+                            newScript.src = oldScript.src;
+                        } else {
+                            newScript.textContent = oldScript.textContent;
+                        }
+                        document.body.appendChild(newScript);
+                    });
+
+                    // Special handling for Statistics page - ensure charts are initialized
+                    if (viewName === 'statistics') {
+                        setTimeout(function() {
+                            // Check if chart canvases exist and initialize them
+                            if (typeof initializeStatisticsCharts === 'function') {
+                                initializeStatisticsCharts();
+                            }
+                        }, 100);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading content:', error);
+                    dynamicContent.innerHTML = `
+                        <div class="dynamic-content">
+                            <div class="loading-spinner" style="color: #DC2626;">
+                                <i class="fas fa-exclamation-circle"></i><br />
+                                Error loading content. Please try again.
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+
+        // Global function for child pages to call
+        window.loadViewFromChild = function(viewName, incidentId) {
+            loadContent(viewName, incidentId);
+        };
+
+        // Handle clicks on elements with data-page attribute
+        document.querySelectorAll('[data-page]').forEach(element => {
+            element.addEventListener('click', function(e) {
                 e.preventDefault();
                 const page = this.getAttribute('data-page');
                 const id = this.getAttribute('data-id');
-                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                if (this.classList.contains('nav-item')) this.classList.add('active');
-                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-                const target = document.getElementById(`${page}-section`);
-                if (target) target.classList.add('active');
-                if (page === 'details' && id) loadDetails(id);
+                loadContent(page, id);
             });
         });
-
-        function loadDetails(id) {
-            fetch(`/Citizen/GetIncidentJson/${id}`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('detailsContent').innerHTML = `
-                        <div class="card-title"><h3><i class="fas fa-info-circle"></i> Incident Details</h3><a href="#" data-page="dashboard">← Back</a></div>
-                        <div style="padding: 20px;">
-                            <p><strong>ID:</strong> #${data.id}</p>
-                            <p><strong>Title:</strong> ${data.title}</p>
-                            <p><strong>Description:</strong> ${data.description}</p>
-                            <p><strong>Location:</strong> ${data.location}</p>
-                            <p><strong>Severity:</strong> <span class="severity-${data.severity.toLowerCase()}">${data.severity}</span></p>
-                            <p><strong>Status:</strong> <span class="status-badge status-${data.status.toLowerCase()}">${data.status}</span></p>
-                            <p><strong>Reported:</strong> ${new Date(data.reportedAt).toLocaleString()}</p>
-                        </div>
-                    `;
-                }).catch(() => document.getElementById('detailsContent').innerHTML = '<div style="padding:20px;text-align:center;color:red;">Error loading</div>');
-        }
 
         function toggleChatbot() { document.getElementById('chatbotContainer').classList.toggle('show'); }
         function handleChatKeyPress(e) { if (e.key === 'Enter') sendChatMessage(); }

@@ -62,7 +62,7 @@ namespace SmartCityPulse.Models
         [BsonElement("complainantPhone")]
         public string ComplainantPhone { get; set; } = string.Empty;
 
-        [BsonElement("complainantCNIC")]  // ✅ ADD THIS MISSING FIELD
+        [BsonElement("complainantCNIC")]
         public string ComplainantCNIC { get; set; } = string.Empty;
 
         [BsonElement("suspectName")]
@@ -130,8 +130,13 @@ namespace SmartCityPulse.Models
 
     public class IncidentComment
     {
+        [BsonElement("text")]
         public string Text { get; set; } = string.Empty;
+
+        [BsonElement("author")]
         public string Author { get; set; } = string.Empty;
+
+        [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
