@@ -16,748 +16,130 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #E8EDF5;
-            color: #1A1F36;
-        }
-
-        .dashboard {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 260px;
-            background: #FFFFFF;
-            border-right: 1px solid #EAECF0;
-            position: fixed;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 100;
-        }
-
-        .sidebar.collapsed {
-            width: 72px;
-        }
-
-        .sidebar.collapsed .logo h2,
-        .sidebar.collapsed .nav-item span,
-        .sidebar.collapsed .footer-item span {
-            display: none;
-        }
-
-        .sidebar.collapsed .nav-item,
-        .sidebar.collapsed .footer-item {
-            justify-content: center;
-            padding: 12px 0;
-        }
-
-        .sidebar.collapsed .nav-item i,
-        .sidebar.collapsed .footer-item i {
-            margin: 0;
-            font-size: 20px;
-        }
-
-        .sidebar.collapsed .sidebar-header {
-            justify-content: center;
-            padding: 20px 0;
-        }
-
-        .sidebar.collapsed .logo {
-            justify-content: center;
-        }
-
-        .sidebar-header {
-            padding: 20px 16px;
-            border-bottom: 1px solid #EAECF0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .logo i {
-            font-size: 24px;
-            color: #2563EB;
-        }
-
-        .logo h2 {
-            font-size: 15px;
-            font-weight: 700;
-            color: #1A1F36;
-            letter-spacing: -0.3px;
-        }
-
-        .logo span {
-            color: #2563EB;
-        }
-
-        .hamburger {
-            cursor: pointer;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            color: #6B7280;
-        }
-
-        .hamburger:hover {
-            background: #F1F5F9;
-            color: #2563EB;
-        }
-
-        .hamburger i {
-            font-size: 18px;
-        }
-
-        .nav-menu {
-            flex: 1;
-            padding: 20px 12px;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 16px;
-            margin: 2px 0;
-            color: #5A6A7F;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            border-radius: 10px;
-            position: relative;
-        }
-
-        .nav-item i {
-            width: 20px;
-            font-size: 16px;
-        }
-
-        .nav-item:hover {
-            background: #F1F5F9;
-            color: #2563EB;
-        }
-
-        .nav-item.active {
-            background: #EFF6FF;
-            color: #2563EB;
-        }
-
-        .notification-badge {
-            position: absolute;
-            right: 16px;
-            top: 8px;
-            background: #EF4444;
-            color: white;
-            border-radius: 50%;
-            padding: 2px 6px;
-            font-size: 10px;
-            font-weight: 600;
-            min-width: 18px;
-            text-align: center;
-        }
-
-        .nav-footer {
-            padding: 16px 12px;
-            border-top: 1px solid #EAECF0;
-        }
-
-        .footer-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 16px;
-            color: #5A6A7F;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            border-radius: 10px;
-            transition: all 0.2s ease;
-        }
-
-        .footer-item:hover {
-            background: #F1F5F9;
-            color: #2563EB;
-        }
-
-        .footer-item.logout {
-            color: #DC2626;
-        }
-
-        .footer-item.logout:hover {
-            background: #FEF2F2;
-        }
-
-        .dept-info {
-            padding: 8px 16px;
-            margin: 0 12px 12px 12px;
-            background: #EFF6FF;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: #2563EB;
-        }
-
-        .main-content {
-            margin-left: 260px;
-            flex: 1;
-            padding: 24px 32px;
-            background: #E8EDF5;
-            transition: margin-left 0.3s ease;
-            min-height: 100vh;
-        }
-
-        .sidebar.collapsed ~ .main-content {
-            margin-left: 72px;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 28px;
-        }
-
-        .welcome-header h1 {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1A1F36;
-        }
-
-        .welcome-header h1 i {
-            color: #2563EB;
-            margin-right: 8px;
-            font-size: 20px;
-        }
-
-        .welcome-header p {
-            font-size: 13px;
-            color: #6B7280;
-            margin-top: 6px;
-        }
-
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .notification-container {
-            position: relative;
-        }
-
-        .notification-bell {
-            background: none;
-            border: none;
-            cursor: pointer;
-            position: relative;
-            padding: 8px;
-            transition: transform 0.2s ease;
-        }
-
-        .notification-bell:hover {
-            transform: scale(1.05);
-        }
-
-        .notification-bell i {
-            font-size: 22px;
-            color: #6B7280;
-        }
-
-        .notification-bell.has-notification i {
-            color: #2563EB;
-        }
-
-        .notification-dropdown {
-            position: absolute;
-            top: 45px;
-            right: 0;
-            width: 380px;
-            max-height: 450px;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            z-index: 1000;
-            overflow: hidden;
-        }
-
-        .notification-header {
-            padding: 15px 18px;
-            border-bottom: 1px solid #EAECF0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .notification-header h3 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1A1F36;
-        }
-
-        .mark-all-read {
-            background: none;
-            border: none;
-            color: #2563EB;
-            font-size: 11px;
-            cursor: pointer;
-        }
-
-        .notification-list {
-            max-height: 350px;
-            overflow-y: auto;
-        }
-
-        .notification-item {
-            padding: 14px 18px;
-            border-bottom: 1px solid #F0F2F5;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin: 4px 8px;
-            border-radius: 12px;
-        }
-
-        .notification-item:hover {
-            background: #F9FAFB;
-            transform: translateX(-2px);
-        }
-
-        .notification-item.unread {
-            background: #EFF6FF;
-            border-left: 3px solid #2563EB;
-        }
-
-        .notification-item.critical {
-            background: #FEF2F2;
-            border-left: 3px solid #DC2626;
-        }
-
-        .notification-item.high {
-            background: #FEF3C7;
-            border-left: 3px solid #F59E0B;
-        }
-
-        .notification-item.medium {
-            background: #E0E7FF;
-            border-left: 3px solid #2563EB;
-        }
-
-        .notification-item.low {
-            background: #DCFCE7;
-            border-left: 3px solid #10B981;
-        }
-
-        .notification-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #1A1F36;
-            margin-bottom: 4px;
-        }
-
-        .notification-message {
-            font-size: 12px;
-            color: #6B7280;
-            margin-bottom: 6px;
-        }
-
-        .notification-time {
-            font-size: 10px;
-            color: #9CA3AF;
-        }
-
-        .empty-notifications {
-            padding: 40px 20px;
-            text-align: center;
-            color: #9CA3AF;
-        }
-
-        .empty-notifications i {
-            font-size: 40px;
-            margin-bottom: 12px;
-            display: block;
-        }
-
-        .notification-footer {
-            padding: 12px 18px;
-            border-top: 1px solid #EAECF0;
-            text-align: center;
-        }
-
-        .notification-footer a {
-            color: #2563EB;
-            text-decoration: none;
-            font-size: 12px;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #FFFFFF;
-            padding: 8px 16px;
-            border-radius: 40px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-        }
-
-        .user-profile i {
-            color: #2563EB;
-            font-size: 18px;
-        }
-
-        .user-profile span {
-            font-size: 13px;
-            font-weight: 500;
-            color: #1A1F36;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 28px;
-        }
-
-        .stat-card {
-            background: #FFFFFF;
-            border-radius: 16px;
-            padding: 18px 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #E8EDF5; color: #1A1F36; }
+        .dashboard { display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: #FFFFFF; border-right: 1px solid #EAECF0; position: fixed; height: 100vh; display: flex; flex-direction: column; transition: all 0.3s; z-index: 100; }
+        .sidebar.collapsed { width: 72px; }
+        .sidebar.collapsed .logo h2, .sidebar.collapsed .nav-item span, .sidebar.collapsed .footer-item span { display: none; }
+        .sidebar.collapsed .nav-item, .sidebar.collapsed .footer-item { justify-content: center; padding: 12px 0; }
+        .sidebar.collapsed .nav-item i, .sidebar.collapsed .footer-item i { margin: 0; font-size: 20px; }
+        .sidebar.collapsed .sidebar-header { justify-content: center; padding: 20px 0; }
+        .sidebar.collapsed .logo { justify-content: center; }
+        .sidebar-header { padding: 20px 16px; border-bottom: 1px solid #EAECF0; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 8px; }
+        .logo i { font-size: 24px; color: #2563EB; }
+        .logo h2 { font-size: 15px; font-weight: 700; color: #1A1F36; letter-spacing: -0.3px; }
+        .logo span { color: #2563EB; }
+        .hamburger { cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: #6B7280; }
+        .hamburger:hover { background: #F1F5F9; color: #2563EB; }
+        .hamburger i { font-size: 18px; }
+        .nav-menu { flex: 1; padding: 20px 12px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; margin: 2px 0; color: #5A6A7F; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 10px; position: relative; }
+        .nav-item i { width: 20px; font-size: 16px; }
+        .nav-item:hover { background: #F1F5F9; color: #2563EB; }
+        .nav-item.active { background: #EFF6FF; color: #2563EB; }
+        .notification-badge { position: absolute; right: 16px; top: 8px; background: #EF4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: 600; min-width: 18px; text-align: center; }
+        .nav-footer { padding: 16px 12px; border-top: 1px solid #EAECF0; }
+        .footer-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; color: #5A6A7F; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 10px; }
+        .footer-item:hover { background: #F1F5F9; color: #2563EB; }
+        .footer-item.logout { color: #DC2626; }
+        .footer-item.logout:hover { background: #FEF2F2; }
+        .dept-info { padding: 8px 16px; margin: 0 12px 12px 12px; background: #EFF6FF; border-radius: 10px; display: flex; align-items: center; gap: 8px; font-size: 12px; color: #2563EB; }
+        .main-content { margin-left: 260px; flex: 1; padding: 24px 32px; background: #E8EDF5; transition: margin-left 0.3s; min-height: 100vh; }
+        .sidebar.collapsed ~ .main-content { margin-left: 72px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+        .welcome-header h1 { font-size: 22px; font-weight: 700; color: #1A1F36; }
+        .welcome-header h1 i { color: #2563EB; margin-right: 8px; }
+        .welcome-header p { font-size: 13px; color: #6B7280; margin-top: 6px; }
+        .topbar-right { display: flex; align-items: center; gap: 20px; }
+        .notification-container { position: relative; }
+        .notification-bell { background: none; border: none; cursor: pointer; position: relative; padding: 8px; border-radius: 50%; transition: all 0.2s; }
+        .notification-bell:hover { background: #F1F5F9; }
+        .notification-bell i { font-size: 22px; color: #6B7280; }
+        .notification-bell.has-notification i { color: #2563EB; }
+        .notification-badge-icon { position: absolute; top: 0; right: 0; background: #EF4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: 600; min-width: 18px; text-align: center; }
+        .notification-dropdown { position: absolute; top: 45px; right: 0; width: 380px; max-height: 450px; background: white; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 1000; overflow: hidden; border: 1px solid #E2E8F0; }
+        .notification-header { padding: 15px 18px; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
+        .notification-header h3 { font-size: 15px; font-weight: 600; color: #0F172A; }
+        .mark-all-read { background: none; border: none; color: #2563EB; font-size: 11px; cursor: pointer; }
+        .notification-list { max-height: 350px; overflow-y: auto; }
+        .notification-item { padding: 14px 18px; border-bottom: 1px solid #F1F5F9; cursor: pointer; margin: 4px 8px; border-radius: 12px; }
+        .notification-item:hover { background: #F8FAFC; }
+        .notification-item.unread { background: #EFF6FF; border-left: 3px solid #2563EB; }
+        .notification-title { font-size: 13px; font-weight: 600; color: #0F172A; margin-bottom: 4px; }
+        .notification-message { font-size: 12px; color: #64748B; margin-bottom: 6px; }
+        .notification-time { font-size: 10px; color: #94A3B8; }
+        .empty-notifications { text-align: center; padding: 40px; color: #94A3B8; }
+        .notification-footer { padding: 12px 18px; border-top: 1px solid #E2E8F0; text-align: center; }
+        .notification-footer a { color: #2563EB; text-decoration: none; font-size: 12px; }
+        .user-profile { display: flex; align-items: center; gap: 10px; background: #FFFFFF; padding: 8px 16px; border-radius: 40px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+        .user-profile i { color: #2563EB; font-size: 18px; }
+        .user-profile span { font-size: 13px; font-weight: 500; color: #1A1F36; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 28px; }
+        .stat-card { background: #FFFFFF; border-radius: 20px; padding: 18px 20px; transition: all 0.3s; box-shadow: 0 1px 2px rgba(0,0,0,0.04); position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
         .stat-card:nth-child(1)::before { background: #3B82F6; }
         .stat-card:nth-child(2)::before { background: #F59E0B; }
         .stat-card:nth-child(3)::before { background: #10B981; }
         .stat-card:nth-child(4)::before { background: #EF4444; }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-        }
-
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .stat-header .stat-label {
-            font-size: 12px;
-            font-weight: 500;
-            color: #6B7280;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-header i {
-            font-size: 24px;
-            opacity: 0.7;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 800;
-            color: #1A1F36;
-            margin-bottom: 6px;
-        }
-
-        .row-2cols {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 28px;
-        }
-
-        .chart-card {
-            background: #FFFFFF;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-        }
-
-        .card-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-        }
-
-        .card-title h3 {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1A1F36;
-        }
-
-        .card-title h3 i {
-            color: #2563EB;
-            margin-right: 6px;
-        }
-
-        canvas {
-            max-height: 200px;
-            width: 100%;
-        }
-
-        .quick-action-card {
-            background: #FFFFFF;
-            border-radius: 16px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-            border-top: 3px solid #2563EB;
-        }
-
-        .quick-action-card h3 {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1A1F36;
-            margin-bottom: 8px;
-        }
-
-        .quick-action-card p {
-            font-size: 12px;
-            color: #6B7280;
-            margin-bottom: 16px;
-        }
-
-        .btn-primary {
-            background: #2563EB;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 40px;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            width: fit-content;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-primary:hover {
-            background: #1D4ED8;
-            transform: translateY(-1px);
-        }
-
-        .critical-alert {
-            background: #FEF2F2;
-            border-left: 3px solid #DC2626;
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .critical-alert i {
-            color: #DC2626;
-            margin-right: 8px;
-        }
-
-        .recent-card {
-            background: #FFFFFF;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        .incident-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .incident-table th {
-            text-align: left;
-            padding: 10px 0;
-            color: #6B7280;
-            font-size: 11px;
-            font-weight: 500;
-            border-bottom: 1px solid #EAECF0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .incident-table td {
-            padding: 10px 0;
-            font-size: 12px;
-            color: #1A1F36;
-            border-bottom: 1px solid #EAECF0;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 50px;
-            font-size: 10px;
-            font-weight: 500;
-        }
-
-        .status-resolved {
-            background: #DCFCE7;
-            color: #166534;
-        }
-
-        .status-progress {
-            background: #FEF3C7;
-            color: #92400E;
-        }
-
-        .status-open {
-            background: #DBEAFE;
-            color: #1E40AF;
-        }
-
-        .severity-critical {
-            color: #DC2626;
-            font-weight: 600;
-        }
-
-        .severity-high {
-            color: #F97316;
-            font-weight: 600;
-        }
-
-        .severity-medium {
-            color: #EAB308;
-            font-weight: 600;
-        }
-
-        .severity-low {
-            color: #10B981;
-            font-weight: 600;
-        }
-
-        .action-link {
-            color: #2563EB;
-            text-decoration: none;
-            font-size: 11px;
-        }
-
-        @@keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @@media (max-width: 1024px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .row-2cols {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @@media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                position: relative;
-                height: auto;
-            }
-            .sidebar.collapsed {
-                width: 100%;
-            }
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-            .sidebar.collapsed ~ .main-content {
-                margin-left: 0;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .notification-dropdown {
-                width: 320px;
-                right: -60px;
-            }
-        }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+        .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .stat-header .stat-label { font-size: 12px; font-weight: 500; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-header i { font-size: 24px; opacity: 0.7; }
+        .stat-value { font-size: 32px; font-weight: 800; color: #0F172A; margin-bottom: 6px; }
+        .row-2cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+        .chart-card { background: #FFFFFF; border-radius: 20px; padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+        .card-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .card-title h3 { font-size: 14px; font-weight: 600; color: #0F172A; }
+        .card-title h3 i { color: #2563EB; margin-right: 6px; }
+        canvas { max-height: 200px; width: 100%; }
+        .quick-action-card { background: linear-gradient(135deg, #2563EB, #1D4ED8); border-radius: 20px; padding: 24px; color: white; }
+        .quick-action-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .quick-action-card p { font-size: 12px; opacity: 0.9; margin-bottom: 20px; }
+        .btn-primary { background: white; color: #2563EB; padding: 8px 16px; border-radius: 40px; text-decoration: none; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s; border: none; cursor: pointer; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .critical-alert { background: #FEF2F2; border-left: 3px solid #DC2626; border-radius: 16px; padding: 12px 16px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; }
+        .critical-alert i { color: #DC2626; margin-right: 8px; }
+        .recent-card { background: #FFFFFF; border-radius: 20px; padding: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .section-title { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .section-title i { color: #2563EB; }
+        .table-responsive { overflow-x: auto; }
+        .incident-table { width: 100%; border-collapse: collapse; }
+        .incident-table th { text-align: left; padding: 12px 0; color: #64748B; font-size: 11px; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid #E2E8F0; }
+        .incident-table td { padding: 14px 0; font-size: 13px; color: #0F172A; border-bottom: 1px solid #F1F5F9; }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 30px; font-size: 11px; font-weight: 600; }
+        .status-resolved { background: #DCFCE7; color: #166534; }
+        .status-progress { background: #FEF3C7; color: #92400E; }
+        .status-open { background: #DBEAFE; color: #1E40AF; }
+        .severity-critical { color: #DC2626; font-weight: 600; }
+        .severity-high { color: #F97316; font-weight: 600; }
+        .severity-medium { color: #EAB308; font-weight: 600; }
+        .severity-low { color: #10B981; font-weight: 600; }
+        .action-link { color: #2563EB; text-decoration: none; font-size: 12px; font-weight: 500; }
+        .action-link:hover { text-decoration: underline; }
+        .empty-state { text-align: center; padding: 40px; color: #94A3B8; }
+        .empty-state i { font-size: 48px; margin-bottom: 16px; display: block; }
+        @@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @@media (max-width: 1024px) { .stats-grid { grid-template-columns: repeat(2,1fr); } .row-2cols { grid-template-columns: 1fr; } }
+        @@media (max-width: 768px) { .sidebar { width: 100%; position: relative; height: auto; } .main-content { margin-left: 0; padding: 20px; } .stats-grid { grid-template-columns: 1fr; padding: 0 20px; } .row-2cols { padding: 0 20px; } .recent-card { margin: 0 20px 20px 20px; } .critical-alert { margin: 0 20px 20px 20px; } .topbar { flex-direction: column; gap: 12px; } }
     </style>
 </head>
 <body>
     <div class="dashboard">
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="logo">
-                    <i class="fas fa-city"></i>
-                    <h2>SMART CIVIC <span>ALERT</span></h2>
-                </div>
-                <div class="hamburger" id="toggleSidebar">
-                    <i class="fas fa-bars"></i>
-                </div>
+                <div class="logo"><i class="fas fa-city"></i><h2>SMART CIVIC <span>ALERT</span></h2></div>
+                <div class="hamburger" id="toggleSidebar"><i class="fas fa-bars"></i></div>
             </div>
-
             <div class="nav-menu">
-                <a href="/Operator/Dashboard" class="nav-item active">
-                    <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
-                </a>
-                <a href="/Operator/Incidents" class="nav-item" id="incidentsNavLink">
-                    <i class="fas fa-list-alt"></i> <span>Incidents</span>
-                    <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
-                </a>
-                <a href="/Operator/CreateIncident" class="nav-item">
-                    <i class="fas fa-plus-circle"></i> <span>Create Incident</span>
-                </a>
+                <a href="/Operator/Dashboard" class="nav-item active"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
+                <a href="/Operator/Incidents" class="nav-item" id="incidentsNavLink"><i class="fas fa-list-alt"></i> <span>Incidents</span><span id="notificationBadge" class="notification-badge" style="display: none;">0</span></a>
+                <a href="/Operator/CreateIncident" class="nav-item"><i class="fas fa-plus-circle"></i> <span>Create Incident</span></a>
             </div>
-
-            <div class="dept-info">
-                <i class="fas fa-building"></i>
-                <span>@dept Department</span>
-            </div>
-
-            <div class="nav-footer">
-                <a href="/Account/Logout" class="footer-item logout">
-                    <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
-                </a>
-            </div>
+            <div class="dept-info"><i class="fas fa-building"></i><span>@dept Department</span></div>
+            <div class="nav-footer"><a href="/Account/Logout" class="footer-item logout"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></div>
         </div>
 
         <div class="main-content">
@@ -770,152 +152,65 @@
                     <div class="notification-container">
                         <button class="notification-bell" id="notificationBell">
                             <i class="fas fa-bell"></i>
-                            <span id="notificationDropdownBadge" class="notification-badge" style="display: none; position: absolute; top: 0; right: 0;">0</span>
+                            <span id="notificationDropdownBadge" class="notification-badge-icon" style="display: none;">0</span>
                         </button>
                         <div id="notificationDropdown" class="notification-dropdown" style="display: none;">
                             <div class="notification-header">
-                                <h3><i class="fas fa-bell" style="color: #2563EB;"></i> Notifications</h3>
+                                <h3><i class="fas fa-bell" style="color:#2563EB;"></i> Notifications</h3>
                                 <button class="mark-all-read" id="markAllRead">Mark all as read</button>
                             </div>
-                            <div id="notificationList" class="notification-list">
-                                <div class="empty-notifications">
-                                    <i class="fas fa-bell-slash"></i>
-                                    No new notifications
-                                </div>
-                            </div>
-                            <div class="notification-footer">
-                                <a href="/Operator/Incidents">View all incidents →</a>
-                            </div>
+                            <div id="notificationList" class="notification-list"><div class="empty-notifications"><i class="fas fa-bell-slash"></i> No new notifications</div></div>
+                            <div class="notification-footer"><a href="/Operator/Incidents">View all incidents →</a></div>
                         </div>
                     </div>
-                    <div class="user-profile">
-                        <i class="fas fa-user-circle"></i>
-                        <span>@operatorName</span>
-                    </div>
+                    <div class="user-profile"><i class="fas fa-user-circle"></i><span>@operatorName</span></div>
                 </div>
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-label">New Today</span>
-                        <i class="fas fa-calendar-day"></i>
-                    </div>
-                    <div class="stat-value" id="newTodayValue">@ViewBag.NewToday</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-label">In Progress</span>
-                        <i class="fas fa-spinner"></i>
-                    </div>
-                    <div class="stat-value">@ViewBag.InProgress</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-label">Resolved</span>
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="stat-value">@ViewBag.Resolved</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-label">Total</span>
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="stat-value">@ViewBag.Total</div>
-                </div>
+                <div class="stat-card"><div class="stat-header"><span class="stat-label">New Today</span><i class="fas fa-calendar-day"></i></div><div class="stat-value" id="newTodayValue">@ViewBag.NewToday</div></div>
+                <div class="stat-card"><div class="stat-header"><span class="stat-label">In Progress</span><i class="fas fa-spinner"></i></div><div class="stat-value">@ViewBag.InProgress</div></div>
+                <div class="stat-card"><div class="stat-header"><span class="stat-label">Resolved</span><i class="fas fa-check-circle"></i></div><div class="stat-value">@ViewBag.Resolved</div></div>
+                <div class="stat-card"><div class="stat-header"><span class="stat-label">Total</span><i class="fas fa-chart-line"></i></div><div class="stat-value">@ViewBag.Total</div></div>
             </div>
 
             <div class="row-2cols">
-                <div class="chart-card">
-                    <div class="card-title">
-                        <h3><i class="fas fa-chart-line"></i> Last 7 Days Trend</h3>
-                    </div>
-                    <canvas id="trendChart"></canvas>
-                </div>
-                <div class="quick-action-card">
-                    <h3><i class="fas fa-plus-circle"></i> Quick Action</h3>
-                    <p>Create a new incident report for your department</p>
-                    <a href="/Operator/CreateIncident" class="btn-primary">
-                        <i class="fas fa-plus"></i> New Incident
-                    </a>
-                </div>
+                <div class="chart-card"><div class="card-title"><i class="fas fa-chart-line"></i> Last 7 Days Trend</div><canvas id="trendChart"></canvas></div>
+                <div class="quick-action-card"><h3><i class="fas fa-plus-circle"></i> Quick Report</h3><p>Create a new incident report for your department</p><a href="/Operator/CreateIncident" class="btn-primary"><i class="fas fa-plus"></i> New Incident</a></div>
             </div>
 
             <div class="row-2cols">
-                <div class="chart-card">
-                    <div class="card-title">
-                        <h3><i class="fas fa-chart-pie"></i> Severity Distribution</h3>
-                    </div>
-                    <canvas id="severityChart"></canvas>
-                </div>
-                <div class="chart-card">
-                    <div class="card-title">
-                        <h3><i class="fas fa-chart-donut"></i> Status Distribution</h3>
-                    </div>
-                    <canvas id="statusChart"></canvas>
-                </div>
+                <div class="chart-card"><div class="card-title"><i class="fas fa-chart-pie"></i> Severity Distribution</div><canvas id="severityChart"></canvas></div>
+                <div class="chart-card"><div class="card-title"><i class="fas fa-chart-donut"></i> Status Distribution</div><canvas id="statusChart"></canvas></div>
             </div>
 
             @if (ViewBag.CriticalCount > 0)
             {
-                <div class="critical-alert">
-                    <div>
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <strong>@ViewBag.CriticalCount critical incidents</strong> require immediate attention!
-                    </div>
-                    <a href="/Operator/Incidents?severity=Critical" style="color:#DC2626; text-decoration:none; font-size:12px;">View Details →</a>
-                </div>
+                <div class="critical-alert"><div><i class="fas fa-exclamation-triangle"></i> <strong>@ViewBag.CriticalCount critical incidents</strong> require immediate attention!</div><a href="/Operator/Incidents?severity=Critical">View Details →</a></div>
             }
 
             <div class="recent-card">
-                <div class="card-title">
-                    <h3><i class="fas fa-history"></i> Recent Incidents</h3>
-                    <a href="/Operator/Incidents" style="font-size:11px; color:#2563EB; text-decoration:none;">View All →</a>
-                </div>
+                <div class="section-header"><div class="section-title"><i class="fas fa-history"></i> Recent Incidents</div><a href="/Operator/Incidents" style="font-size:12px; color:#2563EB; text-decoration:none;">View All →</a></div>
                 <div class="table-responsive">
                     <table class="incident-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Title</th>
-                                <th>Location</th>
-                                <th>Severity</th>
-                                <th>Status</th>
-                                <th>Reported</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentIncidentsTableBody">
+                        <thead><tr><th>ID</th><th>Title</th><th>Location</th><th>Severity</th><th>Status</th><th>Reported</th><th>Action</th></tr></thead>
+                        <tbody>
                             @if (!Model.RecentIncidents.Any())
                             {
-                                <tr>
-                                    <td colspan="7" style="text-align:center; padding:40px; color:#6B7280;">
-                                        <i class="fas fa-inbox" style="font-size:32px; margin-bottom:8px; display:block;"></i>
-                                        No incidents reported yet
-                                    </td>
-                                </tr>
+                                <tr><td colspan="7" class="empty-state"><i class="fas fa-inbox"></i> No incidents reported yet</td></tr>
                             }
                             else
                             {
                                 @foreach (var incident in Model.RecentIncidents.Take(5))
                                 {
                                     <tr>
-                                        <td>#@(incident.Id?.Length >= 6 ? incident.Id.Substring(0, 6) : incident.Id)</td>
-                                        <td>@(incident.Title?.Length > 30 ? incident.Title.Substring(0, 27) + "..." : incident.Title)</td>
-                                        <td>@(incident.Location?.Length > 20 ? incident.Location.Substring(0, 17) + "..." : incident.Location)</td>
+                                        <td>#@(incident.Id?.Length >= 6 ? incident.Id.Substring(0,6) : incident.Id)</td>
+                                        <td>@(incident.Title?.Length > 30 ? incident.Title.Substring(0,27)+"..." : incident.Title)</td>
+                                        <td><i class="fas fa-map-marker-alt" style="color:#2563EB;"></i> @(incident.Location?.Length > 20 ? incident.Location.Substring(0,17)+"..." : incident.Location)</td>
                                         <td class="severity-@(incident.Severity?.ToLower())">@incident.Severity</td>
-                                        <td>
-                                            <span class="status-badge status-@(incident.Status?.ToLower().Replace(" ", ""))">
-                                                @incident.Status
-                                            </span>
-                                        </td>
+                                        <td><span class="status-badge status-@(incident.Status?.ToLower().Replace(" ", ""))">@incident.Status</span></td>
                                         <td>@incident.ReportedAt.ToString("MMM dd, hh:mm tt")</td>
-                                        <td>
-                                            <a href="/Operator/IncidentDetail/@incident.Id" class="action-link">
-                                                <i class="fas fa-eye"></i> View
-                                            </a>
-                                        </td>
+                                        <td><a href="/Operator/IncidentDetail/@incident.Id" class="action-link"><i class="fas fa-eye"></i> View</a></td>
                                     </tr>
                                 }
                             }
@@ -926,309 +221,193 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
-    
     <script>
         // Sidebar Toggle
         const sidebar = document.getElementById('sidebar');
         const toggleBtn = document.getElementById('toggleSidebar');
-        toggleBtn.addEventListener('click', function() {
-            sidebar.classList.toggle('collapsed');
-        });
+        toggleBtn.addEventListener('click', function() { sidebar.classList.toggle('collapsed'); });
 
         // Charts
         const trendCtx = document.getElementById('trendChart').getContext('2d');
         new Chart(trendCtx, {
-            type: 'line',
-            data: {
-                labels: ['6 days ago', '5 days ago', '4 days ago', '3 days ago', '2 days ago', 'Yesterday', 'Today'],
-                datasets: [{
-                    label: 'Incidents',
-                    data: @Html.Raw(ViewBag.Last7Days ?? "[0,0,0,0,0,0,0]"),
-                    borderColor: '#2563EB',
-                    backgroundColor: 'rgba(37, 99, 235, 0.05)',
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: '#2563EB',
-                    pointBorderColor: '#fff',
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } }
-                },
-                scales: {
-                    y: { beginAtZero: true, grid: { color: '#EAECF0' }, ticks: { stepSize: 1, font: { size: 10 } } },
-                    x: { grid: { display: false }, ticks: { font: { size: 10 } } }
-                }
-            }
+            type: 'line', data: { labels: ['6 days ago', '5 days ago', '4 days ago', '3 days ago', '2 days ago', 'Yesterday', 'Today'],
+            datasets: [{ label: 'Incidents', data: @Html.Raw(ViewBag.Last7Days ?? "[0,0,0,0,0,0,0]"),
+            borderColor: '#2563EB', backgroundColor: 'rgba(37,99,235,0.05)', tension: 0.4, fill: true, pointBackgroundColor: '#2563EB', pointBorderColor: '#fff', pointRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } } },
+            scales: { y: { beginAtZero: true, grid: { color: '#EAECF0' }, ticks: { stepSize: 1, font: { size: 10 } } },
+            x: { grid: { display: false }, ticks: { font: { size: 10 } } } } }
         });
 
         const severityCtx = document.getElementById('severityChart').getContext('2d');
         new Chart(severityCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Critical', 'High', 'Medium', 'Low'],
-                datasets: [{
-                    data: [@ViewBag.CriticalCount, @ViewBag.HighCount, @ViewBag.MediumCount, @ViewBag.LowCount],
-                    backgroundColor: ['#DC2626', '#F97316', '#EAB308', '#10B981'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
-                }
-            }
+            type: 'doughnut', data: { labels: ['Critical', 'High', 'Medium', 'Low'],
+            datasets: [{ data: [@ViewBag.CriticalCount, @ViewBag.HighCount, @ViewBag.MediumCount, @ViewBag.LowCount],
+            backgroundColor: ['#DC2626', '#F97316', '#EAB308', '#10B981'], borderWidth: 0 }] },
+            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
         });
 
         const statusCtx = document.getElementById('statusChart').getContext('2d');
         new Chart(statusCtx, {
-            type: 'pie',
-            data: {
-                labels: ['Open', 'In Progress', 'Resolved'],
-                datasets: [{
-                    data: [@ViewBag.OpenCount, @ViewBag.InProgressCount, @ViewBag.ResolvedCount],
-                    backgroundColor: ['#2563EB', '#F59E0B', '#10B981'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
-                }
-            }
+            type: 'pie', data: { labels: ['Open', 'In Progress', 'Resolved'],
+            datasets: [{ data: [@ViewBag.OpenCount, @ViewBag.InProgressCount, @ViewBag.ResolvedCount],
+            backgroundColor: ['#3B82F6', '#F59E0B', '#10B981'], borderWidth: 0 }] },
+            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
         });
 
-        // Notification System
-        let notifications = [];
-        let notificationCount = 0;
+        // ========== POLLING NOTIFICATION SYSTEM (No SignalR - Simple & Working) ==========
         
+        let lastCheckTime = new Date();
+        let shownNotificationIds = [];
+        let pollingInterval = null;
+        
+        // Function to check for new incidents
+        function checkNewIncidents() {
+            fetch(`/Operator/GetNewIncidentsSince?lastCheck=${lastCheckTime.toISOString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.incidents && data.incidents.length > 0) {
+                        data.incidents.forEach(incident => {
+                            // Check if already notified
+                            if (!shownNotificationIds.includes(incident.id)) {
+                                shownNotificationIds.push(incident.id);
+                                showNotificationPopup(incident.title, incident.location, incident.severity);
+                                
+                                // Update New Today count
+                                const newTodayElement = document.getElementById('newTodayValue');
+                                if (newTodayElement) {
+                                    let currentValue = parseInt(newTodayElement.innerText) || 0;
+                                    newTodayElement.innerText = currentValue + 1;
+                                }
+                                
+                                // Update badge count
+                                updateBadgeCount();
+                                updateDropdownNotifications();
+                            }
+                        });
+                    }
+                    lastCheckTime = new Date();
+                })
+                .catch(err => console.error('Polling error:', err));
+        }
+        
+        // Show notification popup
+        function showNotificationPopup(title, location, severity) {
+            let bgColor = '#FFFFFF';
+            let borderColor = '#2563EB';
+            let icon = '📋';
+            
+            switch(severity?.toLowerCase()) {
+                case 'critical': bgColor = '#FEF2F2'; borderColor = '#DC2626'; icon = '🔴'; break;
+                case 'high': bgColor = '#FEF3C7'; borderColor = '#F59E0B'; icon = '🟠'; break;
+                case 'medium': bgColor = '#E0E7FF'; borderColor = '#2563EB'; icon = '🔵'; break;
+                default: bgColor = '#DCFCE7'; borderColor = '#10B981'; icon = '🟢';
+            }
+            
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                position: fixed; bottom: 20px; right: 20px; width: 350px; background: ${bgColor};
+                border-left: 4px solid ${borderColor}; border-radius: 12px; padding: 14px 18px;
+                margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+                animation: slideIn 0.3s ease; cursor: pointer; z-index: 1001;
+            `;
+            popup.innerHTML = `
+                <div style="display: flex; align-items: start; gap: 12px;">
+                    <div style="font-size: 24px;">${icon}</div>
+                    <div style="flex: 1;">
+                        <strong style="color: #1A1F36; font-size: 14px; display: block;">🚨 New Incident</strong>
+                        <div style="font-weight: 600; color: #0F172A; margin: 4px 0;">${escapeHtml(title)}</div>
+                        <div style="font-size: 12px; color: #64748B;"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(location)}</div>
+                        <small style="color: #9CA3AF; font-size: 10px;">${new Date().toLocaleTimeString()}</small>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" style="background:none; border:none; cursor:pointer;">✕</button>
+                </div>
+            `;
+            document.body.appendChild(popup);
+            setTimeout(() => { if(popup.parentElement) popup.remove(); }, 8000);
+            popup.onclick = (e) => { if(e.target.tagName !== 'BUTTON') window.location.href = '/Operator/Incidents'; };
+            
+            // Play beep sound
+            try { new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==').play().catch(e=>{}); } catch(e) {}
+        }
+        
+        function escapeHtml(text) { if(!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        
+        function updateBadgeCount() {
+            fetch('/Operator/GetNotificationCount')
+                .then(res => res.json())
+                .then(data => {
+                    const badge = document.getElementById('notificationBadge');
+                    const dropdownBadge = document.getElementById('notificationDropdownBadge');
+                    if (badge) {
+                        if (data.count > 0) { badge.style.display = 'inline'; badge.innerText = data.count > 99 ? '99+' : data.count; }
+                        else { badge.style.display = 'none'; }
+                    }
+                    if (dropdownBadge) {
+                        if (data.count > 0) { dropdownBadge.style.display = 'inline'; dropdownBadge.innerText = data.count > 99 ? '99+' : data.count; }
+                        else { dropdownBadge.style.display = 'none'; }
+                    }
+                })
+                .catch(err => console.error('Badge error:', err));
+        }
+        
+        let notificationsList = [];
+        
+        function updateDropdownNotifications() {
+            fetch('/Operator/GetNewIncidentsCount')
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById('notificationList');
+                    if (container) {
+                        if (data.count === 0) {
+                            container.innerHTML = '<div class="empty-notifications"><i class="fas fa-bell-slash"></i> No new notifications</div>';
+                        } else {
+                            container.innerHTML = `<div class="empty-notifications"><i class="fas fa-bell"></i> ${data.count} new incident(s)</div>`;
+                        }
+                    }
+                });
+        }
+        
+        // Bell click handler
         const notificationBell = document.getElementById('notificationBell');
         const notificationDropdown = document.getElementById('notificationDropdown');
-        const notificationList = document.getElementById('notificationList');
-        const notificationDropdownBadge = document.getElementById('notificationDropdownBadge');
-        const sidebarNotificationBadge = document.getElementById('notificationBadge');
-        
-        notificationBell.addEventListener('click', function(e) {
-            e.stopPropagation();
-            notificationDropdown.style.display = notificationDropdown.style.display === 'none' ? 'block' : 'none';
-            renderNotifications();
-            markAllAsSeen();
-        });
-        
-        document.addEventListener('click', function(e) {
-            if (!document.querySelector('.notification-container')?.contains(e.target)) {
-                notificationDropdown.style.display = 'none';
-            }
-        });
-        
-        function addNotification(title, message, time, severity = 'medium') {
-            const notification = {
-                id: Date.now(),
-                title: title,
-                message: message,
-                time: time,
-                severity: severity,
-                read: false,
-                timestamp: new Date()
-            };
-            notifications.unshift(notification);
-            updateNotificationBadge();
-            renderNotifications();
-            showPopupNotification(title, message, time, severity);
-        }
-        
-        function updateNotificationBadge() {
-            const unreadCount = notifications.filter(n => !n.read).length;
-            notificationCount = unreadCount;
-            
-            if (unreadCount > 0) {
-                notificationDropdownBadge.style.display = 'inline';
-                notificationDropdownBadge.innerText = unreadCount > 9 ? '9+' : unreadCount;
-                sidebarNotificationBadge.style.display = 'inline';
-                sidebarNotificationBadge.innerText = unreadCount > 9 ? '9+' : unreadCount;
-                notificationBell.classList.add('has-notification');
-            } else {
-                notificationDropdownBadge.style.display = 'none';
-                sidebarNotificationBadge.style.display = 'none';
-                notificationBell.classList.remove('has-notification');
-            }
-        }
-        
-        function markAllAsSeen() {
-            notifications.forEach(n => n.read = true);
-            updateNotificationBadge();
-            renderNotifications();
+        if (notificationBell && notificationDropdown) {
+            notificationBell.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notificationDropdown.style.display = notificationDropdown.style.display === 'none' ? 'block' : 'none';
+                updateDropdownNotifications();
+            });
+            document.addEventListener('click', function(e) {
+                if (!notificationBell.contains(e.target) && !notificationDropdown.contains(e.target)) {
+                    notificationDropdown.style.display = 'none';
+                }
+            });
         }
         
         document.getElementById('markAllRead')?.addEventListener('click', function() {
-            markAllAsSeen();
+            shownNotificationIds = [];
+            updateBadgeCount();
+            updateDropdownNotifications();
+            notificationDropdown.style.display = 'none';
         });
         
-        function renderNotifications() {
-            if (notifications.length === 0) {
-                notificationList.innerHTML = `
-                    <div class="empty-notifications">
-                        <i class="fas fa-bell-slash"></i>
-                        No new notifications
-                    </div>
-                `;
-                return;
-            }
-            
-            notificationList.innerHTML = notifications.map(n => `
-                <div class="notification-item ${!n.read ? 'unread' : ''} ${getSeverityClass(n.severity)}" onclick="markAsRead(${n.id})">
-                    <div class="notification-title">${escapeHtml(n.title)}</div>
-                    <div class="notification-message">${escapeHtml(n.message)}</div>
-                    <div class="notification-time">${formatTime(n.time)}</div>
-                </div>
-            `).join('');
-        }
+        // Start polling every 5 seconds
+        pollingInterval = setInterval(checkNewIncidents, 5000);
         
-        function getSeverityClass(severity) {
-            switch(severity.toLowerCase()) {
-                case 'critical': return 'critical';
-                case 'high': return 'high';
-                case 'medium': return 'medium';
-                case 'low': return 'low';
-                default: return '';
-            }
-        }
+        // Initial badge check
+        updateBadgeCount();
+        updateDropdownNotifications();
         
-        window.markAsRead = function(id) {
-            const notification = notifications.find(n => n.id === id);
-            if (notification) {
-                notification.read = true;
-                updateNotificationBadge();
-                renderNotifications();
-                window.location.href = '/Operator/Incidents';
-            }
-        };
+        console.log("✅ Polling notification system started - checking every 5 seconds for @dept department");
         
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        function formatTime(timeStr) {
-            const date = new Date(timeStr);
-            const now = new Date();
-            const diff = now - date;
-            
-            if (diff < 60000) return 'Just now';
-            if (diff < 3600000) return `${Math.floor(diff / 60000)} minutes ago`;
-            if (diff < 86400000) return `${Math.floor(diff / 3600000)} hours ago`;
-            return date.toLocaleDateString();
-        }
-        
-        function showPopupNotification(title, message, time, severity) {
-            const popup = document.createElement('div');
-            let bgColor = '#FFFFFF';
-            let borderColor = '#2563EB';
-            
-            switch(severity.toLowerCase()) {
-                case 'critical':
-                    bgColor = '#FEF2F2';
-                    borderColor = '#DC2626';
-                    break;
-                case 'high':
-                    bgColor = '#FEF3C7';
-                    borderColor = '#F59E0B';
-                    break;
-                case 'medium':
-                    bgColor = '#E0E7FF';
-                    borderColor = '#2563EB';
-                    break;
-                case 'low':
-                    bgColor = '#DCFCE7';
-                    borderColor = '#10B981';
-                    break;
-            }
-            
-            popup.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                width: 320px;
-                background: ${bgColor};
-                border-left: 4px solid ${borderColor};
-                border-radius: 12px;
-                padding: 14px;
-                margin-bottom: 12px;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                animation: slideIn 0.3s ease;
-                cursor: pointer;
-                z-index: 1001;
-            `;
-            
-            popup.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: start;">
-                    <div>
-                        <strong style="color: #1A1F36; font-size: 13px;">${escapeHtml(title)}</strong>
-                        <p style="margin: 4px 0; font-size: 11px; color: #6B7280;">${escapeHtml(message)}</p>
-                        <small style="color: #9CA3AF; font-size: 10px;">${formatTime(time)}</small>
-                    </div>
-                    <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; cursor: pointer; color: #9CA3AF;">✕</button>
-                </div>
-            `;
-            
-            document.body.appendChild(popup);
-            
-            setTimeout(() => {
-                if (popup.parentElement) popup.remove();
-            }, 5000);
-            
-            popup.onclick = (e) => {
-                if (e.target.tagName !== 'BUTTON') {
-                    window.location.href = '/Operator/Incidents';
-                }
-            };
-        }
-        
-        // SignalR Connection
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/notificationHub")
-            .build();
-        
-        connection.start()
-            .then(() => {
-                console.log("SignalR connected!");
-                connection.invoke("JoinDepartment", "@dept");
-            })
-            .catch(err => console.error("SignalR error:", err));
-        
-        connection.on("ReceiveNotification", (title, message, time) => {
-            console.log("New notification:", title);
-            let severity = 'medium';
-            if (title.includes('Critical') || title.includes('EMERGENCY')) severity = 'critical';
-            else if (title.includes('High')) severity = 'high';
-            else if (title.includes('Low')) severity = 'low';
-            
-            addNotification(title, message, time, severity);
-            
-            const newTodayElement = document.getElementById('newTodayValue');
-            if (newTodayElement) {
-                let currentValue = parseInt(newTodayElement.innerText) || 0;
-                newTodayElement.innerText = currentValue + 1;
+        // Stop polling when page hidden (saves resources)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                if (pollingInterval) clearInterval(pollingInterval);
+            } else {
+                pollingInterval = setInterval(checkNewIncidents, 5000);
+                updateBadgeCount();
             }
         });
-        
-        // Check for new incidents every 30 seconds
-        setInterval(function() {
-            fetch('/Operator/GetNewIncidentsCount')
-                .then(res => res.json())
-                .catch(err => console.error('Error:', err));
-        }, 30000);
     </script>
 </body>
 </html>
