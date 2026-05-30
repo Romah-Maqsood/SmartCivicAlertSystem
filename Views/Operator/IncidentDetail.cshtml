@@ -104,6 +104,9 @@
         .comment-text { font-size: 13px; color: #1A1F36; line-height: 1.5; }
         .add-comment { margin-top: 16px; padding-top: 16px; border-top: 1px solid #EAECF0; }
         .alert-success { background: #DCFCE7; border: 1px solid #BBF7D0; color: #166534; padding: 12px 20px; border-radius: 12px; margin-bottom: 20px; }
+        .fire-badge { background: #FEE2E2; color: #DC2626; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
+        .rescue-badge { background: #D1FAE5; color: #10B981; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
+        .police-badge { background: #DBEAFE; color: #2563EB; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
         @@media (max-width: 1024px) { .detail-grid { grid-template-columns: 1fr; } }
         @@media (max-width: 768px) {
             .sidebar { width: 100%; position: relative; height: auto; }
@@ -154,6 +157,7 @@
             <a href="/Operator/Incidents" class="back-link"><i class="fas fa-arrow-left"></i> Back to Incidents</a>
 
             <div class="detail-grid">
+                <!-- LEFT COLUMN - Main Details -->
                 <div>
                     <div class="card">
                         <div class="incident-title">@Model.Title</div>
@@ -162,16 +166,17 @@
                         <div class="detail-row"><div class="detail-icon"><i class="fas fa-map-marker-alt"></i></div><div><div class="detail-label">Location</div><div class="detail-value">@Model.Location</div></div></div>
                         <div class="detail-row"><div class="detail-icon"><i class="fas fa-exclamation-triangle"></i></div><div><div class="detail-label">Severity</div><div class="detail-value"><span class="badge badge-@Model.Severity.ToLower()">@Model.Severity</span></div></div></div>
                         <div class="detail-row"><div class="detail-icon"><i class="fas fa-traffic-light"></i></div><div><div class="detail-label">Status</div><div class="detail-value">@{ var sc = Model.Status == "Open" ? "status-open" : Model.Status == "In Progress" ? "status-inprogress" : "status-resolved"; }<span class="@sc">@Model.Status</span></div></div></div>
-                        <div class="detail-row"><div class="detail-icon"><i class="fas fa-building"></i></div><div><div class="detail-label">Department</div><div class="detail-value">@Model.Department</div></div></div>
+                        <div class="detail-row"><div class="detail-icon"><i class="fas fa-building"></i></div><div><div class="detail-label">Department</div><div class="detail-value"><span class="@(Model.Department == "Fire" ? "fire-badge" : Model.Department == "Police" ? "police-badge" : "rescue-badge")">@Model.Department</span></div></div></div>
                         <div class="detail-row"><div class="detail-icon"><i class="fas fa-user"></i></div><div><div class="detail-label">Reported By</div><div class="detail-value">@Model.ReportedBy</div></div></div>
                         <div class="detail-row"><div class="detail-icon"><i class="fas fa-clock"></i></div><div><div class="detail-label">Reported At</div><div class="detail-value">@Model.ReportedAt.ToString("dd MMM yyyy, hh:mm tt")</div></div></div>
                         <div class="detail-row"><div class="detail-icon"><i class="fas fa-sync"></i></div><div><div class="detail-label">Last Updated</div><div class="detail-value">@Model.UpdatedAt.ToString("dd MMM yyyy, hh:mm tt")</div></div></div>
                     </div>
 
+                    <!-- POLICE SECTION -->
                     @if (dept == "Police")
                     {
                         <div class="card">
-                            <div class="card-title"><i class="fas fa-gavel"></i> Police Case Information</div>
+                            <div class="card-title"><i class="fas fa-gavel" style="color: #2563EB;"></i> Police Case Information</div>
                             <div class="detail-row"><div class="detail-label">FIR Number</div><div class="detail-value"><span class="fir-number">@Model.FIRNumber</span></div></div>
                             <div class="detail-row"><div class="detail-label">Case Type</div><div class="detail-value"><i class="fas fa-folder" style="color:#2563EB; margin-right:6px;"></i> @Model.CaseType</div></div>
                             <div class="detail-row">
@@ -181,10 +186,10 @@
                                         <select id="investigationStatus" style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #EAECF0; background: #F9FAFB;">
                                             <option value="FIR Registered" selected="@(Model.InvestigationStatus == "FIR Registered")">📋 FIR Registered</option>
                                             <option value="Investigation Started" selected="@(Model.InvestigationStatus == "Investigation Started")">🔍 Investigation Started</option>
-                                            <option value="Suspect/Evidence Found" selected="@(Model.InvestigationStatus == "Suspect/Evidence Found")">👤 Suspect/Evidence Found</option>
+                                            <option value="Suspect Found" selected="@(Model.InvestigationStatus == "Suspect Found")">👤 Suspect Found</option>
                                             <option value="Case Resolved" selected="@(Model.InvestigationStatus == "Case Resolved")">✅ Case Resolved</option>
                                         </select>
-                                        <button onclick="updateInvestigationStatus('@Model.Id')" class="btn-update"><i class="fas fa-save"></i> Update</button>
+                                        <button onclick="updateInvestigationStatus('@Model.Id')" class="btn-update" style="background:#2563EB;"><i class="fas fa-save"></i> Update</button>
                                     </div>
                                 </div>
                             </div>
@@ -196,6 +201,71 @@
                         </div>
                     }
 
+                    <!-- FIRE SECTION -->
+                    @if (dept == "Fire")
+                    {
+                        <div class="card">
+                            <div class="card-title"><i class="fas fa-fire" style="color: #DC2626;"></i> Fire Department Information</div>
+                            <div class="detail-row"><div class="detail-label">Fire Type</div><div class="detail-value"><i class="fas fa-fire" style="color:#DC2626; margin-right:6px;"></i> @Model.FireType</div></div>
+                            <div class="detail-row"><div class="detail-label">Fire Source</div><div class="detail-value">🔥 @Model.FireSource</div></div>
+                            <div class="detail-row"><div class="detail-label">Fire Trucks</div><div class="detail-value">🚒 @Model.FireTrucksDispatched trucks</div></div>
+                            <div class="detail-row"><div class="detail-label">Firefighters</div><div class="detail-value">👨‍🚒 @Model.FirefightersCount firefighters</div></div>
+                            <div class="detail-row">
+                                <div class="detail-label">Fire Status</div>
+                                <div class="detail-value">
+                                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                        <select id="fireStatus" style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #EAECF0;">
+                                            <option value="Dispatched" selected="@(Model.FireStatus == "Dispatched")">🚒 Dispatched</option>
+                                            <option value="En Route" selected="@(Model.FireStatus == "En Route")">🚒 En Route</option>
+                                            <option value="On Scene" selected="@(Model.FireStatus == "On Scene")">📍 On Scene</option>
+                                            <option value="Fighting Fire" selected="@(Model.FireStatus == "Fighting Fire")">🔥 Fighting Fire</option>
+                                            <option value="Fire Controlled" selected="@(Model.FireStatus == "Fire Controlled")">✅ Fire Controlled</option>
+                                            <option value="Fire Extinguished" selected="@(Model.FireStatus == "Fire Extinguished")">💧 Fire Extinguished</option>
+                                            <option value="Resolved" selected="@(Model.FireStatus == "Resolved")">✓ Resolved</option>
+                                        </select>
+                                        <button onclick="updateFireStatus('@Model.Id')" class="btn-update" style="background:#DC2626;"><i class="fas fa-save"></i> Update</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="detail-row"><div class="detail-label">Fire Size</div><div class="detail-value">📏 @Model.EstimatedFireSize</div></div>
+                            <div class="detail-row"><div class="detail-label">Evacuation</div><div class="detail-value">@(Model.IsEvacuationNeeded ? "✅ Evacuation in progress" : "❌ No evacuation needed")</div></div>
+                        </div>
+                    }
+
+                    <!-- RESCUE SECTION -->
+                    @if (dept == "Rescue")
+                    {
+                        <div class="card">
+                            <div class="card-title"><i class="fas fa-truck-medical" style="color: #10B981;"></i> Rescue Department Information</div>
+                            <div class="detail-row"><div class="detail-label">Emergency Type</div><div class="detail-value"><i class="fas fa-truck-medical" style="color:#10B981; margin-right:6px;"></i> @Model.EmergencyType</div></div>
+                            <div class="detail-row"><div class="detail-label">Patient Condition</div><div class="detail-value">
+                                @if (Model.PatientCondition == "Critical"){ <span style="color:#DC2626;">🔴 Critical - Life Threatening</span> }
+                                else if (Model.PatientCondition == "Serious"){ <span style="color:#F97316;">🟠 Serious - Needs Hospital</span> }
+                                else{ <span style="color:#10B981;">🟢 Stable - Conscious</span> }
+                            </div></div>
+                            <div class="detail-row"><div class="detail-label">Ambulances</div><div class="detail-value">🚑 @Model.AmbulancesDispatched ambulances</div></div>
+                            <div class="detail-row"><div class="detail-label">Paramedics</div><div class="detail-value">👨‍⚕️ @Model.ParamedicsCount paramedics</div></div>
+                            <div class="detail-row"><div class="detail-label">Hospital</div><div class="detail-value">🏥 @Model.DestinationHospital</div></div>
+                            <div class="detail-row"><div class="detail-label">Rescue Status</div><div class="detail-value">
+                                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                    <select id="rescueStatus" style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #EAECF0;">
+                                        <option value="Ambulance Dispatched" selected="@(Model.RescueStatus == "Ambulance Dispatched")">🚑 Ambulance Dispatched</option>
+                                        <option value="En Route" selected="@(Model.RescueStatus == "En Route")">🚑 En Route</option>
+                                        <option value="On Scene" selected="@(Model.RescueStatus == "On Scene")">📍 On Scene</option>
+                                        <option value="First Aid" selected="@(Model.RescueStatus == "First Aid")">💊 First Aid Provided</option>
+                                        <option value="Transporting" selected="@(Model.RescueStatus == "Transporting")">🏥 Transporting to Hospital</option>
+                                        <option value="Arrived at Hospital" selected="@(Model.RescueStatus == "Arrived at Hospital")">🏥 Arrived at Hospital</option>
+                                        <option value="Resolved" selected="@(Model.RescueStatus == "Resolved")">✅ Case Resolved</option>
+                                    </select>
+                                    <button onclick="updateRescueStatus('@Model.Id')" class="btn-update" style="background:#10B981;"><i class="fas fa-save"></i> Update</button>
+                                </div>
+                            </div></div>
+                            <div class="detail-row"><div class="detail-label">Oxygen Needed</div><div class="detail-value">@(Model.IsOxygenNeeded ? "✅ Yes, oxygen required" : "❌ No oxygen needed")</div></div>
+                            <div class="detail-row"><div class="detail-label">ETA</div><div class="detail-value">⏱️ @Model.EstimatedArrivalMinutes minutes</div></div>
+                        </div>
+                    }
+
+                    <!-- COMMENTS SECTION -->
                     <div class="card">
                         <div class="card-title"><i class="fas fa-comments"></i> Comments & Timeline</div>
                         @if (!Model.Comments.Any()){ <p style="color: #6B7280; text-align: center; padding: 20px;">No comments yet.</p> }
@@ -219,6 +289,7 @@
                     </div>
                 </div>
 
+                <!-- RIGHT COLUMN - Update Status -->
                 <div>
                     <div class="card">
                         <div class="card-title"><i class="fas fa-edit"></i> Update Incident</div>
@@ -239,6 +310,7 @@
         const toggleBtn = document.getElementById('toggleSidebar');
         toggleBtn.addEventListener('click', function() { sidebar.classList.toggle('collapsed'); });
 
+        // Police Investigation Status Update
         function updateInvestigationStatus(incidentId) {
             const status = document.getElementById('investigationStatus').value;
             fetch('/Operator/UpdateInvestigationStatus', {
@@ -248,6 +320,32 @@
             })
             .then(response => response.json())
             .then(data => { if (data.success) { alert('✅ Investigation status updated!'); location.reload(); } else { alert('❌ Failed to update'); } })
+            .catch(error => { console.error('Error:', error); alert('❌ An error occurred'); });
+        }
+
+        // Fire Status Update
+        function updateFireStatus(incidentId) {
+            const status = document.getElementById('fireStatus').value;
+            fetch('/Operator/UpdateFireStatus', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: incidentId, fireStatus: status })
+            })
+            .then(response => response.json())
+            .then(data => { if (data.success) { alert('✅ Fire status updated!'); location.reload(); } else { alert('❌ Failed to update'); } })
+            .catch(error => { console.error('Error:', error); alert('❌ An error occurred'); });
+        }
+
+        // Rescue Status Update
+        function updateRescueStatus(incidentId) {
+            const status = document.getElementById('rescueStatus').value;
+            fetch('/Operator/UpdateRescueStatus', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: incidentId, rescueStatus: status })
+            })
+            .then(response => response.json())
+            .then(data => { if (data.success) { alert('✅ Rescue status updated!'); location.reload(); } else { alert('❌ Failed to update'); } })
             .catch(error => { console.error('Error:', error); alert('❌ An error occurred'); });
         }
     </script>
