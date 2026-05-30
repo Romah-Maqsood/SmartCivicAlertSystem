@@ -868,6 +868,367 @@
             .sos-cancel:hover {
                 background: #E2E8F0;
             }
+
+        /* ==================== CHATBOT STYLES ==================== */
+        .chatbot-widget {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+        }
+
+        .chatbot-toggle {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+            .chatbot-toggle:hover {
+                transform: scale(1.05);
+                box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+            }
+
+            .chatbot-toggle i {
+                font-size: 24px;
+                color: white;
+            }
+
+        .chatbot-container {
+            position: absolute;
+            bottom: 75px;
+            right: 0;
+            width: 360px;
+            height: 480px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #EAECF0;
+            animation: slideUp 0.3s ease;
+        }
+
+        @@keyframes slideUp {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .chatbot-container.show {
+            display: flex;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .chatbot-header-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chatbot-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .chatbot-avatar i {
+                font-size: 20px;
+            }
+
+        .chatbot-header-text h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .chatbot-header-text p {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .chatbot-close {
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+            .chatbot-close:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+        .chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: #F9FAFB;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+            /* Custom Scrollbar */
+            .chatbot-messages::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            .chatbot-messages::-webkit-scrollbar-track {
+                background: #E5E7EB;
+                border-radius: 10px;
+            }
+
+            .chatbot-messages::-webkit-scrollbar-thumb {
+                background: #94A3B8;
+                border-radius: 10px;
+            }
+
+        .message {
+            display: flex;
+            animation: messageFadeIn 0.3s ease;
+        }
+
+        @@keyframes messageFadeIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            border: 1px solid #EAECF0;
+            color: #1A1F36;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user .message-content {
+            background: #2563EB;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 10px;
+            color: #9CA3AF;
+            margin-top: 4px;
+            margin-left: 12px;
+        }
+
+        .message.user .message-time {
+            text-align: right;
+            margin-right: 12px;
+        }
+
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .quick-reply-btn {
+            background: #F1F5F9;
+            border: 1px solid #EAECF0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #1A1F36;
+        }
+
+            .quick-reply-btn:hover {
+                background: #E2E8F0;
+                border-color: #2563EB;
+            }
+
+        .chatbot-input-area {
+            padding: 12px 16px;
+            border-top: 1px solid #EAECF0;
+            background: white;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1.5px solid #EAECF0;
+            border-radius: 40px;
+            font-family: inherit;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+            .chatbot-input:focus {
+                border-color: #2563EB;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            }
+
+        .chatbot-send {
+            width: 38px;
+            height: 38px;
+            background: #2563EB;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .chatbot-send:hover {
+                background: #1D4ED8;
+                transform: scale(1.02);
+            }
+
+            .chatbot-send i {
+                font-size: 14px;
+            }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 10px 14px;
+            background: white;
+            border: 1px solid #EAECF0;
+            border-radius: 18px;
+            width: fit-content;
+        }
+
+            .typing-indicator span {
+                width: 8px;
+                height: 8px;
+                background: #94A3B8;
+                border-radius: 50%;
+                animation: typing 1.4s infinite;
+            }
+
+                .typing-indicator span:nth-child(2) {
+                    animation-delay: 0.2s;
+                }
+
+                .typing-indicator span:nth-child(3) {
+                    animation-delay: 0.4s;
+                }
+
+        @@keyframes typing {
+            0%, 60%, 100%
+
+        {
+            transform: translateY(0);
+            opacity: 0.4;
+        }
+
+        30% {
+            transform: translateY(-6px);
+            opacity: 1;
+        }
+
+        }
+
+        @@media (max-width: 480px) {
+            .chatbot-container
+
+        {
+            width: 320px;
+            height: 450px;
+            right: -10px;
+        }
+
+        }
+        /* Toast Animation */
+        @@keyframes slideInRight {
+            from
+
+        {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        }
+
+        @@keyframes fadeOutRight {
+            from
+
+        {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        }
     </style>
 </head>
 <body>
@@ -1022,21 +1383,47 @@
         </div>
     </div>
 
+    <!-- ==================== CHATBOT WIDGET ==================== -->
     <div class="chatbot-widget">
         <div class="chatbot-container" id="chatbotContainer">
             <div class="chatbot-header">
-                <span><i class="fas fa-robot"></i> City Assistant</span>
-                <i class="fas fa-times" onclick="toggleChatbot()"></i>
+                <div class="chatbot-header-info">
+                    <div class="chatbot-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="chatbot-header-text">
+                        <h4>City Assistant</h4>
+                        <p>Online • Ready to help</p>
+                    </div>
+                </div>
+                <div class="chatbot-close" onclick="toggleChatbot()">
+                    <i class="fas fa-times"></i>
+                </div>
             </div>
             <div class="chatbot-messages" id="chatMessages">
-                <div class="message bot"><div class="message-content">Hello! I'm your City Assistant. How can I help you today?</div></div>
+                <div class="message bot">
+                    <div class="message-content">
+                        <i class="fas fa-hand-wave" style="margin-right: 6px;"></i> Hello! I'm your City Assistant.<br>
+                        How can I help you today?
+                        <div class="quick-replies" id="quickReplies">
+                            <button class="quick-reply-btn" onclick="sendQuickReply('How to report an incident?')">📝 Report Incident</button>
+                            <button class="quick-reply-btn" onclick="sendQuickReply('What is SOS Emergency?')">🚨 SOS Emergency</button>
+                            <button class="quick-reply-btn" onclick="sendQuickReply('Emergency numbers')">📞 Emergency Numbers</button>
+                            <button class="quick-reply-btn" onclick="sendQuickReply('Safety tips')">🛡️ Safety Tips</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="chatbot-input">
-                <input type="text" id="chatInput" placeholder="Ask me anything..." onkeypress="handleChatKeyPress(event)">
-                <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+            <div class="chatbot-input-area">
+                <input type="text" id="chatInput" class="chatbot-input" placeholder="Ask me anything..." onkeypress="handleChatKeyPress(event)">
+                <button class="chatbot-send" onclick="sendChatMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </div>
         </div>
-        <div class="chatbot-toggle" onclick="toggleChatbot()"><i class="fas fa-comment-dots"></i></div>
+        <div class="chatbot-toggle" onclick="toggleChatbot()">
+            <i class="fas fa-comment-dots"></i>
+        </div>
     </div>
 
     <!-- SOS Modal - Enhanced Version -->
@@ -1086,7 +1473,7 @@
             }
         });
 
-        // Function to load content dynamically - FIXED for Statistics
+                       // Function to load content dynamically - FIXED for Statistics
         function loadContent(viewName, incidentId = null) {
             const dashboardView = document.getElementById('dashboard-view');
             const dynamicContent = document.getElementById('dynamic-content');
@@ -1147,7 +1534,7 @@
                 .then(html => {
                     dynamicContent.innerHTML = `<div class="dynamic-content">${html}</div>`;
 
-                    // IMPORTANT: Execute all scripts in the loaded content to initialize charts
+                    // IMPORTANT: Execute all scripts in the loaded content
                     const scripts = dynamicContent.querySelectorAll('script');
                     scripts.forEach(oldScript => {
                         const newScript = document.createElement('script');
@@ -1157,16 +1544,19 @@
                             newScript.textContent = oldScript.textContent;
                         }
                         document.body.appendChild(newScript);
+                        oldScript.remove();
                     });
 
-                    // Special handling for Statistics page - ensure charts are initialized
+                    // Special handling for Statistics page charts
                     if (viewName === 'statistics') {
                         setTimeout(function() {
-                            // Check if chart canvases exist and initialize them
-                            if (typeof initializeStatisticsCharts === 'function') {
-                                initializeStatisticsCharts();
+                            // Force charts to initialize if they haven't
+                            if (typeof Chart !== 'undefined') {
+                                console.log('Chart.js is loaded, charts should appear');
+                            } else {
+                                console.log('Waiting for Chart.js...');
                             }
-                        }, 100);
+                        }, 200);
                     }
                 })
                 .catch(error => {
@@ -1219,6 +1609,343 @@
         document.getElementById('cancelSos').addEventListener('click', () => sosModal.classList.remove('show'));
         document.getElementById('confirmSos').addEventListener('click', () => window.location.href = '/Citizen/CreateEmergency');
         window.addEventListener('click', e => { if (e.target === sosModal) sosModal.classList.remove('show'); });
+
+                // ==================== CHATBOT FUNCTIONALITY ====================
+
+        // Toggle chatbot visibility
+        function toggleChatbot() {
+            const container = document.getElementById('chatbotContainer');
+            container.classList.toggle('show');
+            if (container.classList.contains('show')) {
+                const input = document.getElementById('chatInput');
+                setTimeout(() => input.focus(), 300);
+            }
+        }
+
+        // Handle Enter key press
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        // Send quick reply
+        function sendQuickReply(message) {
+            const input = document.getElementById('chatInput');
+            input.value = message;
+            sendChatMessage();
+        }
+
+        // Send chat message
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Generate bot response after delay (simulates thinking)
+            setTimeout(() => {
+                hideTypingIndicator();
+                const response = getBotResponse(message);
+                addMessage(response, 'bot');
+
+                // Add quick replies for certain messages
+                if (message.toLowerCase().includes('help') || message.toLowerCase().includes('what can you do')) {
+                    addQuickRepliesAfterResponse();
+                }
+
+                // Scroll to bottom
+                scrollToBottom();
+            }, 500);
+        }
+
+        // Add message to chat
+        function addMessage(text, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            messageDiv.innerHTML = `
+                <div class="message-content">${escapeChatHtml(text)}</div>
+                <div class="message-time">${timeStr}</div>
+            `;
+
+            messagesContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Show typing indicator
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            messagesContainer.appendChild(typingDiv);
+            scrollToBottom();
+        }
+
+        // Hide typing indicator
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // Scroll to bottom of chat
+        function scrollToBottom() {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeChatHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Add quick replies after bot response
+        function addQuickRepliesAfterResponse() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const quickRepliesDiv = document.createElement('div');
+            quickRepliesDiv.className = 'message bot';
+            quickRepliesDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="quick-replies">
+                        <button class="quick-reply-btn" onclick="sendQuickReply('How to report an incident?')">📝 Report Incident</button>
+                        <button class="quick-reply-btn" onclick="sendQuickReply('What is SOS Emergency?')">🚨 SOS Emergency</button>
+                        <button class="quick-reply-btn" onclick="sendQuickReply('Emergency numbers')">📞 Emergency Numbers</button>
+                        <button class="quick-reply-btn" onclick="sendQuickReply('Safety tips')">🛡️ Safety Tips</button>
+                        <button class="quick-reply-btn" onclick="sendQuickReply('My Reports')">📋 My Reports</button>
+                        <button class="quick-reply-btn" onclick="sendQuickReply('Download Reports')">📥 Download Reports</button>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(quickRepliesDiv);
+            scrollToBottom();
+        }
+
+        // Get bot response based on user input
+        function getBotResponse(message) {
+            const msg = message.toLowerCase().trim();
+
+            // Greetings
+            if (msg.match(/^(hello|hi|hey|greetings|good morning|good afternoon|good evening)$/)) {
+                return "👋 Hello! I'm your City Assistant. How can I help you today?";
+            }
+
+            // How are you
+            if (msg.includes('how are you')) {
+                return "I'm doing great, thank you for asking! Ready to assist you with any questions about incident reporting or emergency procedures.";
+            }
+
+            // Thank you
+            if (msg.includes('thank') || msg.includes('thanks')) {
+                return "You're welcome! Stay safe and feel free to ask if you need any more help. 👍";
+            }
+
+            // Report incident
+            if (msg.includes('report') && (msg.includes('incident') || msg.includes('how'))) {
+                return "📝 **How to Report an Incident:**\n\n" +
+                       "1️⃣ Go to your Dashboard\n" +
+                       "2️⃣ Click on 'Report New Incident' button\n" +
+                       "3️⃣ Fill in the Title, Description, and Location\n" +
+                       "4️⃣ Select Severity (Critical/High/Medium/Low)\n" +
+                       "5️⃣ Click 'Submit Incident'\n\n" +
+                       "Your report will be instantly sent to the appropriate department!";
+            }
+
+            // SOS / Emergency
+            if (msg.includes('sos') || (msg.includes('emergency') && !msg.includes('numbers'))) {
+                return "🚨 **SOS Emergency Feature:**\n\n" +
+                       "• One-click emergency alert for life-threatening situations\n" +
+                       "• Creates a CRITICAL priority incident\n" +
+                       "• Notifies all emergency departments immediately\n" +
+                       "• Use only for genuine emergencies!\n\n" +
+                       "⚠️ To use: Click 'SOS Emergency' in the sidebar → Confirm → Alert sent!";
+            }
+
+            // Emergency numbers
+            if (msg.includes('emergency numbers') || msg.includes('helpline') || msg.includes('contact')) {
+                return "📞 **Emergency Helplines:**\n\n" +
+                       "• 🚑 Rescue 1122\n" +
+                       "• 👮 Police 15\n" +
+                       "• 🔥 Fire 16\n" +
+                       "• 🚑 Ambulance 115\n\n" +
+                       "Save these numbers for emergencies!";
+            }
+
+            // Safety tips
+            if (msg.includes('safety') || msg.includes('tip')) {
+                return "🛡️ **Safety Tips:**\n\n" +
+                       "• Always share your exact location when reporting\n" +
+                       "• Take photos/videos of the incident for evidence\n" +
+                       "• Keep your CNIC ready for verification\n" +
+                       "• Learn basic first aid\n" +
+                       "• Stay calm and provide accurate information\n\n" +
+                       "For more tips, click 'Safety Tips' in the sidebar!";
+            }
+
+            // My Reports
+            if (msg.includes('my reports') || (msg.includes('view') && msg.includes('report'))) {
+                return "📋 **My Reports Feature:**\n\n" +
+                       "• Click 'My Reports' in the sidebar to see all your incidents\n" +
+                       "• Track the status of each report (Open/In Progress/Resolved)\n" +
+                       "• Click 'View Details' to see complete information\n" +
+                       "• You can also download reports as PDF or CSV from the Reports page";
+            }
+
+            // Download reports
+            if (msg.includes('download') && (msg.includes('report') || msg.includes('pdf') || msg.includes('csv'))) {
+                return "📥 **Download Reports:**\n\n" +
+                       "1️⃣ Click 'Reports (PDF)' in the sidebar\n" +
+                       "2️⃣ Select incidents using checkboxes\n" +
+                       "3️⃣ Click 'Download Selected as PDF' or 'Download Selected as CSV'\n" +
+                       "4️⃣ Your report will be downloaded automatically!";
+            }
+
+            // Statistics
+            if (msg.includes('statistics') || msg.includes('chart') || msg.includes('graph')) {
+                return "📊 **Statistics Page:**\n\n" +
+                       "• View incident trends over the last 7 days\n" +
+                       "• See severity distribution (Critical/High/Medium/Low)\n" +
+                       "• Track status distribution (Open/In Progress/Resolved)\n\n" +
+                       "Click 'Statistics' in the sidebar to see your analytics!";
+            }
+
+            // Notifications
+            if (msg.includes('notification')) {
+                return "🔔 **Notifications:**\n\n" +
+                       "• Get real-time updates when incident status changes\n" +
+                       "• Click 'Notifications' in the sidebar to view all\n" +
+                       "• Each notification shows the incident title and status change\n\n" +
+                       "You'll be notified when your incident moves to 'In Progress' or 'Resolved'!";
+            }
+
+            // Profile
+            if (msg.includes('profile') || msg.includes('update profile')) {
+                return "👤 **Profile Management:**\n\n" +
+                       "• Click 'My Profile' in the sidebar\n" +
+                       "• Update your name and phone number\n" +
+                       "• Your changes will be saved immediately";
+            }
+
+            // What can you do / Help
+            if (msg.includes('help') || msg.includes('what can you do') || msg.includes('capabilities')) {
+                return "🤖 **I can help you with:**\n\n" +
+                       "• 📝 How to report an incident\n" +
+                       "• 🚨 SOS Emergency feature explanation\n" +
+                       "• 📞 Emergency helpline numbers\n" +
+                       "• 🛡️ Safety tips and guidelines\n" +
+                       "• 📋 Viewing and tracking your reports\n" +
+                       "• 📥 Downloading reports as PDF/CSV\n" +
+                       "• 📊 Understanding statistics charts\n" +
+                       "• 🔔 Notification system\n\n" +
+                       "What would you like to know?";
+            }
+
+            // About the system
+            if (msg.includes('what is') && (msg.includes('smart civic') || msg.includes('this system'))) {
+                return "🏙️ **Smart Civic Alert System:**\n\n" +
+                       "An AI-powered city operations dashboard for smart city management. " +
+                       "Citizens can report incidents, send SOS alerts, track report status, " +
+                       "and download reports - all in one place!";
+            }
+
+            // Default response for unknown queries
+            return "🤔 I'm not sure about that. Here's what I can help with:\n\n" +
+                   "• Report an incident\n" +
+                   "• SOS Emergency\n" +
+                   "• Emergency numbers\n" +
+                   "• Safety tips\n" +
+                   "• My Reports\n" +
+                   "• Download reports\n" +
+                   "• Statistics\n" +
+                   "• Notifications\n\n" +
+                   "Type 'help' to see all options!";
+        }
+
+                // ==================== TOAST NOTIFICATION FOR SOS ====================
+        function showToast(message, type = 'success') {
+            // Remove existing toast if any
+            const existingToast = document.querySelector('.sos-toast-notification');
+            if (existingToast) existingToast.remove();
+
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `sos-toast-notification ${type}`;
+
+            let icon = 'fa-check-circle';
+            let bgColor = '#10B981';
+
+            if (type === 'error') {
+                icon = 'fa-exclamation-triangle';
+                bgColor = '#EF4444';
+            } else if (type === 'warning') {
+                icon = 'fa-exclamation-circle';
+                bgColor = '#F59E0B';
+            } else {
+                icon = 'fa-check-circle';
+                bgColor = '#10B981';
+            }
+
+            toast.style.cssText = `
+                position: fixed;
+                top: 25px;
+                right: 25px;
+                background: ${bgColor};
+                color: white;
+                padding: 14px 24px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 14px;
+                font-weight: 500;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+                z-index: 9999;
+                animation: slideInRight 0.3s ease forwards;
+                font-family: 'Inter', sans-serif;
+            `;
+
+            toast.innerHTML = `<i class="fas ${icon}" style="font-size: 18px;"></i> ${message}`;
+            document.body.appendChild(toast);
+
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'fadeOutRight 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Check for SOS success message on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if SOS was just sent
+            @if (TempData["SOSSuccess"] != null && TempData["SOSSuccess"].ToString() == "true")
+            {
+                    <text>
+                    showToast('@TempData["SOSMessage"]', 'success');
+                    </text>
+            }
+        });
     </script>
     @await Html.PartialAsync("_SignalRClient")
 </body>

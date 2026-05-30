@@ -23,11 +23,18 @@ namespace SmartCityPulse.Controllers
             _hubContext = hubContext;
         }
 
+        // ==================== CHECK IF USER IS CITIZEN ====================
+        private bool IsCitizen()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            return role == "Citizen";
+        }
+
         // ==================== DASHBOARD ====================
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return RedirectToAction("Login", "Account");
 
             var userId = HttpContext.Session.GetString("UserId");
@@ -83,7 +90,7 @@ namespace SmartCityPulse.Controllers
         [HttpGet]
         public async Task<IActionResult> MyReports()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return RedirectToAction("Login", "Account");
             var userId = HttpContext.Session.GetString("UserId");
             var incidents = await _context.Incidents
@@ -96,7 +103,7 @@ namespace SmartCityPulse.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(string id)
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return RedirectToAction("Login", "Account");
             var userId = HttpContext.Session.GetString("UserId");
             var incident = await _context.Incidents.Find(i => i.Id == id).FirstOrDefaultAsync();
@@ -109,7 +116,7 @@ namespace SmartCityPulse.Controllers
         [HttpGet]
         public IActionResult MapView()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return RedirectToAction("Login", "Account");
             return View();
         }
@@ -117,7 +124,7 @@ namespace SmartCityPulse.Controllers
         [HttpGet]
         public async Task<IActionResult> GetIncidentsForMap()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return Unauthorized();
             var userId = HttpContext.Session.GetString("UserId");
             var incidents = await _context.Incidents.Find(i => i.ReportedBy == userId).ToListAsync();
@@ -131,7 +138,6 @@ namespace SmartCityPulse.Controllers
         [HttpGet]
         public IActionResult ReportIncident()
         {
-            // Anyone can access this page (even anonymous users)
             return View();
         }
 
@@ -139,11 +145,9 @@ namespace SmartCityPulse.Controllers
         [HttpPost]
         public async Task<IActionResult> ReportIncident([FromBody] Incident model)
         {
-            // Validate required fields
             if (string.IsNullOrWhiteSpace(model.Title) || string.IsNullOrWhiteSpace(model.Description) || string.IsNullOrWhiteSpace(model.Location))
                 return Json(new { success = false, message = "Title, Description and Location are required." });
 
-            // Map department to full standard name
             var deptMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 { "Fire", "Fire Department" },
@@ -160,8 +164,7 @@ namespace SmartCityPulse.Controllers
             string inputDept = model.Department ?? "";
             model.Department = deptMap.ContainsKey(inputDept) ? deptMap[inputDept] : "Unassigned";
 
-            // Use citizen info if logged in, else set as anonymous
-            if (HttpContext.Session.GetString("UserRole") == "Citizen")
+            if (IsCitizen())
             {
                 model.ReportedBy = HttpContext.Session.GetString("UserId");
                 model.ReportedByName = HttpContext.Session.GetString("UserName") ?? "Citizen";
@@ -181,8 +184,7 @@ namespace SmartCityPulse.Controllers
             {
                 await _context.Incidents.InsertOneAsync(model);
 
-                // Notify department operators
-                string deptGroup = model.Department.Replace(" ", ""); // "FireDepartment"
+                string deptGroup = model.Department.Replace(" ", "");
                 await NotificationService.SendAndSave(
                     _context, _hubContext,
                     "New Incident Reported",
@@ -191,7 +193,6 @@ namespace SmartCityPulse.Controllers
                     targetRole: deptGroup
                 );
 
-                // Critical → Admin
                 if (model.Severity == "Critical")
                 {
                     await NotificationService.SendAndSave(
@@ -215,7 +216,7 @@ namespace SmartCityPulse.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateEmergency()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return RedirectToAction("Login", "Account");
 
             var userId = HttpContext.Session.GetString("UserId");
@@ -225,8 +226,8 @@ namespace SmartCityPulse.Controllers
 
             var emergencyIncident = new Incident
             {
-                Title = " EMERGENCY SOS - Immediate Assistance Required",
-                Description = $" EMERGENCY ALERT \n\nCitizen: {userName}\nContact: {userPhone ?? "Not provided"}\nEmail: {userEmail ?? "Not provided"}\n\n{userName} has requested immediate emergency assistance.",
+                Title = "🚨 EMERGENCY SOS - Immediate Assistance Required",
+                Description = $"🚨 EMERGENCY ALERT 🚨\n\nCitizen: {userName}\nContact: {userPhone ?? "Not provided"}\nEmail: {userEmail ?? "Not provided"}\n\n{userName} has requested immediate emergency assistance.",
                 Location = "Emergency Location - Please contact citizen for exact location",
                 Severity = "Critical",
                 Status = "Open",
@@ -234,39 +235,54 @@ namespace SmartCityPulse.Controllers
                 ReportedByName = userName ?? "Citizen",
                 ReportedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                Department = "Rescue Department",
+                Department = "Rescue",
                 Comments = new List<IncidentComment>()
             };
 
             await _context.Incidents.InsertOneAsync(emergencyIncident);
 
+            // Send real-time SignalR notification to ALL departments (broadcast)
             try
             {
                 await _hubContext.Clients.All.SendAsync("ReceiveEmergencyAlert",
-                    " EMERGENCY SOS",
+                    "🚨 EMERGENCY SOS",
                     $"CRITICAL: {userName} has sent an emergency SOS alert! Immediate action required.",
                     DateTime.Now,
                     emergencyIncident.Id);
             }
-            catch { /* silent */ }
+            catch { }
 
+            // Send notification to the citizen who raised the SOS
             await NotificationService.SendAndSave(
                 _context, _hubContext,
                 "Emergency Submitted",
-                "Your emergency SOS alert has been sent. Authorities are responding.",
+                "Your emergency SOS alert has been sent. Rescue team is responding.",
                 "success", "high",
                 targetUserId: userId
             );
 
+            // Send notification to RESCUE department (primary responder for SOS)
             await NotificationService.SendAndSave(
                 _context, _hubContext,
-                "New Emergency SOS",
+                "🚨 EMERGENCY SOS - Rescue Required",
+                $"CRITICAL: Citizen {userName} has raised an emergency SOS. Immediate rescue assistance required.",
+                "critical", "high",
+                targetRole: "Rescue"
+            );
+
+            // Also notify Admin for oversight
+            await NotificationService.SendAndSave(
+                _context, _hubContext,
+                "New Emergency SOS Alert",
                 $"Citizen {userName} (ID: {userId}) raised an emergency SOS at {DateTime.UtcNow:HH:mm}.",
                 "critical", "high",
                 targetRole: "Admin"
             );
 
-            TempData["SuccessMessage"] = " Emergency SOS alert sent successfully!";
+            // Store success message in TempData for toast notification
+            TempData["SOSSuccess"] = "true";
+            TempData["SOSMessage"] = "🚨 SOS Emergency alert sent successfully! Rescue team has been notified and is responding.";
+
             return RedirectToAction("Index");
         }
 
@@ -274,7 +290,7 @@ namespace SmartCityPulse.Controllers
         [HttpGet]
         public IActionResult Notifications()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return RedirectToAction("Login", "Account");
             return View();
         }
@@ -282,7 +298,7 @@ namespace SmartCityPulse.Controllers
         [HttpGet]
         public async Task<IActionResult> GetNotifications()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return Unauthorized();
             var userId = HttpContext.Session.GetString("UserId");
             var notifications = await _context.Incidents
@@ -314,7 +330,7 @@ namespace SmartCityPulse.Controllers
         [HttpGet]
         public IActionResult DownloadReports()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return RedirectToAction("Login", "Account");
             return View();
         }
@@ -322,7 +338,7 @@ namespace SmartCityPulse.Controllers
         [HttpGet]
         public async Task<IActionResult> DownloadPDF()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return Unauthorized();
             var userId = HttpContext.Session.GetString("UserId");
             var incidents = await _context.Incidents.Find(i => i.ReportedBy == userId).ToListAsync();
@@ -344,7 +360,7 @@ namespace SmartCityPulse.Controllers
         [HttpGet]
         public async Task<IActionResult> DownloadCSV()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return Unauthorized();
             var userId = HttpContext.Session.GetString("UserId");
             var incidents = await _context.Incidents.Find(i => i.ReportedBy == userId).ToListAsync();
@@ -359,7 +375,7 @@ namespace SmartCityPulse.Controllers
         [HttpGet]
         public async Task<IActionResult> Profile()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return RedirectToAction("Login", "Account");
             var userId = HttpContext.Session.GetString("UserId");
             var user = await _context.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
@@ -370,27 +386,13 @@ namespace SmartCityPulse.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> UpdateProfile(string name, string phone)
-        {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
-                return RedirectToAction("Login", "Account");
-            var userId = HttpContext.Session.GetString("UserId");
-            var user = await _context.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
-            if (user == null) return NotFound();
-            user.Name = name;
-            user.Phone = phone;
-            await _context.Users.ReplaceOneAsync(u => u.Id == userId, user);
-            HttpContext.Session.SetString("UserName", name);
-            TempData["SuccessMessage"] = "Profile updated successfully!";
-            return RedirectToAction("Profile");
-        }
+        
 
         // ==================== SAFETY TIPS ====================
         [HttpGet]
         public IActionResult SafetyTips()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return RedirectToAction("Login", "Account");
             return View();
         }
@@ -407,23 +409,28 @@ namespace SmartCityPulse.Controllers
         }
 
         // ==================== REPORTS PAGE ====================
+        // ==================== REPORTS PAGE ====================
         [HttpGet]
-        public IActionResult Reports()
+        public async Task<IActionResult> Reports()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return RedirectToAction("Login", "Account");
+
             var userId = HttpContext.Session.GetString("UserId");
-            ViewBag.TotalIncidents = (int)_context.Incidents.CountDocuments(i => i.ReportedBy == userId);
-            ViewBag.ResolvedIncidents = (int)_context.Incidents.CountDocuments(i => i.ReportedBy == userId && i.Status == "Resolved");
-            ViewBag.PendingIncidents = (int)_context.Incidents.CountDocuments(i => i.ReportedBy == userId && i.Status != "Resolved");
-            return View();
+
+            var incidents = await _context.Incidents
+                .Find(i => i.ReportedBy == userId)
+                .SortByDescending(i => i.ReportedAt)
+                .ToListAsync();
+
+            return View(incidents);
         }
 
         // ==================== AJAX HELPERS ====================
         [HttpGet]
         public async Task<IActionResult> GetIncidentJson(string id)
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return Unauthorized();
             var userId = HttpContext.Session.GetString("UserId");
             var incident = await _context.Incidents.Find(i => i.Id == id).FirstOrDefaultAsync();
@@ -447,38 +454,68 @@ namespace SmartCityPulse.Controllers
         [HttpGet]
         public async Task<IActionResult> Statistics()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
+            {
                 return RedirectToAction("Login", "Account");
+            }
+
             var userId = HttpContext.Session.GetString("UserId");
 
             var weeklyData = new List<int>();
             for (int i = 6; i >= 0; i--)
             {
                 var date = DateTime.UtcNow.Date.AddDays(-i);
-                var count = await _context.Incidents.CountDocumentsAsync(inc => inc.ReportedBy == userId && inc.ReportedAt.Date == date);
+                var count = await _context.Incidents
+                    .CountDocumentsAsync(inc => inc.ReportedBy == userId && inc.ReportedAt.Date == date);
                 weeklyData.Add((int)count);
             }
 
+            var criticalCount = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Critical");
+            var highCount = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "High");
+            var mediumCount = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Medium");
+            var lowCount = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Low");
+
+            var openCount = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Open");
+            var inProgressCount = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "In Progress");
+            var resolvedCount = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Resolved");
+
+            var totalIncidents = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId);
+
             ViewBag.WeeklyData = weeklyData;
-            ViewBag.CriticalIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Critical");
-            ViewBag.HighIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "High");
-            ViewBag.MediumIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Medium");
-            ViewBag.LowIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Severity == "Low");
-            ViewBag.OpenIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Open");
-            ViewBag.InProgressIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "In Progress");
-            ViewBag.ResolvedIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Resolved");
-            ViewBag.TotalIncidents = (int)await _context.Incidents.CountDocumentsAsync(i => i.ReportedBy == userId);
+            ViewBag.CriticalIncidents = (int)criticalCount;
+            ViewBag.HighIncidents = (int)highCount;
+            ViewBag.MediumIncidents = (int)mediumCount;
+            ViewBag.LowIncidents = (int)lowCount;
+            ViewBag.OpenIncidents = (int)openCount;
+            ViewBag.InProgressIncidents = (int)inProgressCount;
+            ViewBag.ResolvedIncidents = (int)resolvedCount;
+            ViewBag.TotalIncidents = (int)totalIncidents;
 
             return View();
         }
 
+        // ==================== GET ALL INCIDENTS FOR REPORTS (SINGLE METHOD - FIXED) ====================
         [HttpGet]
         public async Task<IActionResult> GetAllIncidentsForReports()
         {
-            if (HttpContext.Session.GetString("UserRole") != "Citizen")
+            if (!IsCitizen())
                 return Json(new { success = false, message = "Unauthorized" });
+
             var userId = HttpContext.Session.GetString("UserId");
-            var incidents = await _context.Incidents.Find(i => i.ReportedBy == userId).SortByDescending(i => i.ReportedAt).ToListAsync();
+
+            var incidents = await _context.Incidents
+                .Find(i => i.ReportedBy == userId)
+                .SortByDescending(i => i.ReportedAt)
+                .ToListAsync();
+
             var incidentList = incidents.Select(i => new
             {
                 id = i.Id,
@@ -490,7 +527,64 @@ namespace SmartCityPulse.Controllers
                 reportedAt = i.ReportedAt,
                 updatedAt = i.UpdatedAt
             });
+
             return Json(new { success = true, incidents = incidentList });
+        }
+        // ==================== GET PROFILE STATISTICS ====================
+        [HttpGet]
+        public async Task<IActionResult> GetProfileStatistics()
+        {
+            if (!IsCitizen())
+                return Json(new { success = false, message = "Unauthorized" });
+
+            var userId = HttpContext.Session.GetString("UserId");
+
+            var totalIncidents = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId);
+
+            var resolvedIncidents = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status == "Resolved");
+
+            var activeIncidents = await _context.Incidents
+                .CountDocumentsAsync(i => i.ReportedBy == userId && i.Status != "Resolved");
+
+            return Json(new
+            {
+                success = true,
+                totalIncidents = (int)totalIncidents,
+                resolvedIncidents = (int)resolvedIncidents,
+                activeIncidents = (int)activeIncidents
+            });
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileModel model)
+        {
+            if (!IsCitizen())
+                return Json(new { success = false, message = "Unauthorized" });
+
+            var userId = HttpContext.Session.GetString("UserId");
+            var user = await _context.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
+
+            if (user == null)
+                return Json(new { success = false, message = "User not found" });
+
+            // Update only name and phone (email stays same)
+            user.Name = model.Name;
+            user.Phone = model.Phone;
+
+            await _context.Users.ReplaceOneAsync(u => u.Id == userId, user);
+
+            // Update session
+            HttpContext.Session.SetString("UserName", model.Name);
+
+            return Json(new { success = true, message = "Profile updated successfully!" });
+        }
+
+        // Add this model class
+        public class UpdateProfileModel
+        {
+            public string Name { get; set; }
+            public string Phone { get; set; }
         }
     }
 }

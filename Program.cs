@@ -7,8 +7,16 @@ using SmartCityPulse.Hubs;
 using SmartCityPulse.Services;
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 // MongoDB Context
 builder.Services.AddSingleton<MongoDbContext>();
+
+
+// Add AI Vision Service
+builder.Services.AddScoped<SmartCityPulse.Services.AIVisionService>();
+
+
 
 // Add SignalR
 builder.Services.AddSignalR();

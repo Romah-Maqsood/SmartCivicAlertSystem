@@ -1,0 +1,543 @@
+﻿@{
+    Layout = null;
+    ViewData["Title"] = "My Profile";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Profile - Smart Civic Alert</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: transparent;
+            color: #1A1F36;
+        }
+
+        .profile-container {
+            width: 100%;
+            padding: 0;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+            .page-header h1 {
+                font-size: 22px;
+                font-weight: 700;
+                color: #1A1F36;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+                .page-header h1 i {
+                    color: #2563EB;
+                    font-size: 24px;
+                }
+
+            .page-header p {
+                font-size: 13px;
+                color: #6B7280;
+                margin-top: 6px;
+            }
+
+        .profile-layout {
+            display: flex;
+            gap: 24px;
+            align-items: stretch;
+            flex-wrap: wrap;
+        }
+
+        .personal-card {
+            flex: 2;
+            background: #FFFFFF;
+            border-radius: 20px;
+            border: 1px solid #EAECF0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .account-card {
+            flex: 1;
+            background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+            .personal-card:hover, .account-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+            }
+
+        .card-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid #EAECF0;
+            background: #F8FAFC;
+        }
+
+        .account-card .card-header {
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-header h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1A1F36;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .account-card .card-header h3 {
+            color: white;
+        }
+
+        .card-header h3 i {
+            color: #2563EB;
+            font-size: 16px;
+        }
+
+        .account-card .card-header h3 i {
+            color: white;
+        }
+
+        .card-content {
+            padding: 24px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid #F0F2F5;
+        }
+
+            .info-row:last-child {
+                border-bottom: none;
+            }
+
+        .info-icon {
+            width: 36px;
+            height: 36px;
+            background: #EFF6FF;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .account-card .info-icon {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .info-icon i {
+            font-size: 16px;
+            color: #2563EB;
+        }
+
+        .account-card .info-icon i {
+            color: white;
+        }
+
+        .info-details {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6B7280;
+            margin-bottom: 4px;
+        }
+
+        .account-card .info-label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1A1F36;
+            word-break: break-word;
+        }
+
+        .account-card .info-value {
+            color: white;
+        }
+
+        .role-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: white;
+        }
+
+            .status-active i {
+                font-size: 8px;
+                color: #10B981;
+            }
+
+        .edit-form {
+            background: #F8FAFC;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+            .form-group label {
+                display: block;
+                font-size: 12px;
+                font-weight: 500;
+                color: #6B7280;
+                margin-bottom: 6px;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 10px 14px;
+                border: 1.5px solid #EAECF0;
+                border-radius: 10px;
+                font-family: inherit;
+                font-size: 13px;
+                transition: all 0.2s ease;
+                background: #FFFFFF;
+            }
+
+                .form-group input:focus {
+                    outline: none;
+                    border-color: #2563EB;
+                    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+                }
+
+                .form-group input:disabled {
+                    background: #F8FAFC;
+                    color: #6B7280;
+                    cursor: not-allowed;
+                }
+
+        .btn-primary {
+            background: #2563EB;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .btn-primary:hover {
+                background: #1D4ED8;
+                transform: translateY(-1px);
+            }
+
+        .btn-secondary {
+            background: #F1F5F9;
+            color: #1A1F36;
+            border: 1px solid #EAECF0;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .btn-secondary:hover {
+                background: #E2E8F0;
+            }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        @@media (max-width: 900px) {
+            .profile-layout
+
+        {
+            flex-direction: column;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-user-circle"></i>
+                My Profile
+            </h1>
+            <p>View and manage your personal account information</p>
+        </div>
+
+        <div class="profile-layout">
+            <!-- Personal Information Card -->
+            <div class="personal-card">
+                <div class="card-header">
+                    <h3>
+                        <i class="fas fa-id-card"></i>
+                        Personal Information
+                    </h3>
+                </div>
+                <div class="card-content">
+                    <!-- View Mode -->
+                    <div id="viewMode">
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="info-details">
+                                <div class="info-label">Full Name</div>
+                                <div class="info-value" id="displayName">@ViewBag.UserName</div>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="info-details">
+                                <div class="info-label">Email Address</div>
+                                <div class="info-value" id="displayEmail">@ViewBag.UserEmail</div>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div class="info-details">
+                                <div class="info-label">Phone Number</div>
+                                <div class="info-value" id="displayPhone">@(ViewBag.UserPhone ?? "Not provided")</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <button class="btn-secondary" onclick="showEditForm()">
+                                <i class="fas fa-pen"></i> Edit Profile
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Edit Mode -->
+                    <div id="editMode" style="display: none;">
+                        <div class="edit-form">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="editName" value="@ViewBag.UserName">
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="editEmail" value="@ViewBag.UserEmail" disabled>
+                                <small style="font-size: 10px; color: #9CA3AF; display: block; margin-top: 4px;">Email cannot be changed</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="editPhone" value="@(ViewBag.UserPhone ?? "")" placeholder="Enter your phone number">
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn-primary" onclick="saveProfile()">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                                <button class="btn-secondary" onclick="cancelEdit()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Information Card -->
+            <div class="account-card">
+                <div class="card-header">
+                    <h3>
+                        <i class="fas fa-shield-alt"></i>
+                        Account Information
+                    </h3>
+                </div>
+                <div class="card-content">
+                    <div class="info-row">
+                        <div class="info-icon">
+                            <i class="fas fa-user-tag"></i>
+                        </div>
+                        <div class="info-details">
+                            <div class="info-label">Account Type</div>
+                            <div class="info-value">
+                                <span class="role-badge">
+                                    <i class="fas fa-check-circle"></i> Citizen
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-icon">
+                            <i class="fas fa-circle"></i>
+                        </div>
+                        <div class="info-details">
+                            <div class="info-label">Account Status</div>
+                            <div class="info-value">
+                                <span class="status-active">
+                                    <i class="fas fa-circle"></i> Active
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showEditForm() {
+            document.getElementById('viewMode').style.display = 'none';
+            document.getElementById('editMode').style.display = 'block';
+        }
+
+        function cancelEdit() {
+            document.getElementById('viewMode').style.display = 'block';
+            document.getElementById('editMode').style.display = 'none';
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('editName').value.trim();
+            const phone = document.getElementById('editPhone').value.trim();
+
+            if (!name) {
+                showToast('Please enter your name', 'warning');
+                return;
+            }
+
+            const saveBtn = document.querySelector('.btn-primary');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            saveBtn.disabled = true;
+
+            fetch('/Citizen/UpdateProfile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: name, phone: phone })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('displayName').textContent = name;
+                    document.getElementById('displayPhone').textContent = phone || 'Not provided';
+                    showToast('Profile updated successfully!', 'success');
+                    cancelEdit();
+                } else {
+                    showToast(data.message || 'Error updating profile', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Network error. Please try again.', 'error');
+            })
+            .finally(() => {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            });
+        }
+
+        function showToast(message, type = 'success') {
+            const existingToast = document.querySelector('.profile-toast');
+            if (existingToast) existingToast.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'profile-toast';
+
+            let icon = 'fa-check-circle';
+            let bgColor = '#10B981';
+
+            if (type === 'error') {
+                icon = 'fa-exclamation-triangle';
+                bgColor = '#EF4444';
+            } else if (type === 'warning') {
+                icon = 'fa-exclamation-circle';
+                bgColor = '#F59E0B';
+            }
+
+            toast.style.cssText = `
+                position: fixed;
+                top: 25px;
+                right: 25px;
+                background: ${bgColor};
+                color: white;
+                padding: 14px 24px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 14px;
+                font-weight: 500;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+                z-index: 9999;
+                animation: slideInRight 0.3s ease forwards;
+                font-family: 'Inter', sans-serif;
+            `;
+
+            toast.innerHTML = `<i class="fas ${icon}" style="font-size: 18px;"></i> ${message}`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOutRight 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @@keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @@keyframes fadeOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
