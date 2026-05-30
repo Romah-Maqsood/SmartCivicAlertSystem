@@ -26,85 +26,42 @@ namespace SmartCityPulse.Controllers
             return View(new Incident());
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Create(Incident incident)
-        //{
-        //    try
-        //    {
-        //        // Get user information from session
-        //        var userId = HttpContext.Session.GetString("UserId");
-        //        var userName = HttpContext.Session.GetString("UserName");
-        //        var userRole = HttpContext.Session.GetString("UserRole");
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] Incident incident)
+        {
+            try
+            {
+                var userId = HttpContext.Session.GetString("UserId");
+                var userName = HttpContext.Session.GetString("UserName");
+                var userRole = HttpContext.Session.GetString("UserRole");
 
-        //        // Set incident properties
-        //        incident.Id = Guid.NewGuid().ToString();
-        //        incident.ReportedAt = DateTime.UtcNow;
-        //        incident.UpdatedAt = DateTime.UtcNow;
-        //        incident.Status = "Open";
-        //        incident.Comments = new List<IncidentComment>();
+                // ❌ REMOVED: incident.Id = Guid.NewGuid().ToString();
+                // MongoDB will generate a valid ObjectId automatically
+                incident.Id = null;
+                incident.ReportedAt = DateTime.UtcNow;
+                incident.UpdatedAt = DateTime.UtcNow;
+                incident.Status = "Open";
+                incident.Comments = new List<IncidentComment>();
 
-        //        // Save citizen information if logged in
-        //        if (!string.IsNullOrEmpty(userId))
-        //        {
-        //            incident.ReportedBy = userId;
-        //            incident.ReportedByName = userName ?? "Unknown User";
-        //        }
-        //        else
-        //        {
-        //            incident.ReportedByName = "Anonymous User";
-        //        }
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    incident.ReportedBy = userId;
+                    incident.ReportedByName = userName ?? "Unknown User";
+                }
+                else
+                {
+                    incident.ReportedByName = "Anonymous User";
+                }
 
-        //        // Auto-assign department based on severity if not selected
-        //        if (string.IsNullOrEmpty(incident.Department))
-        //        {
-        //            incident.Department = GetDepartmentBySeverity(incident.Severity);
-        //        }
+                await _context.Incidents.InsertOneAsync(incident);
 
-        //        await _context.Incidents.InsertOneAsync(incident);
-
-        //        // Send SignalR notification
-        //        try
-        //        {
-        //            await _hubContext.Clients.All
-        //                .SendAsync("ReceiveNotification",
-        //                    "New Incident Reported",
-        //                    $"New {incident.Severity} incident: {incident.Title} at {incident.Location}",
-        //                    DateTime.Now);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Console.WriteLine($"Notification error: {ex.Message}");
-        //        }
-
-        //        // Check if request is AJAX
-        //        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-        //        {
-        //            return Json(new { success = true, message = "✅ Incident reported successfully!", incidentId = incident.Id });
-        //        }
-
-        //        // Redirect with success parameter for toast message
-        //        if (userRole == "Citizen")
-        //        {
-        //            TempData["SuccessMessage"] = "✅ Incident reported successfully!";
-        //            return RedirectToAction("Index", "Citizen");
-        //        }
-        //        else
-        //        {
-        //            TempData["SuccessMessage"] = "✅ Incident reported successfully!";
-        //            return RedirectToAction("Create", "Incident", new { success = true });
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-        //        {
-        //            return Json(new { success = false, message = $"❌ Error: {ex.Message}" });
-        //        }
-
-        //        ModelState.AddModelError("", $"Error reporting incident: {ex.Message}");
-        //        return View(incident);
-        //    }
-        //}
+                return Json(new { success = true, message = "Incident reported successfully!", incidentId = incident.Id });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
         private string GetDepartmentBySeverity(string severity)
         {
@@ -135,15 +92,11 @@ namespace SmartCityPulse.Controllers
         public async Task<IActionResult> Details(string id)
         {
             if (string.IsNullOrEmpty(id))
-            {
                 return NotFound();
-            }
 
             var incident = await _context.Incidents.Find(i => i.Id == id).FirstOrDefaultAsync();
             if (incident == null)
-            {
                 return NotFound();
-            }
 
             return View(incident);
         }
@@ -153,15 +106,11 @@ namespace SmartCityPulse.Controllers
         public async Task<IActionResult> GetIncidentJson(string id)
         {
             if (string.IsNullOrEmpty(id))
-            {
                 return Json(new { success = false, message = "Invalid incident ID" });
-            }
 
             var incident = await _context.Incidents.Find(i => i.Id == id).FirstOrDefaultAsync();
             if (incident == null)
-            {
                 return Json(new { success = false, message = "Incident not found" });
-            }
 
             return Json(new
             {
@@ -187,9 +136,7 @@ namespace SmartCityPulse.Controllers
         {
             var userId = HttpContext.Session.GetString("UserId");
             if (string.IsNullOrEmpty(userId))
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
             var incidents = await _context.Incidents
                 .Find(i => i.ReportedBy == userId)
@@ -208,13 +155,11 @@ namespace SmartCityPulse.Controllers
             var userRole = HttpContext.Session.GetString("UserRole");
 
             if (string.IsNullOrEmpty(userId))
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
             var emergencyIncident = new Incident
             {
-                Id = Guid.NewGuid().ToString(),
+                // ❌ REMOVED: Id = Guid.NewGuid().ToString();
                 Title = "🚨 EMERGENCY SOS - Immediate Assistance Required",
                 Description = $"Emergency SOS alert raised by citizen {userName}. Immediate assistance required.",
                 Location = "Location shared via emergency system",
@@ -230,14 +175,12 @@ namespace SmartCityPulse.Controllers
 
             await _context.Incidents.InsertOneAsync(emergencyIncident);
 
-            // Send emergency notification to all departments
             try
             {
-                await _hubContext.Clients.All
-                    .SendAsync("ReceiveNotification",
-                        "🚨 EMERGENCY SOS",
-                        $"Emergency alert from {userName}. Immediate assistance required!",
-                        DateTime.Now);
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification",
+                    "🚨 EMERGENCY SOS",
+                    $"Emergency alert from {userName}. Immediate assistance required!",
+                    DateTime.Now);
             }
             catch (Exception ex)
             {
@@ -247,9 +190,7 @@ namespace SmartCityPulse.Controllers
             TempData["SuccessMessage"] = "🚨 Emergency alert sent! Authorities have been notified.";
 
             if (userRole == "Citizen")
-            {
                 return RedirectToAction("Index", "Citizen");
-            }
 
             return RedirectToAction("Index", "Home");
         }
@@ -259,31 +200,24 @@ namespace SmartCityPulse.Controllers
         public async Task<IActionResult> UpdateStatus(string id, string status)
         {
             if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(status))
-            {
                 return Json(new { success = false, message = "Invalid data" });
-            }
 
             var incident = await _context.Incidents.Find(i => i.Id == id).FirstOrDefaultAsync();
             if (incident == null)
-            {
                 return Json(new { success = false, message = "Incident not found" });
-            }
 
             incident.Status = status;
             incident.UpdatedAt = DateTime.UtcNow;
-
             await _context.Incidents.ReplaceOneAsync(i => i.Id == id, incident);
 
-            // Send notification to citizen
             try
             {
                 if (!string.IsNullOrEmpty(incident.ReportedBy))
                 {
-                    await _hubContext.Clients.User(incident.ReportedBy)
-                        .SendAsync("ReceiveNotification",
-                            "Incident Status Updated",
-                            $"Your incident '{incident.Title}' status changed to {status}",
-                            DateTime.Now);
+                    await _hubContext.Clients.User(incident.ReportedBy).SendAsync("ReceiveNotification",
+                        "Incident Status Updated",
+                        $"Your incident '{incident.Title}' status changed to {status}",
+                        DateTime.Now);
                 }
             }
             catch (Exception ex)
@@ -299,15 +233,11 @@ namespace SmartCityPulse.Controllers
         public async Task<IActionResult> AddComment(string id, string comment)
         {
             if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(comment))
-            {
                 return Json(new { success = false, message = "Invalid data" });
-            }
 
             var incident = await _context.Incidents.Find(i => i.Id == id).FirstOrDefaultAsync();
             if (incident == null)
-            {
                 return Json(new { success = false, message = "Incident not found" });
-            }
 
             var userName = HttpContext.Session.GetString("UserName") ?? "System";
             var userRole = HttpContext.Session.GetString("UserRole") ?? "User";
@@ -319,48 +249,9 @@ namespace SmartCityPulse.Controllers
                 CreatedAt = DateTime.UtcNow
             });
             incident.UpdatedAt = DateTime.UtcNow;
-
             await _context.Incidents.ReplaceOneAsync(i => i.Id == id, incident);
 
             return Json(new { success = true, message = "Comment added successfully" });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Incident incident)
-        {
-            try
-            {
-                // Get user information from session
-                var userId = HttpContext.Session.GetString("UserId");
-                var userName = HttpContext.Session.GetString("UserName");
-                var userRole = HttpContext.Session.GetString("UserRole");
-
-                // Set incident properties
-                incident.Id = Guid.NewGuid().ToString();
-                incident.ReportedAt = DateTime.UtcNow;
-                incident.UpdatedAt = DateTime.UtcNow;
-                incident.Status = "Open";
-                incident.Comments = new List<IncidentComment>();
-
-                // Save citizen information if logged in
-                if (!string.IsNullOrEmpty(userId))
-                {
-                    incident.ReportedBy = userId;
-                    incident.ReportedByName = userName ?? "Unknown User";
-                }
-                else
-                {
-                    incident.ReportedByName = "Anonymous User";
-                }
-
-                await _context.Incidents.InsertOneAsync(incident);
-
-                return Json(new { success = true, message = "Incident reported successfully!", incidentId = incident.Id });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
         }
     }
 }

@@ -7,6 +7,9 @@ using SmartCityPulse.Data;
 using System.Text;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using Microsoft.AspNetCore.SignalR;
+using SmartCityPulse.Hubs;
+using SmartCityPulse.Services;
 
 namespace SmartCityPulse.Controllers
 {
@@ -14,11 +17,16 @@ namespace SmartCityPulse.Controllers
     {
         private readonly MongoDbContext _context;
         private readonly ILogger<AdminController> _logger;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public AdminController(MongoDbContext context, ILogger<AdminController> logger)
+        public AdminController(
+            MongoDbContext context,
+            ILogger<AdminController> logger,
+            IHubContext<NotificationHub> hubContext)
         {
             _context = context;
             _logger = logger;
+            _hubContext = hubContext;
         }
 
         private bool IsAdmin() => HttpContext.Session.GetString("UserRole") == "Admin";
@@ -189,6 +197,16 @@ namespace SmartCityPulse.Controllers
                 newOperator.Role = "Operator";
                 newOperator.CreatedAt = DateTime.UtcNow;
                 await _context.Operators.InsertOneAsync(newOperator);
+
+                // ✅ Clearer notification
+                await NotificationService.SendAndSave(
+                    _context, _hubContext,
+                    "Operator Added",
+                    $"Operator '{newOperator.Name}' ({newOperator.Department ?? "No Dept"}) was added at {DateTime.UtcNow:HH:mm}.",
+                    "info", "medium",
+                    targetRole: "Admin"
+                );
+
                 return Json(new { success = true, message = "Operator added successfully!" });
             }
             catch (Exception ex)
@@ -215,6 +233,7 @@ namespace SmartCityPulse.Controllers
                 if (!string.IsNullOrEmpty(updated.PasswordHash))
                     existing.PasswordHash = updated.PasswordHash;
                 await _context.Operators.ReplaceOneAsync(o => o.Id == id, existing);
+
                 return Json(new { success = true, message = "Operator updated successfully!" });
             }
             catch (Exception ex)
@@ -230,7 +249,21 @@ namespace SmartCityPulse.Controllers
             if (!IsAdmin()) return Json(new { success = false, message = "Unauthorized" });
             try
             {
+                var op = await _context.Operators.Find(o => o.Id == delOp.Id).FirstOrDefaultAsync();
+                string operatorName = op?.Name ?? delOp.Id;
+                string operatorDept = op?.Department ?? "";
+
                 await _context.Operators.DeleteOneAsync(o => o.Id == delOp.Id);
+
+                // ✅ Clearer notification
+                await NotificationService.SendAndSave(
+                    _context, _hubContext,
+                    "Operator Removed",
+                    $"Operator '{operatorName}' ({operatorDept}) was removed at {DateTime.UtcNow:HH:mm}.",
+                    "warning", "medium",
+                    targetRole: "Admin"
+                );
+
                 return Json(new { success = true, message = "Operator deleted." });
             }
             catch (Exception ex)
@@ -455,11 +488,10 @@ namespace SmartCityPulse.Controllers
                     if (string.IsNullOrEmpty(model.CurrentPassword))
                         return Json(new { success = false, message = "Current password is required." });
 
-                    // Plain text check – replace with proper hashing in production
                     if (admin.PasswordHash != model.CurrentPassword)
                         return Json(new { success = false, message = "Current password is incorrect." });
 
-                    admin.PasswordHash = model.NewPassword; // Should be hashed
+                    admin.PasswordHash = model.NewPassword;
                 }
 
                 if (!string.IsNullOrEmpty(model.Name))
@@ -476,6 +508,34 @@ namespace SmartCityPulse.Controllers
                 _logger.LogError(ex, "UpdateProfile error");
                 return Json(new { success = false, message = "Server error: " + ex.Message });
             }
+        }
+
+        // ==================== GET NOTIFICATIONS ====================
+        [HttpGet]
+        public async Task<IActionResult> GetNotifications()
+        {
+            if (!IsAdmin()) return Unauthorized();
+            var notifications = await _context.Notifications
+                .Find(n => n.TargetRole == "Admin" || n.TargetRole == "")
+                .SortByDescending(n => n.CreatedAt)
+                .Limit(50)
+                .ToListAsync();
+            return Json(notifications);
+        }
+
+        // AdminController.cs mein yeh action add karein
+        [HttpPost]
+        public async Task<IActionResult> MarkNotificationRead(string id)
+        {
+            if (!IsAdmin()) return Unauthorized();
+
+            var notification = await _context.Notifications.Find(n => n.Id == id).FirstOrDefaultAsync();
+            if (notification == null) return NotFound();
+
+            notification.IsRead = !notification.IsRead;   // toggle
+            await _context.Notifications.ReplaceOneAsync(n => n.Id == id, notification);
+
+            return Json(new { success = true, isRead = notification.IsRead });
         }
     }
 

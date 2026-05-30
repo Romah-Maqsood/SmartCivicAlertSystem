@@ -7,7 +7,6 @@ namespace SmartCityPulse.Data
     {
         private readonly IMongoDatabase _database;
 
-        // ✅ Simple constructor - sirf configuration lega
         public MongoDbContext(IConfiguration configuration)
         {
             var connectionString = configuration.GetValue<string>("MongoDB:ConnectionString");
@@ -25,6 +24,7 @@ namespace SmartCityPulse.Data
         public IMongoCollection<Incident> Incidents =>
             _database.GetCollection<Incident>("Incidents");
 
-        public IMongoCollection<Notification> Notifications => _database.GetCollection<Notification>("Notifications");
+        public IMongoCollection<Notification> Notifications =>
+            _database.GetCollection<Notification>("Notifications");
     }
 }

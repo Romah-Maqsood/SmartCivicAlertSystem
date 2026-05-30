@@ -3,6 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace SmartCityPulse.Models
 {
+    [BsonIgnoreExtraElements]                           // ← added to ignore unknown fields
     public class Incident
     {
         [BsonId]
@@ -130,13 +131,13 @@ namespace SmartCityPulse.Models
 
     public class IncidentComment
     {
-        [BsonElement("text")]
+        [BsonElement("Text")]           // matches database "Text"
         public string Text { get; set; } = string.Empty;
 
-        [BsonElement("author")]
+        [BsonElement("Author")]         // matches database "Author"
         public string Author { get; set; } = string.Empty;
 
-        [BsonElement("createdAt")]
+        [BsonElement("CreatedAt")]      // ✅ corrected to match database "CreatedAt"
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

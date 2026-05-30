@@ -3,32 +3,35 @@ using SmartCityPulse.Data;
 using SmartCityPulse.Models;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.SignalR;
+using SmartCityPulse.Hubs;
+using SmartCityPulse.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SmartCityPulse.Controllers
 {
     public class OperatorController : Controller
     {
         private readonly MongoDbContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public OperatorController(MongoDbContext context)
+        public OperatorController(MongoDbContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
-        private bool IsOperatorLoggedIn()
-        {
-            return HttpContext.Session.GetString("UserRole") == "Operator";
-        }
+        private bool IsOperatorLoggedIn() =>
+            HttpContext.Session.GetString("UserRole") == "Operator";
 
-        private string GetOperatorDepartment()
-        {
-            return HttpContext.Session.GetString("UserDepartment") ?? "";
-        }
+        private string GetOperatorDepartment() =>
+            HttpContext.Session.GetString("UserDepartment") ?? "";
 
-        private string GetOperatorName()
-        {
-            return HttpContext.Session.GetString("UserName") ?? "Operator";
-        }
+        private string GetOperatorName() =>
+            HttpContext.Session.GetString("UserName") ?? "Operator";
 
         private string GenerateFIRNumber()
         {
@@ -36,14 +39,43 @@ namespace SmartCityPulse.Controllers
             return $"FIR/{DateTime.Now:yyyyMMdd}/{random}";
         }
 
+        /// <summary>
+        /// Builds a filter that matches any department variation for the current operator,
+        /// plus Unassigned.
+        /// </summary>
+        private FilterDefinition<Incident> GetDepartmentFilter()
+        {
+            var department = GetOperatorDepartment();   // e.g. "Fire Department" or "Fire"
+            var possible = new List<string> { department };
+
+            // Add the opposite variation (short ↔ full)
+            if (department.EndsWith(" Department", StringComparison.OrdinalIgnoreCase))
+            {
+                string shortName = department.Substring(0, department.LastIndexOf(" Department"));
+                possible.Add(shortName);
+            }
+            else
+            {
+                string fullName = department + " Department";
+                possible.Add(fullName);
+            }
+
+            // Always include Unassigned
+            possible.Add("Unassigned");
+
+            return Builders<Incident>.Filter.In(i => i.Department, possible);
+        }
+
+        // ==================== DASHBOARD ====================
         public async Task<IActionResult> Dashboard()
         {
             if (!IsOperatorLoggedIn())
                 return RedirectToAction("Login", "Account");
 
-            var department = GetOperatorDepartment();
             var operatorName = GetOperatorName();
-            var filter = Builders<Incident>.Filter.Eq(i => i.Department, department);
+            var department = GetOperatorDepartment();
+            var filter = GetDepartmentFilter();
+
             var incidents = await _context.Incidents.Find(filter).ToListAsync();
 
             var today = DateTime.UtcNow.Date;
@@ -105,6 +137,7 @@ namespace SmartCityPulse.Controllers
             return View(viewModel);
         }
 
+        // ==================== INCIDENTS LIST ====================
         public async Task<IActionResult> Incidents(string? status, string? severity, string? caseType, string? fireType, string? emergencyType)
         {
             if (!IsOperatorLoggedIn())
@@ -112,17 +145,17 @@ namespace SmartCityPulse.Controllers
 
             var department = GetOperatorDepartment();
             var filterBuilder = Builders<Incident>.Filter;
-            var filter = filterBuilder.Eq(i => i.Department, department);
+            var filter = GetDepartmentFilter();
 
             if (!string.IsNullOrEmpty(status))
                 filter &= filterBuilder.Eq(i => i.Status, status);
             if (!string.IsNullOrEmpty(severity))
                 filter &= filterBuilder.Eq(i => i.Severity, severity);
-            if (!string.IsNullOrEmpty(caseType) && department == "Police")
+            if (!string.IsNullOrEmpty(caseType) && department.Contains("Police"))
                 filter &= filterBuilder.Eq(i => i.CaseType, caseType);
-            if (!string.IsNullOrEmpty(fireType) && department == "Fire")
+            if (!string.IsNullOrEmpty(fireType) && department.Contains("Fire"))
                 filter &= filterBuilder.Eq(i => i.FireType, fireType);
-            if (!string.IsNullOrEmpty(emergencyType) && department == "Rescue")
+            if (!string.IsNullOrEmpty(emergencyType) && department.Contains("Rescue"))
                 filter &= filterBuilder.Eq(i => i.EmergencyType, emergencyType);
 
             var incidents = await _context.Incidents.Find(filter)
@@ -140,6 +173,7 @@ namespace SmartCityPulse.Controllers
             return View(incidents);
         }
 
+        // ==================== INCIDENT DETAIL ====================
         public async Task<IActionResult> IncidentDetail(string id)
         {
             if (!IsOperatorLoggedIn())
@@ -155,6 +189,7 @@ namespace SmartCityPulse.Controllers
             return View(incident);
         }
 
+        // ==================== UPDATE STATUS ====================
         [HttpPost]
         public async Task<IActionResult> UpdateStatus(string id, string status, string comment)
         {
@@ -182,19 +217,41 @@ namespace SmartCityPulse.Controllers
             }
 
             await _context.Incidents.UpdateOneAsync(i => i.Id == id, update);
+
+            // Notify citizen
+            if (!string.IsNullOrEmpty(incident.ReportedBy))
+            {
+                await NotificationService.SendAndSave(
+                    _context, _hubContext,
+                    "Incident Status Updated",
+                    $"Your incident '{incident.Title}' (ID: {incident.Id}) is now {status}. Updated at {DateTime.UtcNow:HH:mm}.",
+                    "info", "medium",
+                    targetUserId: incident.ReportedBy
+                );
+            }
+
+            // Critical resolved → admin
+            if (incident.Severity == "Critical" && status == "Resolved")
+            {
+                await NotificationService.SendAndSave(
+                    _context, _hubContext,
+                    "Critical Incident Resolved",
+                    $"Critical incident '{incident.Title}' (ID: {incident.Id}) has been resolved by {GetOperatorName()} ({GetOperatorDepartment()}) at {DateTime.UtcNow:HH:mm}.",
+                    "success", "high",
+                    targetRole: "Admin"
+                );
+            }
+
             TempData["Success"] = "Status updated successfully!";
             return RedirectToAction("IncidentDetail", new { id });
         }
 
+        // ==================== DEPARTMENT‑SPECIFIC UPDATES ====================
         [HttpPost]
         public async Task<IActionResult> UpdateInvestigationStatus(string id, string investigationStatus)
         {
-            if (!IsOperatorLoggedIn())
-                return Json(new { success = false });
-
-            var update = Builders<Incident>.Update
-                .Set(i => i.InvestigationStatus, investigationStatus)
-                .Set(i => i.UpdatedAt, DateTime.UtcNow);
+            if (!IsOperatorLoggedIn()) return Json(new { success = false });
+            var update = Builders<Incident>.Update.Set(i => i.InvestigationStatus, investigationStatus).Set(i => i.UpdatedAt, DateTime.UtcNow);
             await _context.Incidents.UpdateOneAsync(i => i.Id == id, update);
             return Json(new { success = true });
         }
@@ -202,12 +259,8 @@ namespace SmartCityPulse.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateFireStatus(string id, string fireStatus)
         {
-            if (!IsOperatorLoggedIn())
-                return Json(new { success = false });
-
-            var update = Builders<Incident>.Update
-                .Set(i => i.FireStatus, fireStatus)
-                .Set(i => i.UpdatedAt, DateTime.UtcNow);
+            if (!IsOperatorLoggedIn()) return Json(new { success = false });
+            var update = Builders<Incident>.Update.Set(i => i.FireStatus, fireStatus).Set(i => i.UpdatedAt, DateTime.UtcNow);
             await _context.Incidents.UpdateOneAsync(i => i.Id == id, update);
             return Json(new { success = true });
         }
@@ -215,22 +268,17 @@ namespace SmartCityPulse.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateRescueStatus(string id, string rescueStatus)
         {
-            if (!IsOperatorLoggedIn())
-                return Json(new { success = false });
-
-            var update = Builders<Incident>.Update
-                .Set(i => i.RescueStatus, rescueStatus)
-                .Set(i => i.UpdatedAt, DateTime.UtcNow);
+            if (!IsOperatorLoggedIn()) return Json(new { success = false });
+            var update = Builders<Incident>.Update.Set(i => i.RescueStatus, rescueStatus).Set(i => i.UpdatedAt, DateTime.UtcNow);
             await _context.Incidents.UpdateOneAsync(i => i.Id == id, update);
             return Json(new { success = true });
         }
 
+        // ==================== CREATE INCIDENT (OPERATOR SIDE) ====================
         [HttpGet]
         public IActionResult CreateIncident()
         {
-            if (!IsOperatorLoggedIn())
-                return RedirectToAction("Login", "Account");
-
+            if (!IsOperatorLoggedIn()) return RedirectToAction("Login", "Account");
             ViewBag.OperatorName = GetOperatorName();
             ViewBag.Department = GetOperatorDepartment();
             return View(new Incident());
@@ -239,8 +287,7 @@ namespace SmartCityPulse.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateIncident(Incident model)
         {
-            if (!IsOperatorLoggedIn())
-                return RedirectToAction("Login", "Account");
+            if (!IsOperatorLoggedIn()) return RedirectToAction("Login", "Account");
 
             model.Department = GetOperatorDepartment();
             model.ReportedBy = GetOperatorName();
@@ -257,16 +304,16 @@ namespace SmartCityPulse.Controllers
                 }
             };
 
-            if (model.Department == "Police")
+            if (model.Department == "Police Department")
             {
                 model.FIRNumber = GenerateFIRNumber();
                 model.InvestigationStatus = "FIR Registered";
             }
-            else if (model.Department == "Fire")
+            else if (model.Department == "Fire Department")
             {
                 model.FireStatus = "Dispatched";
             }
-            else if (model.Department == "Rescue")
+            else if (model.Department == "Rescue Department")
             {
                 model.RescueStatus = "Ambulance Dispatched";
             }
@@ -274,6 +321,27 @@ namespace SmartCityPulse.Controllers
             try
             {
                 await _context.Incidents.InsertOneAsync(model);
+
+                string deptGroup = model.Department.Replace(" ", "");
+                await NotificationService.SendAndSave(
+                    _context, _hubContext,
+                    "New Incident in Department",
+                    $"New {model.Severity} incident: {model.Title} at {model.Location}. Reported at {DateTime.UtcNow:HH:mm}.",
+                    "info", model.Severity.ToLower(),
+                    targetRole: deptGroup
+                );
+
+                if (model.Severity == "Critical")
+                {
+                    await NotificationService.SendAndSave(
+                        _context, _hubContext,
+                        "New Critical Incident",
+                        $"Critical incident '{model.Title}' reported in {model.Department} at {DateTime.UtcNow:HH:mm}. Location: {model.Location}.",
+                        "critical", "high",
+                        targetRole: "Admin"
+                    );
+                }
+
                 TempData["Success"] = "Incident created successfully!";
                 return RedirectToAction("Incidents");
             }
@@ -286,15 +354,13 @@ namespace SmartCityPulse.Controllers
             }
         }
 
+        // ==================== ADD COMMENT ====================
         [HttpPost]
         public async Task<IActionResult> AddComment(string id, string commentText)
         {
-            if (!IsOperatorLoggedIn())
-                return RedirectToAction("Login", "Account");
-
+            if (!IsOperatorLoggedIn()) return RedirectToAction("Login", "Account");
             var incident = await _context.Incidents.Find(i => i.Id == id).FirstOrDefaultAsync();
-            if (incident == null)
-                return NotFound();
+            if (incident == null) return NotFound();
 
             var newComment = new IncidentComment
             {
@@ -304,63 +370,101 @@ namespace SmartCityPulse.Controllers
             };
             incident.Comments.Add(newComment);
 
-            var update = Builders<Incident>.Update
-                .Set(i => i.Comments, incident.Comments)
-                .Set(i => i.UpdatedAt, DateTime.UtcNow);
+            var update = Builders<Incident>.Update.Set(i => i.Comments, incident.Comments).Set(i => i.UpdatedAt, DateTime.UtcNow);
             await _context.Incidents.UpdateOneAsync(i => i.Id == id, update);
+
+            if (!string.IsNullOrEmpty(incident.ReportedBy))
+            {
+                await NotificationService.SendAndSave(
+                    _context, _hubContext,
+                    "New Comment on Your Incident",
+                    $"A new comment was added to your incident '{incident.Title}' by {GetOperatorName()}.",
+                    "info", "low",
+                    targetUserId: incident.ReportedBy
+                );
+            }
 
             TempData["Success"] = "Comment added successfully!";
             return RedirectToAction("IncidentDetail", new { id });
         }
 
-        // ==================== NOTIFICATION METHODS ====================
+        // ==================== NOTIFICATIONS ====================
+
+        // GET: return notifications for this operator's department
+        [HttpGet]
+        public async Task<IActionResult> GetNotifications()
+        {
+            if (!IsOperatorLoggedIn()) return Unauthorized();
+            var department = GetOperatorDepartment().Replace(" ", ""); // e.g., "FireDepartment"
+            var notifications = await _context.Notifications
+                .Find(n => n.TargetRole == department || n.TargetRole == "Operator" || n.TargetRole == "")
+                .SortByDescending(n => n.CreatedAt)
+                .Limit(50)
+                .ToListAsync();
+            return Json(notifications);
+        }
+
+        // POST: mark a single notification as read
+        [HttpPost]
+        public async Task<IActionResult> MarkNotificationRead(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return BadRequest();
+            await _context.Notifications.UpdateOneAsync(
+                n => n.Id == id,
+                Builders<Notification>.Update.Set(n => n.IsRead, true));
+            return Ok(new { success = true });
+        }
+
+        // ==================== AJAX HELPERS (FIXED DATE RANGE) ====================
 
         [HttpGet]
         public async Task<IActionResult> GetNewIncidentsCount()
         {
-            if (!IsOperatorLoggedIn())
-                return Json(new { count = 0 });
+            if (!IsOperatorLoggedIn()) return Json(new { count = 0 });
 
-            var department = GetOperatorDepartment();
+            var deptFilter = GetDepartmentFilter();
             var today = DateTime.UtcNow.Date;
-            var count = await _context.Incidents
-                .Find(i => i.Department == department && i.ReportedAt.Date == today && i.Status == "Open")
-                .CountDocumentsAsync();
+            var tomorrow = today.AddDays(1);
+
+            var dateFilter = Builders<Incident>.Filter.Gte(i => i.ReportedAt, today) &
+                             Builders<Incident>.Filter.Lt(i => i.ReportedAt, tomorrow);
+            var statusFilter = Builders<Incident>.Filter.Eq(i => i.Status, "Open");
+
+            var finalFilter = deptFilter & dateFilter & statusFilter;
+            var count = await _context.Incidents.CountDocumentsAsync(finalFilter);
             return Json(new { count });
         }
 
         [HttpGet]
         public async Task<IActionResult> GetNotificationCount()
         {
-            if (!IsOperatorLoggedIn())
-                return Json(new { count = 0 });
+            if (!IsOperatorLoggedIn()) return Json(new { count = 0 });
 
-            var department = GetOperatorDepartment();
+            var deptFilter = GetDepartmentFilter();
             var today = DateTime.UtcNow.Date;
+            var tomorrow = today.AddDays(1);
 
-            var count = await _context.Incidents
-                .CountDocumentsAsync(i => i.Department == department &&
-                                         i.ReportedAt.Date == today &&
-                                         i.Status == "Open");
+            var dateFilter = Builders<Incident>.Filter.Gte(i => i.ReportedAt, today) &
+                             Builders<Incident>.Filter.Lt(i => i.ReportedAt, tomorrow);
+            var statusFilter = Builders<Incident>.Filter.Eq(i => i.Status, "Open");
 
+            var finalFilter = deptFilter & dateFilter & statusFilter;
+            var count = await _context.Incidents.CountDocumentsAsync(finalFilter);
             return Json(new { count });
         }
 
         [HttpGet]
         public async Task<IActionResult> GetNewIncidentsSince(DateTime lastCheck)
         {
-            if (!IsOperatorLoggedIn())
-                return Json(new { incidents = new List<object>() });
+            if (!IsOperatorLoggedIn()) return Json(new { incidents = new List<object>() });
 
-            var department = GetOperatorDepartment();
+            var filter = GetDepartmentFilter() &
+                         Builders<Incident>.Filter.Gt(i => i.ReportedAt, lastCheck);
 
-            var newIncidents = await _context.Incidents
-                .Find(i => i.Department == department && i.ReportedAt > lastCheck)
-                .SortByDescending(i => i.ReportedAt)
-                .ToListAsync();
+            var newIncidents = await _context.Incidents.Find(filter)
+                .SortByDescending(i => i.ReportedAt).ToListAsync();
 
-            var result = newIncidents.Select(i => new
-            {
+            var result = newIncidents.Select(i => new {
                 id = i.Id,
                 title = i.Title,
                 location = i.Location,
@@ -368,7 +472,6 @@ namespace SmartCityPulse.Controllers
                 department = i.Department,
                 reportedAt = i.ReportedAt
             });
-
             return Json(new { incidents = result });
         }
     }

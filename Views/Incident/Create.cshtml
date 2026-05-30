@@ -462,10 +462,10 @@
                             </label>
                             <div class="department-group">
                                 <select name="Department" id="Department" class="form-control">
+                                    <!-- ✅ Updated: only three standard department names -->
                                     <option value="Fire Department">Fire Department</option>
                                     <option value="Police Department">Police Department</option>
-                                    <option value="Rescue/Medical">Rescue/Medical</option>
-                                    <option value="Emergency Response">Emergency Response</option>
+                                    <option value="Rescue Department">Rescue Department</option>
                                 </select>
                                 <button type="button" class="ai-suggest-btn" id="aiSuggestDeptBtn">
                                     <i class="fas fa-robot"></i> AI Suggest
@@ -524,17 +524,18 @@
                     suggestedDepartment = "Police Department";
                     confidence = "High";
                 }
+                // ✅ Updated: maps rescue/medical to "Rescue Department"
                 else if (lowerText.includes('accident') || lowerText.includes('injured') || lowerText.includes('medical') ||
                          lowerText.includes('ambulance') || lowerText.includes('hurt') || lowerText.includes('bleeding') ||
                          lowerText.includes('unconscious') || lowerText.includes('heart') || lowerText.includes('collapse') ||
                          lowerText.includes('emergency')) {
-                    suggestedDepartment = "Rescue/Medical";
+                    suggestedDepartment = "Rescue Department";
                     confidence = "High";
                 }
                 else {
                     if (lowerText.includes('road') || lowerText.includes('vehicle') || lowerText.includes('car') ||
                         lowerText.includes('traffic')) {
-                        suggestedDepartment = "Rescue/Medical";
+                        suggestedDepartment = "Rescue Department";
                         confidence = "Medium";
                     } else {
                         suggestedDepartment = "Police Department";
@@ -679,7 +680,8 @@
                 };
 
                 try {
-                    const response = await fetch('/Incident/Create', {
+                    // ✅ Updated: correct endpoint
+                    const response = await fetch('/Citizen/ReportIncident', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
