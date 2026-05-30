@@ -70,6 +70,8 @@
         .notification-title { font-size: 13px; font-weight: 600; color: #0F172A; margin-bottom: 4px; }
         .notification-message { font-size: 12px; color: #64748B; margin-bottom: 6px; }
         .notification-time { font-size: 10px; color: #94A3B8; }
+        .notification-actions { display: flex; justify-content: flex-end; }
+        .btn-mark-read { background: none; border: none; color: #2563EB; font-size: 11px; cursor: pointer; }
         .empty-notifications { text-align: center; padding: 40px; color: #94A3B8; }
         .notification-footer { padding: 12px 18px; border-top: 1px solid #E2E8F0; text-align: center; }
         .notification-footer a { color: #2563EB; text-decoration: none; font-size: 12px; }
@@ -254,32 +256,25 @@
             options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
         });
 
-        // ========== POLLING NOTIFICATION SYSTEM (No SignalR - Simple & Working) ==========
-        
+        // ========== POLLING NOTIFICATION SYSTEM (popup unchanged) ==========
         let lastCheckTime = new Date();
         let shownNotificationIds = [];
         let pollingInterval = null;
-        
-        // Function to check for new incidents
+
         function checkNewIncidents() {
             fetch(`/Operator/GetNewIncidentsSince?lastCheck=${lastCheckTime.toISOString()}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.incidents && data.incidents.length > 0) {
                         data.incidents.forEach(incident => {
-                            // Check if already notified
                             if (!shownNotificationIds.includes(incident.id)) {
                                 shownNotificationIds.push(incident.id);
                                 showNotificationPopup(incident.title, incident.location, incident.severity);
-                                
-                                // Update New Today count
                                 const newTodayElement = document.getElementById('newTodayValue');
                                 if (newTodayElement) {
                                     let currentValue = parseInt(newTodayElement.innerText) || 0;
                                     newTodayElement.innerText = currentValue + 1;
                                 }
-                                
-                                // Update badge count
                                 updateBadgeCount();
                                 updateDropdownNotifications();
                             }
@@ -289,20 +284,17 @@
                 })
                 .catch(err => console.error('Polling error:', err));
         }
-        
-        // Show notification popup
+
         function showNotificationPopup(title, location, severity) {
             let bgColor = '#FFFFFF';
             let borderColor = '#2563EB';
             let icon = '📋';
-            
             switch(severity?.toLowerCase()) {
                 case 'critical': bgColor = '#FEF2F2'; borderColor = '#DC2626'; icon = '🔴'; break;
                 case 'high': bgColor = '#FEF3C7'; borderColor = '#F59E0B'; icon = '🟠'; break;
                 case 'medium': bgColor = '#E0E7FF'; borderColor = '#2563EB'; icon = '🔵'; break;
                 default: bgColor = '#DCFCE7'; borderColor = '#10B981'; icon = '🟢';
             }
-            
             const popup = document.createElement('div');
             popup.style.cssText = `
                 position: fixed; bottom: 20px; right: 20px; width: 350px; background: ${bgColor};
@@ -325,13 +317,11 @@
             document.body.appendChild(popup);
             setTimeout(() => { if(popup.parentElement) popup.remove(); }, 8000);
             popup.onclick = (e) => { if(e.target.tagName !== 'BUTTON') window.location.href = '/Operator/Incidents'; };
-            
-            // Play beep sound
             try { new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==').play().catch(e=>{}); } catch(e) {}
         }
-        
+
         function escapeHtml(text) { if(!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
-        
+
         function updateBadgeCount() {
             fetch('/Operator/GetNotificationCount')
                 .then(res => res.json())
@@ -349,32 +339,74 @@
                 })
                 .catch(err => console.error('Badge error:', err));
         }
-        
-        let notificationsList = [];
-        
+
+        // ======== UPDATED: fetch real notifications for dropdown ========
         function updateDropdownNotifications() {
-            fetch('/Operator/GetNewIncidentsCount')
+            fetch('/Operator/GetNotifications')
                 .then(res => res.json())
-                .then(data => {
+                .then(notifications => {
                     const container = document.getElementById('notificationList');
-                    if (container) {
-                        if (data.count === 0) {
-                            container.innerHTML = '<div class="empty-notifications"><i class="fas fa-bell-slash"></i> No new notifications</div>';
-                        } else {
-                            container.innerHTML = `<div class="empty-notifications"><i class="fas fa-bell"></i> ${data.count} new incident(s)</div>`;
-                        }
+                    if (!container) return;
+                    if (notifications.length === 0) {
+                        container.innerHTML = '<div class="empty-notifications"><i class="fas fa-bell-slash"></i> No notifications</div>';
+                        return;
                     }
-                });
+                    container.innerHTML = notifications.map(n => `
+                        <div class="notification-item ${!n.isRead ? 'unread' : ''}">
+                            <div class="notification-title">${escapeHtml(n.title)}</div>
+                            <div class="notification-message">${escapeHtml(n.message || '')}</div>
+                            <div class="notification-time">${new Date(n.createdAt).toLocaleString()}</div>
+                            <div class="notification-actions">
+                                <button class="btn-mark-read" onclick="event.stopPropagation(); markAsRead('${n.id}')">
+                                    ${!n.isRead ? '✔ Mark Read' : '🔵 Read'}
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                })
+                .catch(err => console.error('Dropdown fetch error:', err));
         }
-        
-        // Bell click handler
+
+        async function markAsRead(id) {
+            try {
+                const res = await fetch('/Operator/MarkNotificationRead', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'id=' + encodeURIComponent(id)
+                });
+                if (res.ok) {
+                    updateBadgeCount();
+                    updateDropdownNotifications(); // re-fetch & re-render
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function markAllAsRead() {
+            // Mark all currently shown notifications (they might be partial, but it's fine)
+            const items = document.querySelectorAll('.notification-item.unread');
+            for (const item of items) {
+                const btn = item.querySelector('.btn-mark-read');
+                if (btn) {
+                    const id = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+                    await fetch('/Operator/MarkNotificationRead', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'id=' + encodeURIComponent(id)
+                    });
+                }
+            }
+            updateBadgeCount();
+            updateDropdownNotifications();
+        }
+
+        // Bell click handler (unchanged)
         const notificationBell = document.getElementById('notificationBell');
         const notificationDropdown = document.getElementById('notificationDropdown');
         if (notificationBell && notificationDropdown) {
             notificationBell.addEventListener('click', function(e) {
                 e.stopPropagation();
                 notificationDropdown.style.display = notificationDropdown.style.display === 'none' ? 'block' : 'none';
-                updateDropdownNotifications();
+                updateDropdownNotifications(); // refresh dropdown when opening
             });
             document.addEventListener('click', function(e) {
                 if (!notificationBell.contains(e.target) && !notificationDropdown.contains(e.target)) {
@@ -382,24 +414,20 @@
                 }
             });
         }
-        
+
         document.getElementById('markAllRead')?.addEventListener('click', function() {
-            shownNotificationIds = [];
-            updateBadgeCount();
-            updateDropdownNotifications();
-            notificationDropdown.style.display = 'none';
+            markAllAsRead();
         });
-        
-        // Start polling every 5 seconds
+
+        // Start polling (unchanged)
         pollingInterval = setInterval(checkNewIncidents, 5000);
-        
+
         // Initial badge check
         updateBadgeCount();
         updateDropdownNotifications();
-        
+
         console.log("✅ Polling notification system started - checking every 5 seconds for @dept department");
-        
-        // Stop polling when page hidden (saves resources)
+
         document.addEventListener('visibilitychange', function() {
             if (document.hidden) {
                 if (pollingInterval) clearInterval(pollingInterval);
