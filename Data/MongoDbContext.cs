@@ -14,6 +14,8 @@ namespace SmartCityPulse.Data
             var client = new MongoClient(connectionString);
             _database = client.GetDatabase(databaseName);
         }
+        public IMongoCollection<ChatHistory> ChatHistoryCollection =>
+        _database.GetCollection<ChatHistory>("ChatHistory");
 
         public IMongoCollection<AppUser> Users =>
             _database.GetCollection<AppUser>("Users");

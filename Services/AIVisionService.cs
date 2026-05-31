@@ -18,7 +18,7 @@ namespace SmartCityPulse.Services
         public AIVisionService(IConfiguration configuration, ILogger<AIVisionService> logger)
         {
             _httpClient = new HttpClient();
-            _apiKey = configuration["GeminiAPI:ApiKey"] ?? throw new Exception("Gemini API Key not found in configuration");
+            _apiKey = configuration["GeminiApiKey:Citizen"] ?? throw new Exception("Gemini API Key not found in configuration");
             _logger = logger;
         }
 
