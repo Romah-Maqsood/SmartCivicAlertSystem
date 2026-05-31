@@ -41,27 +41,29 @@ namespace SmartCityPulse.Controllers
                 var todayStart = DateTime.UtcNow.Date;
                 var todayEnd = todayStart.AddDays(1);
 
-                var totalToday = await _context.Incidents
-                    .CountDocumentsAsync(i => i.ReportedAt >= todayStart && i.ReportedAt < todayEnd);
+                // ✅ Total open incidents (all time)
+                var openIncidents = await _context.Incidents
+                    .CountDocumentsAsync(i => i.Status == "Open");
+
+                // ✅ Resolved today
                 var resolvedToday = await _context.Incidents
                     .CountDocumentsAsync(i => i.Status == "Resolved" && i.UpdatedAt >= todayStart && i.UpdatedAt < todayEnd);
+
                 var criticalIncidents = await _context.Incidents
                     .CountDocumentsAsync(i => i.Severity == "Critical" && i.Status != "Resolved");
+
                 var pendingIncidents = await _context.Incidents
                     .CountDocumentsAsync(i => i.Status == "Open" || i.Status == "In Progress");
-                var criticalPending = await _context.Incidents
-                    .CountDocumentsAsync(i => i.Severity == "Critical" && (i.Status == "Open" || i.Status == "In Progress"));
 
                 var recentIncidents = await _context.Incidents.Find(_ => true)
                     .SortByDescending(i => i.ReportedAt).Limit(5).ToListAsync();
 
                 ViewBag.UserName = HttpContext.Session.GetString("UserName") ?? "Admin";
                 ViewBag.UserEmail = HttpContext.Session.GetString("UserEmail") ?? "admin@city.com";
-                ViewBag.TotalToday = totalToday;
-                ViewBag.ResolvedToday = resolvedToday;
-                ViewBag.CriticalIncidents = criticalIncidents;
-                ViewBag.PendingIncidents = pendingIncidents;
-                ViewBag.CriticalPending = criticalPending;
+                ViewBag.OpenIncidents = (int)openIncidents;
+                ViewBag.ResolvedToday = (int)resolvedToday;
+                ViewBag.CriticalIncidents = (int)criticalIncidents;
+                ViewBag.PendingIncidents = (int)pendingIncidents;
                 ViewBag.RecentIncidents = recentIncidents;
 
                 return View();
@@ -198,7 +200,6 @@ namespace SmartCityPulse.Controllers
                 newOperator.CreatedAt = DateTime.UtcNow;
                 await _context.Operators.InsertOneAsync(newOperator);
 
-                // ✅ Clearer notification
                 await NotificationService.SendAndSave(
                     _context, _hubContext,
                     "Operator Added",
@@ -255,7 +256,6 @@ namespace SmartCityPulse.Controllers
 
                 await _context.Operators.DeleteOneAsync(o => o.Id == delOp.Id);
 
-                // ✅ Clearer notification
                 await NotificationService.SendAndSave(
                     _context, _hubContext,
                     "Operator Removed",
@@ -510,20 +510,22 @@ namespace SmartCityPulse.Controllers
             }
         }
 
-        // ==================== GET NOTIFICATIONS ====================
+        // ==================== GET NOTIFICATIONS (FIXED) ====================
         [HttpGet]
         public async Task<IActionResult> GetNotifications()
         {
             if (!IsAdmin()) return Unauthorized();
+
             var notifications = await _context.Notifications
-                .Find(n => n.TargetRole == "Admin" || n.TargetRole == "")
+                .Find(n => n.TargetRole == "Admin")    // only admin
                 .SortByDescending(n => n.CreatedAt)
                 .Limit(50)
                 .ToListAsync();
+
             return Json(notifications);
         }
 
-        // AdminController.cs mein yeh action add karein
+        // ==================== MARK NOTIFICATION READ ====================
         [HttpPost]
         public async Task<IActionResult> MarkNotificationRead(string id)
         {

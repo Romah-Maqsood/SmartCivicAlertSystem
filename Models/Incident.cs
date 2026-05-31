@@ -50,6 +50,10 @@ namespace SmartCityPulse.Models
         [BsonElement("comments")]
         public List<IncidentComment> Comments { get; set; } = new();
 
+        // ==================== IMAGE PATH FIELD ====================
+        [BsonElement("imagePath")]
+        public string ImagePath { get; set; } = string.Empty;
+
         // ========== POLICE DEPARTMENT FIELDS ==========
         [BsonElement("firNumber")]
         public string FIRNumber { get; set; } = string.Empty;

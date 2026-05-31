@@ -1,0 +1,407 @@
+@{
+    Layout = null;
+}
+<style>
+    /* Breathing robot button – 90px, moved slightly away from corner */
+    .chat-robot-btn {
+        position: fixed;
+        bottom: 42px;          /* corner se upar */
+        right: 42px;           /* corner se left */
+        width: 90px;           /* bara button */
+        height: 90px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        z-index: 1000;
+        padding: 0;
+        outline: none;
+        animation: robotFloat 3s ease-in-out infinite;
+        filter: drop-shadow(0 6px 18px rgba(37,99,235,0.28));
+        transition: all 0.3s ease;
+    }
+    .chat-robot-btn:hover {
+        filter: drop-shadow(0 8px 24px rgba(37,99,235,0.45));
+    }
+
+    /* When chat is open – small face, top‑left corner, no breathing */
+    .chat-robot-btn.chat-open {
+        top: 20px;
+        left: 20px;
+        bottom: auto;
+        right: auto;
+        width: 50px;
+        height: 50px;
+        animation: none;
+        filter: drop-shadow(0 4px 12px rgba(37,99,235,0.3));
+    }
+
+    @@keyframes robotFloat {
+        0%,100% { transform: translateY(0px) scale(1); }
+        50%      { transform: translateY(-10px) scale(1.04); }
+    }
+
+    /* Chat widget – softer professional look */
+    .chat-widget {
+        position: fixed;
+        bottom: 130px;
+        right: 42px;
+        width: 380px;
+        max-height: 520px;
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        display: none;
+        flex-direction: column;
+        z-index: 999;
+        font-family: 'Inter', sans-serif;
+        overflow: hidden;
+        animation: widgetPop 0.25s cubic-bezier(.34,1.56,.64,1);
+    }
+    .chat-widget.open { display: flex; }
+
+    @@keyframes widgetPop {
+        0%   { opacity: 0; transform: scale(0.88) translateY(16px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .chat-header {
+        padding: 14px 18px;
+        background: linear-gradient(135deg, #3B82F6 0%, #6366F1 100%);
+        color: white;
+        font-weight: 500;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .chat-header-avatar { width: 32px; height: 32px; flex-shrink: 0; }
+    .chat-header-info { flex: 1; }
+    .chat-header-title { font-size: 14px; font-weight: 600; line-height: 1.2; }
+    .chat-header-sub { font-size: 11px; font-weight: 400; opacity: 0.85; margin-top: 1px; }
+    .chat-header-close {
+        background: rgba(255,255,255,0.2);
+        border: none; color: white; width: 26px; height: 26px;
+        border-radius: 50%; cursor: pointer; font-size: 14px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; transition: background 0.15s;
+    }
+    .chat-header-close:hover { background: rgba(255,255,255,0.35); }
+
+    .chat-body {
+        flex: 1; padding: 14px 12px; overflow-y: auto;
+        display: flex; flex-direction: column; gap: 8px;
+        background: #F8FAFC;
+    }
+    .chat-body::-webkit-scrollbar { width: 4px; }
+    .chat-body::-webkit-scrollbar-track { background: transparent; }
+    .chat-body::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
+
+    .empty-chat {
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; flex: 1; text-align: center;
+        color: #9CA3AF; padding: 24px 16px; gap: 10px;
+    }
+    .empty-chat-icon { opacity: 0.55; }
+    .empty-chat p { font-size: 13px; line-height: 1.5; margin: 0; }
+    .empty-chat strong { display: block; font-size: 14px; color: #6B7280; font-weight: 600; margin-bottom: 4px; }
+
+    .chat-message {
+        max-width: 82%; padding: 10px 14px; border-radius: 16px;
+        font-size: 13.5px; line-height: 1.55; word-break: break-word;
+        position: relative;
+    }
+    .chat-message.user {
+        background: #DBEAFE; color: #1E3A8A; align-self: flex-end;
+        border-bottom-right-radius: 4px;
+    }
+    .chat-message.bot {
+        background: #FFFFFF; color: #1A1F36; align-self: flex-start;
+        border-bottom-left-radius: 4px; border: 1px solid #E5E7EB;
+    }
+    .chat-message .time {
+        font-size: 10px; color: rgba(0,0,0,0.4);
+        display: block; margin-top: 5px; text-align: right;
+    }
+    .chat-message.bot .time { color: #9CA3AF; text-align: left; }
+
+    .typing-indicator {
+        display: flex; align-items: center; gap: 5px;
+        padding: 10px 14px; background: #FFFFFF;
+        border: 1px solid #E5E7EB; border-radius: 16px;
+        border-bottom-left-radius: 4px; align-self: flex-start;
+        max-width: 70px;
+    }
+    .typing-dot {
+        width: 7px; height: 7px; background: #9CA3AF;
+        border-radius: 50%; animation: typingBounce 1.2s ease-in-out infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.18s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.36s; }
+    @@keyframes typingBounce {
+        0%,60%,100% { transform: translateY(0); }
+        30%          { transform: translateY(-5px); }
+    }
+
+    .chat-input-area {
+        display: flex; border-top: 1px solid #E5E7EB;
+        padding: 10px 12px; gap: 8px; background: #FFFFFF;
+        align-items: center; flex-shrink: 0;
+    }
+    .chat-input-area input {
+        flex: 1; padding: 9px 14px; border: 1.5px solid #E2E8F0;
+        border-radius: 20px; font-size: 13px; font-family: 'Inter', sans-serif;
+        outline: none; color: #1A1F36; background: #F8FAFC;
+        transition: border-color 0.15s;
+    }
+    .chat-input-area input:focus { border-color: #3B82F6; background: #fff; }
+    .chat-input-area input::placeholder { color: #9CA3AF; }
+
+    .chat-send-btn {
+        background: #3B82F6; color: white; border: none;
+        border-radius: 50%; width: 36px; height: 36px;
+        font-size: 16px; cursor: pointer; display: flex;
+        align-items: center; justify-content: center; flex-shrink: 0;
+        transition: background 0.15s, transform 0.12s;
+    }
+    .chat-send-btn:hover:not(:disabled) { background: #2563EB; transform: scale(1.07); }
+    .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
+
+<!-- Floating Cute Robot Button (90px, breathing, morph on chat open) -->
+<button class="chat-robot-btn" id="chatRobotIcon" onclick="toggleChatWidget()" title="AI Assistant" aria-label="Open AI Assistant">
+    <svg viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="34" cy="64" rx="16" ry="4" fill="rgba(0,0,0,0.10)" id="robot-shadow"/>
+
+        <g id="robot-body-parts">
+            <rect x="16" y="34" width="36" height="24" rx="10" fill="#E8EEFA"/>
+            <rect x="16" y="34" width="36" height="24" rx="10" fill="url(#bodyGrad)" opacity="0.5"/>
+            <rect x="7" y="36" width="9" height="14" rx="4.5" fill="#D0D8F0"/>
+            <rect x="52" y="36" width="9" height="14" rx="4.5" fill="#D0D8F0"/>
+            <ellipse cx="11.5" cy="51" rx="4" ry="3.5" fill="#BEC8E8"/>
+            <ellipse cx="56.5" cy="51" rx="4" ry="3.5" fill="#BEC8E8"/>
+            <rect x="29" y="28" width="10" height="8" rx="3" fill="#D0D8F0"/>
+            <rect x="21" y="55" width="11" height="7" rx="3.5" fill="#C8D0EC"/>
+            <rect x="36" y="55" width="11" height="7" rx="3.5" fill="#C8D0EC"/>
+            <rect x="24" y="40" width="20" height="11" rx="4" fill="#C8D0EC" opacity="0.7"/>
+            <rect x="27" y="43" width="5" height="5" rx="1.5" fill="#2563EB" opacity="0.8"/>
+            <circle cx="36.5" cy="45.5" r="2.2" fill="#3B82F6" opacity="0.8"/>
+            <circle cx="36.5" cy="45.5" r="1" fill="#BFDBFE">
+                <animate attributeName="opacity" values="1;0.4;1" dur="1.2s" repeatCount="indefinite"/>
+            </circle>
+        </g>
+
+        <g id="robot-head">
+            <rect x="14" y="8" width="40" height="28" rx="12" fill="#EEF1FB"/>
+            <rect x="14" y="8" width="40" height="28" rx="12" fill="url(#headGrad)" opacity="0.4"/>
+            <rect x="14" y="8" width="40" height="28" rx="12" stroke="#C8D0EC" stroke-width="1"/>
+            <rect x="19" y="13" width="30" height="16" rx="7" fill="#1E3A8A" opacity="0.9"/>
+            <rect x="19" y="13" width="30" height="16" rx="7" fill="url(#visorSheen)" opacity="0.25"/>
+            <ellipse cx="27.5" cy="21" rx="4.5" ry="4.5" fill="#00E5FF" opacity="0.25"/>
+            <ellipse cx="40.5" cy="21" rx="4.5" ry="4.5" fill="#00E5FF" opacity="0.25"/>
+            <ellipse cx="27.5" cy="21" rx="3" ry="3" fill="#00BCD4"/>
+            <ellipse cx="27.5" cy="21" rx="1.6" ry="1.6" fill="#E0F7FA"/>
+            <ellipse cx="40.5" cy="21" rx="3" ry="3" fill="#00BCD4"/>
+            <ellipse cx="40.5" cy="21" rx="1.6" ry="1.6" fill="#E0F7FA"/>
+            <path d="M31 27 Q34 30 37 27" stroke="#00BCD4" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <line x1="34" y1="8" x2="34" y2="3" stroke="#C8D0EC" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="34" cy="2" r="2.5" fill="#2563EB"/>
+            <circle cx="34" cy="2" r="1.2" fill="#93C5FD">
+                <animate attributeName="opacity" values="1;0.3;1" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
+        </g>
+
+        <defs>
+            <linearGradient id="bodyGrad" x1="16" y1="34" x2="52" y2="58" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FFFFFF"/>
+                <stop offset="100%" stop-color="#C8D0EC"/>
+            </linearGradient>
+            <linearGradient id="headGrad" x1="14" y1="8" x2="54" y2="36" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FFFFFF"/>
+                <stop offset="100%" stop-color="#C8D0EC"/>
+            </linearGradient>
+            <linearGradient id="visorSheen" x1="19" y1="13" x2="49" y2="29" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FFFFFF"/>
+                <stop offset="100%" stop-color="transparent"/>
+            </linearGradient>
+        </defs>
+    </svg>
+</button>
+
+<!-- Chat Widget -->
+<div class="chat-widget" id="adminChatWidget">
+    <div class="chat-header" onclick="toggleChatWidget()">
+        <svg class="chat-header-avatar" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="7" y="15" width="20" height="13" rx="5" fill="rgba(255,255,255,0.25)"/>
+            <rect x="13" y="11" width="8" height="6" rx="2" fill="rgba(255,255,255,0.2)"/>
+            <rect x="6" y="6" width="22" height="16" rx="6" fill="rgba(255,255,255,0.22)"/>
+            <rect x="9" y="9" width="16" height="8" rx="3.5" fill="rgba(0,0,0,0.35)"/>
+            <ellipse cx="14" cy="13" rx="2" ry="2" fill="#00E5FF"/>
+            <ellipse cx="20" cy="13" rx="2" ry="2" fill="#00E5FF"/>
+            <path d="M15.5 17.5 Q17 19.5 18.5 17.5" stroke="#00E5FF" stroke-width="1" stroke-linecap="round" fill="none"/>
+            <line x1="17" y1="6" x2="17" y2="3" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="17" cy="2.5" r="1.5" fill="white" opacity="0.8"/>
+        </svg>
+        <div class="chat-header-info">
+            <div class="chat-header-title">AI Assistant</div>
+            <div class="chat-header-sub">● Online — ready to help</div>
+        </div>
+        <button class="chat-header-close" onclick="event.stopPropagation(); toggleChatWidget()">✕</button>
+    </div>
+
+    <div class="chat-body" id="chatBody">
+        <div class="empty-chat" id="emptyChatMessage">
+            <svg class="empty-chat-icon" width="54" height="54" viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="16" y="34" width="36" height="24" rx="10" fill="#E8EEFA"/>
+                <rect x="7" y="36" width="9" height="14" rx="4.5" fill="#D0D8F0"/>
+                <rect x="52" y="36" width="9" height="14" rx="4.5" fill="#D0D8F0"/>
+                <rect x="29" y="28" width="10" height="8" rx="3" fill="#D0D8F0"/>
+                <rect x="14" y="8" width="40" height="28" rx="12" fill="#EEF1FB" stroke="#C8D0EC" stroke-width="1"/>
+                <rect x="19" y="13" width="30" height="16" rx="7" fill="#1E3A8A" opacity="0.9"/>
+                <ellipse cx="27.5" cy="21" rx="3" ry="3" fill="#00BCD4"/>
+                <ellipse cx="27.5" cy="21" rx="1.6" ry="1.6" fill="#E0F7FA"/>
+                <ellipse cx="40.5" cy="21" rx="3" ry="3" fill="#00BCD4"/>
+                <ellipse cx="40.5" cy="21" rx="1.6" ry="1.6" fill="#E0F7FA"/>
+                <path d="M31 27 Q34 30 37 27" stroke="#00BCD4" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+                <line x1="34" y1="8" x2="34" y2="3" stroke="#C8D0EC" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="34" cy="2" r="2.5" fill="#2563EB"/>
+                <rect x="21" y="55" width="11" height="7" rx="3.5" fill="#C8D0EC"/>
+                <rect x="36" y="55" width="11" height="7" rx="3.5" fill="#C8D0EC"/>
+            </svg>
+            <div>
+                <strong>Hello! I'm your AI assistant</strong>
+                <p>Ask me about incidents, departments, or any metrics you need.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="Type your question…" onkeydown="if(event.key==='Enter') sendMessage()" />
+        <button class="chat-send-btn" id="chatSendBtn" onclick="sendMessage()" aria-label="Send message">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<script>
+    const btn = document.getElementById('chatRobotIcon');
+    const widget = document.getElementById('adminChatWidget');
+    const robotBodyParts = document.getElementById('robot-body-parts');
+    const robotShadow = document.getElementById('robot-shadow');
+
+    function toggleChatWidget() {
+        const isOpen = widget.classList.toggle('open');
+        if (isOpen) {
+            // Make button small, move to top‑left corner, show only face
+            btn.classList.add('chat-open');
+            if (robotBodyParts) robotBodyParts.style.display = 'none';
+            if (robotShadow) robotShadow.style.display = 'none';
+            loadHistory();
+            setTimeout(() => document.getElementById('chatInput').focus(), 180);
+        } else {
+            // Restore original button position & size, breathing animation resumes
+            btn.classList.remove('chat-open');
+            if (robotBodyParts) robotBodyParts.style.display = '';
+            if (robotShadow) robotShadow.style.display = '';
+        }
+    }
+
+    async function loadHistory() {
+        try {
+            const res  = await fetch('/AdminChat/GetHistory');
+            const data = await res.json();
+            const body = document.getElementById('chatBody');
+            body.innerHTML = '';
+            if (!data || data.length === 0) {
+                body.innerHTML = `
+                <div class="empty-chat" id="emptyChatMessage">
+                    <svg width="54" height="54" viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="16" y="34" width="36" height="24" rx="10" fill="#E8EEFA"/>
+                        <rect x="7" y="36" width="9" height="14" rx="4.5" fill="#D0D8F0"/>
+                        <rect x="52" y="36" width="9" height="14" rx="4.5" fill="#D0D8F0"/>
+                        <rect x="29" y="28" width="10" height="8" rx="3" fill="#D0D8F0"/>
+                        <rect x="14" y="8" width="40" height="28" rx="12" fill="#EEF1FB" stroke="#C8D0EC" stroke-width="1"/>
+                        <rect x="19" y="13" width="30" height="16" rx="7" fill="#1E3A8A" opacity="0.9"/>
+                        <ellipse cx="27.5" cy="21" rx="3" ry="3" fill="#00BCD4"/>
+                        <ellipse cx="27.5" cy="21" rx="1.6" ry="1.6" fill="#E0F7FA"/>
+                        <ellipse cx="40.5" cy="21" rx="3" ry="3" fill="#00BCD4"/>
+                        <ellipse cx="40.5" cy="21" rx="1.6" ry="1.6" fill="#E0F7FA"/>
+                        <path d="M31 27 Q34 30 37 27" stroke="#00BCD4" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+                        <line x1="34" y1="8" x2="34" y2="3" stroke="#C8D0EC" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="34" cy="2" r="2.5" fill="#2563EB"/>
+                        <rect x="21" y="55" width="11" height="7" rx="3.5" fill="#C8D0EC"/>
+                        <rect x="36" y="55" width="11" height="7" rx="3.5" fill="#C8D0EC"/>
+                    </svg>
+                    <div>
+                        <strong>Hello! I'm your AI assistant</strong>
+                        <p>Ask me about incidents, departments, or any metrics you need.</p>
+                    </div>
+                </div>`;
+                return;
+            }
+            data.reverse().forEach(msg => appendMessage(msg.role, msg.message, msg.timestamp));
+            body.scrollTop = body.scrollHeight;
+        } catch (err) { console.error(err); }
+    }
+
+    function appendMessage(role, text, timestamp) {
+        const body     = document.getElementById('chatBody');
+        const emptyMsg = document.getElementById('emptyChatMessage');
+        if (emptyMsg) emptyMsg.remove();
+        const typing   = document.getElementById('typingIndicator');
+        if (typing) typing.remove();
+
+        const div      = document.createElement('div');
+        div.className  = `chat-message ${role}`;
+        div.innerHTML  = `${text}<span class="time">${new Date(timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span>`;
+        body.appendChild(div);
+        body.scrollTop = body.scrollHeight;
+    }
+
+    function showTyping() {
+        const body = document.getElementById('chatBody');
+        const div  = document.createElement('div');
+        div.id     = 'typingIndicator';
+        div.className = 'typing-indicator';
+        div.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+        body.appendChild(div);
+        body.scrollTop = body.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input   = document.getElementById('chatInput');
+        const btnSend = document.getElementById('chatSendBtn');
+        const message = input.value.trim();
+        if (!message) return;
+
+        btnSend.disabled = true;
+        input.value = '';
+
+        appendMessage('user', message, new Date().toISOString());
+        showTyping();
+
+        try {
+            const res    = await fetch('/AdminChat/Ask', {
+                method : 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body   : 'message=' + encodeURIComponent(message)
+            });
+            const result = await res.json();
+            appendMessage('bot', result.success ? result.reply : 'Unable to get answer.', new Date().toISOString());
+        } catch {
+            appendMessage('bot', 'Connection error.', new Date().toISOString());
+        } finally {
+            btnSend.disabled = false;
+            input.focus();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadHistory();
+    });
+</script>
