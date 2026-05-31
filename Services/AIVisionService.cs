@@ -13,12 +13,14 @@ namespace SmartCityPulse.Services
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
         private readonly ILogger<AIVisionService> _logger;
-        private const string GeminiApiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+
+        // Standard Gemini API endpoint — works with ALL key formats including AQ. keys
+        private const string GeminiApiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={0}";
 
         public AIVisionService(IConfiguration configuration, ILogger<AIVisionService> logger)
         {
             _httpClient = new HttpClient();
-            _apiKey = configuration["GeminiApiKey:Citizen"] ?? throw new Exception("Gemini API Key not found in configuration");
+            _apiKey = configuration["GeminiApiKey:Citizen"] ?? throw new Exception("Gemini API Key for Citizen not found in configuration");
             _logger = logger;
         }
 
@@ -47,19 +49,14 @@ namespace SmartCityPulse.Services
                                 },
                                 new
                                 {
-                                    text = @"Analyze this image carefully. This is an emergency incident photo. 
-                                    Return ONLY valid JSON in this exact format, no other text:
+                                    text = @"Analyze this image. This is an emergency incident photo. 
+                                    Return ONLY valid JSON. Do not add any other text before or after the JSON.
                                     {
-                                        ""title"": ""A specific, detailed title for this incident (max 60 characters)"",
-                                        ""description"": ""A detailed description of what you see in the image (max 200 characters)"",
-                                        ""severity"": ""One of: Critical, High, Medium, Low"",
-                                        ""department"": ""One of: Fire Department, Police Department, Rescue Department""
-                                    }
-                                    For example:
-                                    - If you see fire/smoke: title = 'Fire in Building', severity = 'Critical', department = 'Fire Department'
-                                    - If you see car accident: title = 'Car Accident', severity = 'High', department = 'Rescue Department'
-                                    - If you see theft/robbery: title = 'Theft Incident', severity = 'Medium', department = 'Police Department'
-                                    - If you see medical emergency: title = 'Medical Emergency', severity = 'High', department = 'Rescue Department'"
+                                        ""title"": ""Short title of what happened (max 60 characters)"",
+                                        ""description"": ""Brief description of the incident (max 200 characters)"",
+                                        ""severity"": ""Critical or High or Medium or Low"",
+                                        ""department"": ""Fire Department or Police Department or Rescue Department""
+                                    }"
                                 }
                             }
                         }
@@ -68,29 +65,32 @@ namespace SmartCityPulse.Services
 
                 var json = JsonSerializer.Serialize(requestBody);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var requestUrl = $"{GeminiApiUrl}?key={_apiKey}";
 
-                _logger.LogInformation($"Calling Gemini API at: {requestUrl}");
+                // Use API key as a query parameter — no Authorization header needed
+                _httpClient.DefaultRequestHeaders.Clear();
+
+                var requestUrl = string.Format(GeminiApiUrl, _apiKey);
+
+                _logger.LogInformation("Calling Gemini API...");
                 var response = await _httpClient.PostAsync(requestUrl, content);
                 var responseJson = await response.Content.ReadAsStringAsync();
 
-                _logger.LogInformation($"Gemini API Response Status: {response.StatusCode}");
-                _logger.LogInformation($"Gemini API Response: {responseJson}");
+                _logger.LogInformation($"API Response Status: {response.StatusCode}");
+                _logger.LogInformation($"API Response Body: {responseJson}");
 
                 if (response.IsSuccessStatusCode)
                 {
                     var result = ParseGeminiResponse(responseJson);
-                    _logger.LogInformation($"Parsed Result - Title: {result.Title}, Severity: {result.Severity}, Department: {result.Department}");
                     return result;
                 }
 
-                _logger.LogError($"Gemini API Error: {response.StatusCode} - {responseJson}");
-                return GetDefaultAnalysis("API Error: Unable to analyze image");
+                _logger.LogError($"API Error: {response.StatusCode} - {responseJson}");
+                return GetDefaultAnalysis($"API Error: {response.StatusCode}");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"AI Vision Analysis Error: {ex.Message}");
-                return GetDefaultAnalysis($"Error: {ex.Message}");
+                _logger.LogError($"Exception: {ex.Message}");
+                return GetDefaultAnalysis($"Exception: {ex.Message}");
             }
         }
 
@@ -101,51 +101,60 @@ namespace SmartCityPulse.Services
                 using var doc = JsonDocument.Parse(responseJson);
                 var root = doc.RootElement;
 
-                // Navigate to the text response
-                var text = root.GetProperty("candidates")[0]
-                               .GetProperty("content")
-                               .GetProperty("parts")[0]
-                               .GetProperty("text")
-                               .GetString();
-
-                _logger.LogInformation($"Raw AI Response: {text}");
-
-                if (!string.IsNullOrEmpty(text))
+                if (root.TryGetProperty("candidates", out var candidates) && candidates.GetArrayLength() > 0)
                 {
-                    // Extract JSON from response
-                    var jsonStart = text.IndexOf('{');
-                    var jsonEnd = text.LastIndexOf('}') + 1;
-                    if (jsonStart >= 0 && jsonEnd > jsonStart)
+                    var candidate = candidates[0];
+                    if (candidate.TryGetProperty("content", out var content))
                     {
-                        var jsonText = text.Substring(jsonStart, jsonEnd - jsonStart);
-                        using var jsonDoc = JsonDocument.Parse(jsonText);
-                        var rootElement = jsonDoc.RootElement;
-
-                        return new AIAnalysisResult
+                        if (content.TryGetProperty("parts", out var parts) && parts.GetArrayLength() > 0)
                         {
-                            Title = rootElement.TryGetProperty("title", out var title) ? title.GetString() ?? "Incident Detected" : "Incident Detected",
-                            Description = rootElement.TryGetProperty("description", out var desc) ? desc.GetString() ?? "Please investigate this incident" : "Please investigate this incident",
-                            Severity = rootElement.TryGetProperty("severity", out var sev) ? sev.GetString() ?? "Medium" : "Medium",
-                            Department = rootElement.TryGetProperty("department", out var dept) ? dept.GetString() ?? "General Services" : "General Services",
-                            Success = true
-                        };
+                            var part = parts[0];
+                            if (part.TryGetProperty("text", out var textElement))
+                            {
+                                var text = textElement.GetString();
+                                _logger.LogInformation($"Raw AI Text: {text}");
+
+                                if (!string.IsNullOrEmpty(text))
+                                {
+                                    int jsonStart = text.IndexOf('{');
+                                    int jsonEnd = text.LastIndexOf('}') + 1;
+
+                                    if (jsonStart >= 0 && jsonEnd > jsonStart)
+                                    {
+                                        string jsonText = text.Substring(jsonStart, jsonEnd - jsonStart);
+                                        using var jsonDoc = JsonDocument.Parse(jsonText);
+                                        var rootElement = jsonDoc.RootElement;
+
+                                        return new AIAnalysisResult
+                                        {
+                                            Title = rootElement.TryGetProperty("title", out var title) ? title.GetString() ?? "Incident Detected" : "Incident Detected",
+                                            Description = rootElement.TryGetProperty("description", out var desc) ? desc.GetString() ?? "No description" : "No description",
+                                            Severity = rootElement.TryGetProperty("severity", out var sev) ? sev.GetString() ?? "Medium" : "Medium",
+                                            Department = rootElement.TryGetProperty("department", out var dept) ? dept.GetString() ?? "General Services" : "General Services",
+                                            Success = true
+                                        };
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+
+                return GetDefaultAnalysis("No valid response from API");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Parse error: {ex.Message}");
+                return GetDefaultAnalysis($"Parse error: {ex.Message}");
             }
-
-            return GetDefaultAnalysis("Failed to parse AI response");
         }
 
-        private AIAnalysisResult GetDefaultAnalysis(string reason = "")
+        private AIAnalysisResult GetDefaultAnalysis(string reason)
         {
             return new AIAnalysisResult
             {
                 Title = "Incident Detected",
-                Description = "AI could not analyze this image. Please provide description manually.",
+                Description = $"AI could not analyze: {reason}. Please provide description manually.",
                 Severity = "Medium",
                 Department = "General Services",
                 Success = false

@@ -781,18 +781,15 @@
         }
 
         @@keyframes modalPopIn {
-            from
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
 
-        {
-            transform: scale(0.9);
-            opacity: 0;
-        }
-
-        to {
-            transform: scale(1);
-            opacity: 1;
-        }
-
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .sos-warning-icon {
@@ -918,18 +915,15 @@
         }
 
         @@keyframes slideUp {
-            from
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
 
-        {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .chatbot-container.show {
@@ -1022,18 +1016,15 @@
         }
 
         @@keyframes messageFadeIn {
-            from
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
 
-        {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .message.bot {
@@ -1084,6 +1075,7 @@
             margin-top: 8px;
         }
 
+        /* CHANGE 4: Updated quick-reply-btn with icon support */
         .quick-reply-btn {
             background: #F1F5F9;
             border: 1px solid #EAECF0;
@@ -1093,11 +1085,19 @@
             cursor: pointer;
             transition: all 0.2s ease;
             color: #1A1F36;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
             .quick-reply-btn:hover {
                 background: #E2E8F0;
                 border-color: #2563EB;
+            }
+
+            .quick-reply-btn i {
+                font-size: 10px;
+                color: #2563EB;
             }
 
         .chatbot-input-area {
@@ -1175,60 +1175,237 @@
                 }
 
         @@keyframes typing {
-            0%, 60%, 100%
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
 
-        {
-            transform: translateY(0);
-            opacity: 0.4;
-        }
-
-        30% {
-            transform: translateY(-6px);
-            opacity: 1;
-        }
-
+            30% {
+                transform: translateY(-6px);
+                opacity: 1;
+            }
         }
 
         @@media (max-width: 480px) {
-            .chatbot-container
-
-        {
-            width: 320px;
-            height: 450px;
-            right: -10px;
-        }
-
+            .chatbot-container {
+                width: 320px;
+                height: 450px;
+                right: -10px;
+            }
         }
         /* Toast Animation */
         @@keyframes slideInRight {
-            from
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
 
-        {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         @@keyframes fadeOutRight {
-            from
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
 
-        {
-            transform: translateX(0);
-            opacity: 1;
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        /* ==================== SOS MODAL PROFESSIONAL UI ==================== */
+        .sos-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
         }
 
-        to {
-            transform: translateX(100%);
-            opacity: 0;
+            .sos-modal.show {
+                display: flex;
+            }
+
+        .sos-modal-content {
+            background: #FFFFFF;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            animation: modalPopIn 0.3s ease;
         }
 
+        .sos-modal-header {
+            background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+            padding: 24px 28px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
         }
+
+        .sos-header-icon {
+            width: 42px;
+            height: 42px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+            .sos-header-icon i {
+                font-size: 20px;
+                color: #FFFFFF;
+            }
+
+        .sos-header-label {
+            font-size: 16px;
+            font-weight: 700;
+            color: #FFFFFF;
+            letter-spacing: 0.8px;
+        }
+
+        .sos-modal-body {
+            padding: 24px 28px 8px 28px;
+        }
+
+        .sos-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1A1F36;
+            margin-bottom: 8px;
+        }
+
+        .sos-modal-subtitle {
+            font-size: 13px;
+            color: #6B7280;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+            .sos-modal-subtitle strong {
+                color: #DC2626;
+            }
+
+        .sos-feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .sos-feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: #F8FAFC;
+            border: 1px solid #EAECF0;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .sos-feature-icon {
+            width: 30px;
+            height: 30px;
+            background: #EFF6FF;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+            .sos-feature-icon i {
+                font-size: 13px;
+                color: #2563EB;
+            }
+
+        .sos-warning-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #DC2626;
+            margin-bottom: 20px;
+        }
+
+            .sos-warning-note i {
+                font-size: 13px;
+                color: #DC2626;
+                flex-shrink: 0;
+            }
+
+        .sos-modal-actions {
+            padding: 0 28px 24px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sos-confirm {
+            width: 100%;
+            background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+            color: white;
+            border: none;
+            padding: 13px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+
+            .sos-confirm:hover {
+                background: linear-gradient(135deg, #B91C1C 0%, #991B1B 100%);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+            }
+
+        .sos-cancel {
+            width: 100%;
+            background: #F1F5F9;
+            color: #64748B;
+            border: 1px solid #E2E8F0;
+            padding: 11px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+            .sos-cancel:hover {
+                background: #E2E8F0;
+                color: #374151;
+            }
     </style>
 </head>
 <body>
@@ -1405,11 +1582,12 @@
                     <div class="message-content">
                         <i class="fas fa-hand-wave" style="margin-right: 6px;"></i> Hello! I'm your City Assistant.<br>
                         How can I help you today?
+                        <!-- CHANGE 1: Quick reply buttons now use Font Awesome icons instead of emojis -->
                         <div class="quick-replies" id="quickReplies">
-                            <button class="quick-reply-btn" onclick="sendQuickReply('How to report an incident?')">📝 Report Incident</button>
-                            <button class="quick-reply-btn" onclick="sendQuickReply('What is SOS Emergency?')">🚨 SOS Emergency</button>
-                            <button class="quick-reply-btn" onclick="sendQuickReply('Emergency numbers')">📞 Emergency Numbers</button>
-                            <button class="quick-reply-btn" onclick="sendQuickReply('Safety tips')">🛡️ Safety Tips</button>
+                            <button class="quick-reply-btn" onclick="sendQuickReply('How to report an incident?')"><i class="fas fa-file-alt"></i> Report Incident</button>
+                            <button class="quick-reply-btn" onclick="sendQuickReply('What is SOS Emergency?')"><i class="fas fa-exclamation-triangle"></i> SOS Emergency</button>
+                            <button class="quick-reply-btn" onclick="sendQuickReply('Emergency numbers')"><i class="fas fa-phone-alt"></i> Emergency Numbers</button>
+                            <button class="quick-reply-btn" onclick="sendQuickReply('Safety tips')"><i class="fas fa-shield-alt"></i> Safety Tips</button>
                         </div>
                     </div>
                 </div>
@@ -1426,29 +1604,72 @@
         </div>
     </div>
 
-    <!-- SOS Modal - Enhanced Version -->
+    <!-- SOS Modal - Professional UI -->
     <div id="sosModal" class="sos-modal">
         <div class="sos-modal-content">
-            <div class="sos-warning-icon">
-                <i class="fas fa-exclamation-triangle"></i>
+
+            <!-- Header band -->
+            <div class="sos-modal-header">
+                <div class="sos-header-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <span class="sos-header-label">EMERGENCY ALERT</span>
             </div>
-            <h3> EMERGENCY SOS ALERT </h3>
-            <p>You are about to send an <strong>EMERGENCY SOS</strong> alert. This will:</p>
-            <ul style="text-align: left; margin: 15px 0; padding-left: 20px; color: #6B7280; font-size: 13px;">
-                <li>✓ Notify emergency services immediately</li>
-                <li>✓ Create a CRITICAL priority incident</li>
-                <li>✓ Alert all departments in real-time</li>
-                <li>✓ Flag your report for immediate action</li>
-            </ul>
-            <p style="color: #DC2626; font-weight: 500;">Only use this in genuine emergencies!</p>
-            <div class="sos-buttons">
+
+            <!-- Body -->
+            <div class="sos-modal-body">
+                <h3 class="sos-modal-title">Send SOS Alert?</h3>
+                <p class="sos-modal-subtitle">
+                    This will immediately notify all emergency departments and create a
+                    <strong>Critical</strong> priority incident on your behalf.
+                </p>
+
+                <!-- Feature list -->
+                <div class="sos-feature-list">
+                    <div class="sos-feature-item">
+                        <div class="sos-feature-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <span>Notifies emergency services instantly</span>
+                    </div>
+                    <div class="sos-feature-item">
+                        <div class="sos-feature-icon">
+                            <i class="fas fa-flag"></i>
+                        </div>
+                        <span>Creates a Critical priority incident</span>
+                    </div>
+                    <div class="sos-feature-item">
+                        <div class="sos-feature-icon">
+                            <i class="fas fa-broadcast-tower"></i>
+                        </div>
+                        <span>Alerts all departments in real-time</span>
+                    </div>
+                    <div class="sos-feature-item">
+                        <div class="sos-feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <span>Flags your report for immediate action</span>
+                    </div>
+                </div>
+
+                <!-- Warning note -->
+                <div class="sos-warning-note">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Only use this in genuine emergencies</span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="sos-modal-actions">
                 <button class="sos-confirm" id="confirmSos">
-                    <i class="fas fa-exclamation-triangle"></i> Send SOS Alert
+                    <i class="fas fa-paper-plane"></i>
+                    Send SOS Alert
                 </button>
                 <button class="sos-cancel" id="cancelSos">
-                    <i class="fas fa-times"></i> Cancel
+                    Cancel
                 </button>
             </div>
+
         </div>
     </div>
 
@@ -1722,7 +1943,7 @@
             return div.innerHTML;
         }
 
-        // Add quick replies after bot response
+        // CHANGE 1 (continued): addQuickRepliesAfterResponse uses Font Awesome icons
         function addQuickRepliesAfterResponse() {
             const messagesContainer = document.getElementById('chatMessages');
             const quickRepliesDiv = document.createElement('div');
@@ -1730,12 +1951,12 @@
             quickRepliesDiv.innerHTML = `
                 <div class="message-content">
                     <div class="quick-replies">
-                        <button class="quick-reply-btn" onclick="sendQuickReply('How to report an incident?')">📝 Report Incident</button>
-                        <button class="quick-reply-btn" onclick="sendQuickReply('What is SOS Emergency?')">🚨 SOS Emergency</button>
-                        <button class="quick-reply-btn" onclick="sendQuickReply('Emergency numbers')">📞 Emergency Numbers</button>
-                        <button class="quick-reply-btn" onclick="sendQuickReply('Safety tips')">🛡️ Safety Tips</button>
-                        <button class="quick-reply-btn" onclick="sendQuickReply('My Reports')">📋 My Reports</button>
-                        <button class="quick-reply-btn" onclick="sendQuickReply('Download Reports')">📥 Download Reports</button>
+                        <button class="quick-reply-btn" onclick="sendQuickReply('How to report an incident?')"><i class="fas fa-file-alt"></i> Report Incident</button>
+                        <button class="quick-reply-btn" onclick="sendQuickReply('What is SOS Emergency?')"><i class="fas fa-exclamation-triangle"></i> SOS Emergency</button>
+                        <button class="quick-reply-btn" onclick="sendQuickReply('Emergency numbers')"><i class="fas fa-phone-alt"></i> Emergency Numbers</button>
+                        <button class="quick-reply-btn" onclick="sendQuickReply('Safety tips')"><i class="fas fa-shield-alt"></i> Safety Tips</button>
+                        <button class="quick-reply-btn" onclick="sendQuickReply('My Reports')"><i class="fas fa-file-alt"></i> My Reports</button>
+                        <button class="quick-reply-btn" onclick="sendQuickReply('Download Reports')"><i class="fas fa-download"></i> Download Reports</button>
                     </div>
                 </div>
             `;
@@ -1743,106 +1964,106 @@
             scrollToBottom();
         }
 
-        // Get bot response based on user input
+        // CHANGE 2: getBotResponse — all emojis removed, professional clean text responses
         function getBotResponse(message) {
             const msg = message.toLowerCase().trim();
 
             // Greetings
             if (msg.match(/^(hello|hi|hey|greetings|good morning|good afternoon|good evening)$/)) {
-                return "👋 Hello! I'm your City Assistant. How can I help you today?";
+                return "Hello! I am your City Assistant. How can I help you today?";
             }
 
             // How are you
             if (msg.includes('how are you')) {
-                return "I'm doing great, thank you for asking! Ready to assist you with any questions about incident reporting or emergency procedures.";
+                return "I am doing great, thank you for asking! Ready to assist you with any questions about incident reporting or emergency procedures.";
             }
 
             // Thank you
             if (msg.includes('thank') || msg.includes('thanks')) {
-                return "You're welcome! Stay safe and feel free to ask if you need any more help. 👍";
+                return "You are welcome! Stay safe and feel free to ask if you need any more help.";
             }
 
             // Report incident
             if (msg.includes('report') && (msg.includes('incident') || msg.includes('how'))) {
-                return "📝 **How to Report an Incident:**\n\n" +
-                       "1️⃣ Go to your Dashboard\n" +
-                       "2️⃣ Click on 'Report New Incident' button\n" +
-                       "3️⃣ Fill in the Title, Description, and Location\n" +
-                       "4️⃣ Select Severity (Critical/High/Medium/Low)\n" +
-                       "5️⃣ Click 'Submit Incident'\n\n" +
-                       "Your report will be instantly sent to the appropriate department!";
+                return "How to Report an Incident:\n\n" +
+                       "1. Go to your Dashboard\n" +
+                       "2. Click on 'Report New Incident' button\n" +
+                       "3. Fill in the Title, Description, and Location\n" +
+                       "4. Select Severity (Critical / High / Medium / Low)\n" +
+                       "5. Click 'Submit Incident'\n\n" +
+                       "Your report will be instantly sent to the appropriate department.";
             }
 
             // SOS / Emergency
             if (msg.includes('sos') || (msg.includes('emergency') && !msg.includes('numbers'))) {
-                return "🚨 **SOS Emergency Feature:**\n\n" +
+                return "SOS Emergency Feature:\n\n" +
                        "• One-click emergency alert for life-threatening situations\n" +
-                       "• Creates a CRITICAL priority incident\n" +
+                       "• Creates a CRITICAL priority incident automatically\n" +
                        "• Notifies all emergency departments immediately\n" +
-                       "• Use only for genuine emergencies!\n\n" +
-                       "⚠️ To use: Click 'SOS Emergency' in the sidebar → Confirm → Alert sent!";
+                       "• Use only for genuine emergencies\n\n" +
+                       "To use: Click 'SOS Emergency' in the sidebar, confirm the dialog, and your alert will be sent.";
             }
 
             // Emergency numbers
             if (msg.includes('emergency numbers') || msg.includes('helpline') || msg.includes('contact')) {
-                return "📞 **Emergency Helplines:**\n\n" +
-                       "• 🚑 Rescue 1122\n" +
-                       "• 👮 Police 15\n" +
-                       "• 🔥 Fire 16\n" +
-                       "• 🚑 Ambulance 115\n\n" +
-                       "Save these numbers for emergencies!";
+                return "Emergency Helplines:\n\n" +
+                       "• Rescue: 1122\n" +
+                       "• Police: 15\n" +
+                       "• Fire Brigade: 16\n" +
+                       "• Ambulance: 115\n\n" +
+                       "Please save these numbers for use in emergencies.";
             }
 
             // Safety tips
             if (msg.includes('safety') || msg.includes('tip')) {
-                return "🛡️ **Safety Tips:**\n\n" +
-                       "• Always share your exact location when reporting\n" +
-                       "• Take photos/videos of the incident for evidence\n" +
-                       "• Keep your CNIC ready for verification\n" +
-                       "• Learn basic first aid\n" +
-                       "• Stay calm and provide accurate information\n\n" +
-                       "For more tips, click 'Safety Tips' in the sidebar!";
+                return "Safety Tips:\n\n" +
+                       "• Always share your exact location when reporting an incident\n" +
+                       "• Take photos or videos of the incident as evidence\n" +
+                       "• Keep your CNIC ready for identity verification\n" +
+                       "• Learn basic first aid procedures\n" +
+                       "• Stay calm and provide accurate, detailed information\n\n" +
+                       "For more tips, click 'Safety Tips' in the sidebar.";
             }
 
             // My Reports
             if (msg.includes('my reports') || (msg.includes('view') && msg.includes('report'))) {
-                return "📋 **My Reports Feature:**\n\n" +
-                       "• Click 'My Reports' in the sidebar to see all your incidents\n" +
-                       "• Track the status of each report (Open/In Progress/Resolved)\n" +
-                       "• Click 'View Details' to see complete information\n" +
-                       "• You can also download reports as PDF or CSV from the Reports page";
+                return "My Reports Feature:\n\n" +
+                       "• Click 'My Reports' in the sidebar to view all your submitted incidents\n" +
+                       "• Track the status of each report: Open, In Progress, or Resolved\n" +
+                       "• Click 'View Details' to see complete information for any incident\n" +
+                       "• Download reports as PDF or CSV from the Reports page";
             }
 
             // Download reports
             if (msg.includes('download') && (msg.includes('report') || msg.includes('pdf') || msg.includes('csv'))) {
-                return "📥 **Download Reports:**\n\n" +
-                       "1️⃣ Click 'Reports (PDF)' in the sidebar\n" +
-                       "2️⃣ Select incidents using checkboxes\n" +
-                       "3️⃣ Click 'Download Selected as PDF' or 'Download Selected as CSV'\n" +
-                       "4️⃣ Your report will be downloaded automatically!";
+                return "Download Reports:\n\n" +
+                       "1. Click 'Reports (PDF)' in the sidebar\n" +
+                       "2. Select incidents using the checkboxes\n" +
+                       "3. Click 'Download Selected as PDF' or 'Download Selected as CSV'\n" +
+                       "4. Your file will be downloaded automatically";
             }
 
             // Statistics
             if (msg.includes('statistics') || msg.includes('chart') || msg.includes('graph')) {
-                return "📊 **Statistics Page:**\n\n" +
+                return "Statistics Page:\n\n" +
                        "• View incident trends over the last 7 days\n" +
-                       "• See severity distribution (Critical/High/Medium/Low)\n" +
-                       "• Track status distribution (Open/In Progress/Resolved)\n\n" +
-                       "Click 'Statistics' in the sidebar to see your analytics!";
+                       "• See severity distribution: Critical, High, Medium, and Low\n" +
+                       "• Track status distribution: Open, In Progress, and Resolved\n\n" +
+                       "Click 'Statistics' in the sidebar to view your analytics.";
             }
 
             // Notifications
             if (msg.includes('notification')) {
-                return "🔔 **Notifications:**\n\n" +
-                       "• Get real-time updates when incident status changes\n" +
-                       "• Click 'Notifications' in the sidebar to view all\n" +
-                       "• Each notification shows the incident title and status change\n\n" +
-                       "You'll be notified when your incident moves to 'In Progress' or 'Resolved'!";
+                return "Notifications:\n\n" +
+                       "• Receive real-time updates whenever an incident status changes\n" +
+                       "• Click 'Notifications' in the sidebar to view all updates\n" +
+                       "• Each notification displays the incident title and the status change\n\n" +
+                       "You will be notified when your incident moves to 'In Progress' or 'Resolved'.";
             }
 
             // Profile
             if (msg.includes('profile') || msg.includes('update profile')) {
-                return "👤 **Profile Management:**\n\n" +
+                return "Profile Management:\n\n" +
                        "• Click 'My Profile' in the sidebar\n" +
                        "• Update your name and phone number\n" +
                        "• Your changes will be saved immediately";
@@ -1850,28 +2071,28 @@
 
             // What can you do / Help
             if (msg.includes('help') || msg.includes('what can you do') || msg.includes('capabilities')) {
-                return "🤖 **I can help you with:**\n\n" +
-                       "• 📝 How to report an incident\n" +
-                       "• 🚨 SOS Emergency feature explanation\n" +
-                       "• 📞 Emergency helpline numbers\n" +
-                       "• 🛡️ Safety tips and guidelines\n" +
-                       "• 📋 Viewing and tracking your reports\n" +
-                       "• 📥 Downloading reports as PDF/CSV\n" +
-                       "• 📊 Understanding statistics charts\n" +
-                       "• 🔔 Notification system\n\n" +
+                return "I can help you with:\n\n" +
+                       "• How to report an incident\n" +
+                       "• SOS Emergency feature explanation\n" +
+                       "• Emergency helpline numbers\n" +
+                       "• Safety tips and guidelines\n" +
+                       "• Viewing and tracking your reports\n" +
+                       "• Downloading reports as PDF or CSV\n" +
+                       "• Understanding statistics and charts\n" +
+                       "• Notification system overview\n\n" +
                        "What would you like to know?";
             }
 
             // About the system
             if (msg.includes('what is') && (msg.includes('smart civic') || msg.includes('this system'))) {
-                return "🏙️ **Smart Civic Alert System:**\n\n" +
+                return "Smart Civic Alert System:\n\n" +
                        "An AI-powered city operations dashboard for smart city management. " +
                        "Citizens can report incidents, send SOS alerts, track report status, " +
-                       "and download reports - all in one place!";
+                       "and download reports — all in one place.";
             }
 
             // Default response for unknown queries
-            return "🤔 I'm not sure about that. Here's what I can help with:\n\n" +
+            return "I am not sure about that. Here is what I can help with:\n\n" +
                    "• Report an incident\n" +
                    "• SOS Emergency\n" +
                    "• Emergency numbers\n" +
@@ -1880,7 +2101,7 @@
                    "• Download reports\n" +
                    "• Statistics\n" +
                    "• Notifications\n\n" +
-                   "Type 'help' to see all options!";
+                   "Type 'help' to see all available options.";
         }
 
                 // ==================== TOAST NOTIFICATION FOR SOS ====================
@@ -1941,9 +2162,9 @@
             // Check if SOS was just sent
             @if (TempData["SOSSuccess"] != null && TempData["SOSSuccess"].ToString() == "true")
             {
-                    <text>
-                    showToast('@TempData["SOSMessage"]', 'success');
-                    </text>
+                        <text>
+                        showToast('@TempData["SOSMessage"]', 'success');
+                        </text>
             }
         });
     </script>
