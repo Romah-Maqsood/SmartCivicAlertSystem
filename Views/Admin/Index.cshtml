@@ -14,6 +14,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Leaflet for map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -370,7 +373,7 @@
         .ai-loading-box { display:none; align-items:center; gap:12px; margin-top:16px; padding:14px 16px; background:#F5F3FF; border:1px solid #DDD6FE; border-radius:12px; }
         .ai-loading-box span { font-size:13px; font-weight:600; color:#5B21B6; }
         .ai-loading-box small { display:block; font-size:11px; color:#7C3AED; margin-top:2px; }
-        .ai-result-box { margin-top:16px; background:#F0F7FF; border:1px solid #BFDBFE; border-radius:12px; overflow:hidden; } /* display controlled by inline style */
+        .ai-result-box { margin-top:16px; background:#F0F7FF; border:1px solid #BFDBFE; border-radius:12px; overflow:hidden; }
         .ai-result-header { display:flex; align-items:center; justify-content:space-between; padding:11px 16px; border-bottom:1px solid #DBEAFE; background:#EFF6FF; }
         .ai-result-header-left { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; color:#1E40AF; text-transform:uppercase; letter-spacing:.5px; }
         .ai-result-header-left i { color:#7C3AED; font-size:13px; }
@@ -411,6 +414,96 @@
             .notif-read-toggle .toggle-option{padding:3px 8px;}
         }
         @@media(max-width:480px){.stats-grid{grid-template-columns:1fr;}}
+
+        /* ===== MAP MODAL STYLES ===== */
+        .map-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .map-modal.active { display: flex; }
+        .map-modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 24px 48px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        .map-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            background: white;
+        }
+        .map-modal-header h4 {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+        .map-modal-header h4 i { color: var(--red); }
+        .map-modal-close {
+            background: var(--bg-page);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .map-modal-close:hover {
+            background: var(--red-light);
+            border-color: var(--red);
+            color: var(--red);
+        }
+        #locationMap { height: 450px; width: 100%; }
+        .map-modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            border-top: 1px solid var(--border);
+            background: white;
+        }
+        .btn-google-maps {
+            background: var(--blue);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-google-maps:hover { background: var(--blue-dark); }
+
+        /* Location clickable link */
+        .location-link {
+            color: var(--blue);
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+        .location-link:hover {
+            color: var(--blue-dark);
+        }
     </style>
 </head>
 <body>
@@ -895,6 +988,23 @@
     </div>
 </div>
 
+<!-- MAP MODAL -->
+<div id="mapModal" class="map-modal">
+    <div class="map-modal-content">
+        <div class="map-modal-header">
+            <h4><i class="fas fa-map-marker-alt"></i> Incident Location: <span id="mapLocationTitle"></span></h4>
+            <button class="map-modal-close" onclick="closeMapModal()">&times;</button>
+        </div>
+        <div id="locationMap"></div>
+        <div class="map-modal-footer">
+            <p><i class="fas fa-location-dot"></i> <span id="mapLocationText"></span></p>
+            <button onclick="openInGoogleMaps()" class="btn-google-maps">
+                <i class="fab fa-google"></i> Open in Google Maps
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     const ACTIVITY_KEY = 'sc_admin_activity';
     const ACTIVITY_ICONS = { login:'fa-sign-in-alt', edit:'fa-edit', create:'fa-plus-circle', delete:'fa-trash', report:'fa-file-alt', view:'fa-eye', filter:'fa-filter' };
@@ -992,7 +1102,6 @@
     function showSection(section) {
         document.querySelectorAll('.nav-item').forEach(item => { item.classList.toggle('active', item.getAttribute('data-page') === section); });
         ['dashboard', 'incidents', 'operators', 'citizens', 'analytics', 'reports', 'notifications'].forEach(s => { document.getElementById(s + 'Section').classList.toggle('hide', s !== section); });
-        // Subtitle is now static – no need to change it.
         if (section === 'incidents') { loadAllIncidents(); logActivity('view', 'Viewed All Incidents', 'Incidents Section'); }
         if (section === 'operators') { loadOperators(); logActivity('view', 'Viewed Operators', 'Operators Section'); }
         if (section === 'citizens') { loadCitizens(); logActivity('view', 'Viewed Citizens', 'Citizens Section'); }
@@ -1026,7 +1135,28 @@
         const params = []; if (status) params.push(`status=${encodeURIComponent(status)}`); if (severity) params.push(`severity=${encodeURIComponent(severity)}`); if (params.length) url += '?' + params.join('&');
         const tbody = document.getElementById('allIncidentsTable');
         tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>';
-        try { const res = await fetch(url, { credentials: 'same-origin' }); const incidents = await res.json(); tbody.innerHTML = ''; if (!incidents.length) { tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-folder-open"></i><p>No incidents found</p></div></td></tr>'; return; } incidents.forEach(i => { const row = tbody.insertRow(); row.innerHTML = `<td><strong>${escapeHtml(i.title)}</strong></td><td class="td-muted">${escapeHtml(i.location)}</td><td class="td-muted">${i.department || '--'}</td><td><span class="badge badge-${i.severity?.toLowerCase()}">${i.severity}</span></td><td class="col-status"><span class="status-badge status-${i.status?.toLowerCase().replace(/ /g, '')}">${i.status}</span></td><td class="td-muted">${new Date(i.reportedAt).toLocaleString()}</td><td><button class="btn-view" onclick="viewIncidentDetail('${i.id}')"><i class="fas fa-eye"></i> View</button></td>`; }); if (status || severity) logActivity('filter', `Filtered incidents (${incidents.length} results)`, 'Status: ' + (status || 'All') + ' · Severity: ' + (severity || 'All')); } catch (err) { console.error(err); }
+        try {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            const incidents = await res.json();
+            tbody.innerHTML = '';
+            if (!incidents.length) {
+                tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-folder-open"></i><p>No incidents found</p></div></td></tr>';
+                return;
+            }
+            incidents.forEach(i => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><strong>${escapeHtml(i.title)}</strong></td>
+                    <td class="td-muted">${escapeHtml(i.location)}</td>
+                    <td class="td-muted">${i.department || '--'}</td>
+                    <td><span class="badge badge-${i.severity?.toLowerCase()}">${i.severity}</span></td>
+                    <td class="col-status"><span class="status-badge status-${i.status?.toLowerCase().replace(/ /g, '')}">${i.status}</span></td>
+                    <td class="td-muted">${new Date(i.reportedAt).toLocaleString()}</td>
+                    <td><button class="btn-view" onclick="viewIncidentDetail('${i.id}')"><i class="fas fa-eye"></i> View</button></td>
+                `;
+            });
+            if (status || severity) logActivity('filter', `Filtered incidents (${incidents.length} results)`, 'Status: ' + (status || 'All') + ' · Severity: ' + (severity || 'All'));
+        } catch (err) { console.error(err); }
     }
     function clearFilters() { document.getElementById('statusFilter').value = ''; document.getElementById('severityFilter').value = ''; loadAllIncidents(); }
     function escapeHtml(text) { return text ? String(text).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])) : ''; }
@@ -1052,7 +1182,6 @@
     function showConfirmModal(message, entityName, onConfirm) { document.getElementById('confirmMessage').innerText = message; const chip = document.getElementById('deleteNameChip'); if (entityName) { chip.innerText = entityName; chip.style.display = 'inline-block'; } else { chip.style.display = 'none'; } confirmCallback = onConfirm; document.getElementById('confirmModal').classList.add('active'); }
     function closeConfirmModal() { document.getElementById('confirmModal').classList.remove('active'); confirmCallback = null; }
     document.getElementById('confirmDeleteBtn').addEventListener('click', () => { if (confirmCallback) { confirmCallback(); closeConfirmModal(); } });
-    window.onclick = e => { if (e.target.classList.contains('modal')) { e.target.classList.remove('active'); if (e.target.id === 'confirmModal') closeConfirmModal(); } if (e.target.classList.contains('profile-modal-overlay')) e.target.classList.remove('active'); };
 
     function loadAnalytics() {
         fetch('/Admin/GetAnalyticsJson', { credentials: 'same-origin' }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }).then(data => {
@@ -1171,6 +1300,7 @@
         }
     }
 
+    // ========== INCIDENT DETAIL WITH CLICKABLE LOCATION ==========
     async function viewIncidentDetail(incidentId) {
         const modal = document.getElementById('incidentDetailModal');
         const content = document.getElementById('incidentDetailModalContent');
@@ -1180,18 +1310,139 @@
             const res = await fetch(`/Admin/GetIncidentDetailJson?id=${incidentId}`, { credentials: 'same-origin' });
             if (!res.ok) throw new Error('Incident not found');
             const inc = await res.json();
-            const sevClass = `badge-${inc.severity.toLowerCase()}`, statClass = `status-${inc.status.toLowerCase().replace(' ', '')}`, statIcon = inc.status === 'Resolved' ? 'fa-check-circle' : 'fa-hourglass-half';
+            const sevClass = `badge-${inc.severity.toLowerCase()}`;
+            const statClass = `status-${inc.status.toLowerCase().replace(' ', '')}`;
+            const statIcon = inc.status === 'Resolved' ? 'fa-check-circle' : 'fa-hourglass-half';
             let citizenHtml = '';
-            if (inc.citizen) { citizenHtml = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;"><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-user"></i> Name</div><div class="incident-detail-value">${escapeHtml(inc.citizen.name)}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-envelope"></i> Email</div><div class="incident-detail-value">${escapeHtml(inc.citizen.email)}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-phone"></i> Phone</div><div class="incident-detail-value">${escapeHtml(inc.citizen.phone || 'N/A')}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-id-badge"></i> Role</div><div class="incident-detail-value">${escapeHtml(inc.citizen.role)}</div></div></div>`; }
-            else { citizenHtml = '<div style="color:#9CA3AF;font-style:italic;font-size:13px;display:flex;align-items:center;gap:6px;padding:10px 0;"><i class="fas fa-user-slash"></i> Unknown -- reported without login</div>'; }
-            content.innerHTML = `<div style="margin-bottom:16px;"><div style="font-size:18px;font-weight:700;color:#374151;margin-bottom:8px;padding-right:30px;">${escapeHtml(inc.title)}</div><div style="display:flex;gap:7px;flex-wrap:wrap;"><span class="badge ${sevClass}">${escapeHtml(inc.severity)}</span><span class="status-badge ${statClass}"><i class="fas ${statIcon}" style="font-size:10px;"></i> ${escapeHtml(inc.status)}</span></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;"><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-map-marker-alt"></i> Location</div><div class="incident-detail-value">${escapeHtml(inc.location || 'Not specified')}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-building"></i> Department</div><div class="incident-detail-value">${escapeHtml(inc.department || 'Unassigned')}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-calendar-alt"></i> Reported At</div><div class="incident-detail-value">${new Date(inc.reportedAt).toLocaleString()}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-clock"></i> Last Updated</div><div class="incident-detail-value">${new Date(inc.updatedAt).toLocaleString()}</div></div><div class="incident-info-card" style="grid-column:span 2;"><div class="incident-detail-label"><i class="fas fa-align-left"></i> Description</div><div class="incident-detail-value" style="white-space:pre-wrap;font-weight:400;color:#6B7280;">${escapeHtml(inc.description || 'No description provided.')}</div></div></div><div style="border-top:1px solid #E5E7EB;padding-top:14px;"><div class="incident-detail-label" style="margin-bottom:4px;"><i class="fas fa-user"></i> Reported By</div>${citizenHtml}</div>`;
+            if (inc.citizen) {
+                citizenHtml = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;"><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-user"></i> Name</div><div class="incident-detail-value">${escapeHtml(inc.citizen.name)}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-envelope"></i> Email</div><div class="incident-detail-value">${escapeHtml(inc.citizen.email)}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-phone"></i> Phone</div><div class="incident-detail-value">${escapeHtml(inc.citizen.phone || 'N/A')}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-id-badge"></i> Role</div><div class="incident-detail-value">${escapeHtml(inc.citizen.role)}</div></div></div>`;
+            } else {
+                citizenHtml = '<div style="color:#9CA3AF;font-style:italic;font-size:13px;display:flex;align-items:center;gap:6px;padding:10px 0;"><i class="fas fa-user-slash"></i> Unknown -- reported without login</div>';
+            }
+            const location = inc.location || 'Not specified';
+            // Make location clickable — opens map modal
+            content.innerHTML = `
+                <div style="margin-bottom:16px;">
+                    <div style="font-size:18px;font-weight:700;color:#374151;margin-bottom:8px;padding-right:30px;">${escapeHtml(inc.title)}</div>
+                    <div style="display:flex;gap:7px;flex-wrap:wrap;">
+                        <span class="badge ${sevClass}">${escapeHtml(inc.severity)}</span>
+                        <span class="status-badge ${statClass}"><i class="fas ${statIcon}" style="font-size:10px;"></i> ${escapeHtml(inc.status)}</span>
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+                    <div class="incident-info-card">
+                        <div class="incident-detail-label"><i class="fas fa-map-marker-alt"></i> Location</div>
+                        <div class="incident-detail-value">
+                            <span class="location-link" onclick="openMapModal('${escapeHtml(location).replace(/'/g, "\\'")}', '${escapeHtml(inc.title).replace(/'/g, "\\'")}')">${escapeHtml(location)}</span>
+                        </div>
+                    </div>
+                    <div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-building"></i> Department</div><div class="incident-detail-value">${escapeHtml(inc.department || 'Unassigned')}</div></div>
+                    <div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-calendar-alt"></i> Reported At</div><div class="incident-detail-value">${new Date(inc.reportedAt).toLocaleString()}</div></div>
+                    <div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-clock"></i> Last Updated</div><div class="incident-detail-value">${new Date(inc.updatedAt).toLocaleString()}</div></div>
+                    <div class="incident-info-card" style="grid-column:span 2;"><div class="incident-detail-label"><i class="fas fa-align-left"></i> Description</div><div class="incident-detail-value" style="white-space:pre-wrap;font-weight:400;color:#6B7280;">${escapeHtml(inc.description || 'No description provided.')}</div></div>
+                </div>
+                <div style="border-top:1px solid #E5E7EB;padding-top:14px;">
+                    <div class="incident-detail-label" style="margin-bottom:4px;"><i class="fas fa-user"></i> Reported By</div>
+                    ${citizenHtml}
+                </div>
+            `;
             logActivity('view', 'Viewed Incident: ' + inc.title, 'Incident #' + incidentId);
         } catch (err) {
             content.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#DC2626;"><i class="fas fa-exclamation-circle" style="font-size:24px;display:block;margin-bottom:10px;"></i>Could not load incident details.</div>';
             console.error(err);
         }
     }
-    function closeIncidentDetailModal() { document.getElementById('incidentDetailModal').classList.remove('active'); }
+
+    function closeIncidentDetailModal() {
+        document.getElementById('incidentDetailModal').classList.remove('active');
+    }
+
+    // ========== MAP MODAL FUNCTIONS ==========
+    let currentMap = null;
+    let currentMapLocation = '';
+
+    function openMapModal(location, title) {
+        if (!location || location.trim() === '') {
+            showToast('No location available for this incident.', 'error');
+            return;
+        }
+        currentMapLocation = location;
+        document.getElementById('mapLocationTitle').textContent = title || 'Incident';
+        document.getElementById('mapLocationText').textContent = location;
+        document.getElementById('mapModal').classList.add('active');
+        setTimeout(initLocationMap, 100);
+    }
+
+    function closeMapModal() {
+        document.getElementById('mapModal').classList.remove('active');
+        if (currentMap) {
+            currentMap.remove();
+            currentMap = null;
+        }
+    }
+
+    function openInGoogleMaps() {
+        if (currentMapLocation) {
+            window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(currentMapLocation), '_blank');
+        }
+    }
+
+    function initLocationMap() {
+        const mapContainer = document.getElementById('locationMap');
+        mapContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#6B7280;"><i class="fas fa-spinner fa-spin"></i> Loading map...</div>';
+
+        if (currentMap) currentMap.remove();
+
+        const defaultLat = 24.8607, defaultLng = 67.0011;
+        currentMap = L.map('locationMap').setView([defaultLat, defaultLng], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(currentMap);
+
+        fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(currentMapLocation + ', Pakistan') + '&limit=1')
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lng = parseFloat(data[0].lon);
+                    currentMap.setView([lat, lng], 16);
+                    const redIcon = L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    });
+                    L.marker([lat, lng], { icon: redIcon })
+                        .addTo(currentMap)
+                        .bindPopup('<b>📍 ' + escapeHtml(document.getElementById('mapLocationTitle').textContent) + '</b><br/>' + escapeHtml(currentMapLocation))
+                        .openPopup();
+                } else {
+                    L.popup()
+                        .setLatLng([defaultLat, defaultLng])
+                        .setContent('<div style="text-align:center;"><i class="fas fa-map-marker-alt" style="font-size:24px;color:#DC2626;"></i><br/><b>Location:</b> ' + escapeHtml(currentMapLocation) + '<br/><i>Click below to open in Google Maps</i></div>')
+                        .openOn(currentMap);
+                }
+            })
+            .catch(() => {
+                console.log('Geocoding failed, showing default view');
+            });
+    }
+
+    // Close map modal when clicking outside the modal content
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('mapModal')) {
+            closeMapModal();
+        }
+        if (event.target.classList.contains('modal')) {
+            event.target.classList.remove('active');
+            if (event.target.id === 'confirmModal') closeConfirmModal();
+        }
+        if (event.target.classList.contains('profile-modal-overlay')) event.target.classList.remove('active');
+    };
 
     document.addEventListener('DOMContentLoaded', () => {
         loadNotifications();
