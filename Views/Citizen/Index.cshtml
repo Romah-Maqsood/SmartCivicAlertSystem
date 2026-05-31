@@ -1406,6 +1406,71 @@
                 background: #E2E8F0;
                 color: #374151;
             }
+        /* SOS Location Input Styles */
+        .sos-location-group {
+            margin: 20px 0 16px 0;
+        }
+
+        .sos-location-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1A1F36;
+            margin-bottom: 8px;
+        }
+
+            .sos-location-label i {
+                color: #DC2626;
+                font-size: 13px;
+            }
+
+        .required-star {
+            color: #DC2626;
+            margin-left: 2px;
+        }
+
+        .sos-location-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #EAECF0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            margin-bottom: 10px;
+        }
+
+            .sos-location-input:focus {
+                outline: none;
+                border-color: #DC2626;
+                box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+            }
+
+        .sos-current-location-btn {
+            width: 100%;
+            background: #F1F5F9;
+            border: 1px solid #EAECF0;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #2563EB;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+            .sos-current-location-btn:hover {
+                background: #E2E8F0;
+                border-color: #2563EB;
+            }
+
+
     </style>
 </head>
 <body>
@@ -1604,52 +1669,34 @@
         </div>
     </div>
 
-    <!-- SOS Modal - Professional UI -->
+    <!-- SOS Modal - Simplified with Location Input -->
     <div id="sosModal" class="sos-modal">
         <div class="sos-modal-content">
-
-            <!-- Header band -->
+            <!-- Header -->
             <div class="sos-modal-header">
                 <div class="sos-header-icon">
-                    <i class="fas fa-shield-alt"></i>
+                    <i class="fas fa-exclamation-triangle"></i>
                 </div>
-                <span class="sos-header-label">EMERGENCY ALERT</span>
+                <span class="sos-header-label">EMERGENCY SOS</span>
             </div>
 
             <!-- Body -->
             <div class="sos-modal-body">
-                <h3 class="sos-modal-title">Send SOS Alert?</h3>
+                <h3 class="sos-modal-title">Send SOS Alert</h3>
                 <p class="sos-modal-subtitle">
-                    This will immediately notify all emergency departments and create a
-                    <strong>Critical</strong> priority incident on your behalf.
+                    This will immediately notify the <strong>Rescue Department</strong> and create a
+                    <strong>Critical</strong> priority incident.
                 </p>
 
-                <!-- Feature list -->
-                <div class="sos-feature-list">
-                    <div class="sos-feature-item">
-                        <div class="sos-feature-icon">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <span>Notifies emergency services instantly</span>
-                    </div>
-                    <div class="sos-feature-item">
-                        <div class="sos-feature-icon">
-                            <i class="fas fa-flag"></i>
-                        </div>
-                        <span>Creates a Critical priority incident</span>
-                    </div>
-                    <div class="sos-feature-item">
-                        <div class="sos-feature-icon">
-                            <i class="fas fa-broadcast-tower"></i>
-                        </div>
-                        <span>Alerts all departments in real-time</span>
-                    </div>
-                    <div class="sos-feature-item">
-                        <div class="sos-feature-icon">
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                        <span>Flags your report for immediate action</span>
-                    </div>
+                <!-- Location Input Field -->
+                <div class="sos-location-group">
+                    <label class="sos-location-label">
+                        <i class="fas fa-location-dot"></i> Emergency Location <span class="required-star">*</span>
+                    </label>
+                    <input type="text" id="sosLocation" class="sos-location-input" placeholder="e.g., Shahrah-e-Faisal, Karachi" />
+                    <button type="button" id="getCurrentLocationBtn" class="sos-current-location-btn">
+                        <i class="fas fa-crosshairs"></i> Use My Current Location
+                    </button>
                 </div>
 
                 <!-- Warning note -->
@@ -1662,14 +1709,12 @@
             <!-- Actions -->
             <div class="sos-modal-actions">
                 <button class="sos-confirm" id="confirmSos">
-                    <i class="fas fa-paper-plane"></i>
-                    Send SOS Alert
+                    <i class="fas fa-paper-plane"></i> Send SOS Alert
                 </button>
                 <button class="sos-cancel" id="cancelSos">
                     Cancel
                 </button>
             </div>
-
         </div>
     </div>
 
@@ -1825,10 +1870,119 @@
         }
         function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
 
+                // SOS Modal functionality with location
         const sosModal = document.getElementById('sosModal');
-        document.getElementById('sosButton').addEventListener('click', e => { e.preventDefault(); sosModal.classList.add('show'); });
+        const sosLocationInput = document.getElementById('sosLocation');
+        const getCurrentLocationBtn = document.getElementById('getCurrentLocationBtn');
+
+        // Open SOS modal
+        document.getElementById('sosButton').addEventListener('click', e => {
+            e.preventDefault();
+            sosLocationInput.value = ''; // Clear previous location
+            sosModal.classList.add('show');
+        });
+
+        // Close modal
         document.getElementById('cancelSos').addEventListener('click', () => sosModal.classList.remove('show'));
-        document.getElementById('confirmSos').addEventListener('click', () => window.location.href = '/Citizen/CreateEmergency');
+
+        // Get Current Location using browser geolocation
+        if (getCurrentLocationBtn) {
+            getCurrentLocationBtn.addEventListener('click', function() {
+                if (!navigator.geolocation) {
+                    showToast('Geolocation is not supported by your browser', 'warning');
+                    return;
+                }
+
+                getCurrentLocationBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Getting location...';
+                getCurrentLocationBtn.disabled = true;
+
+                navigator.geolocation.getCurrentPosition(
+                    async function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+
+                        // Reverse geocode to get address
+                        try {
+                            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+                            const data = await response.json();
+                            const address = data.display_name || `${lat}, ${lng}`;
+                            sosLocationInput.value = address;
+                            showToast('Location detected successfully!', 'success');
+                        } catch (error) {
+                            sosLocationInput.value = `${lat}, ${lng}`;
+                            showToast('Location coordinates obtained', 'success');
+                        }
+
+                        getCurrentLocationBtn.innerHTML = '<i class="fas fa-crosshairs"></i> Use My Current Location';
+                        getCurrentLocationBtn.disabled = false;
+                    },
+                    function(error) {
+                        let errorMessage = 'Unable to get your location. ';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage += 'Please allow location access.';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage += 'Location information unavailable.';
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage += 'Location request timed out.';
+                                break;
+                        }
+                        showToast(errorMessage, 'warning');
+                        getCurrentLocationBtn.innerHTML = '<i class="fas fa-crosshairs"></i> Use My Current Location';
+                        getCurrentLocationBtn.disabled = false;
+                    }
+                );
+            });
+        }
+
+        // Send SOS with location
+        document.getElementById('confirmSos').addEventListener('click', async () => {
+            const location = sosLocationInput.value.trim();
+
+            if (!location) {
+                showToast('Please enter the emergency location', 'warning');
+                sosLocationInput.focus();
+                return;
+            }
+
+            // Disable button to prevent double submission
+            const confirmBtn = document.getElementById('confirmSos');
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Sending SOS...';
+
+            try {
+                const response = await fetch('/Citizen/CreateEmergency', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ location: location })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    sosModal.classList.remove('show');
+                    showToast(result.message || 'SOS alert sent successfully! Rescue team notified.', 'success');
+                    // Refresh the page to show new incident
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    showToast(result.message || 'Failed to send SOS alert. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Network error. Please try again.', 'error');
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send SOS Alert';
+            }
+        });
+
+        // Close modal when clicking outside
         window.addEventListener('click', e => { if (e.target === sosModal) sosModal.classList.remove('show'); });
 
                 // ==================== CHATBOT FUNCTIONALITY ====================

@@ -212,23 +212,29 @@ namespace SmartCityPulse.Controllers
             }
         }
 
-        // ==================== CREATE EMERGENCY SOS ====================
-        [HttpGet]
-        public async Task<IActionResult> CreateEmergency()
+        // ==================== CREATE EMERGENCY SOS WITH LOCATION ====================
+        [HttpPost]
+        public async Task<IActionResult> CreateEmergency([FromBody] SOSRequest request)
         {
             if (!IsCitizen())
-                return RedirectToAction("Login", "Account");
+                return Json(new { success = false, message = "Unauthorized" });
 
             var userId = HttpContext.Session.GetString("UserId");
             var userName = HttpContext.Session.GetString("UserName");
             var userEmail = HttpContext.Session.GetString("UserEmail");
             var userPhone = HttpContext.Session.GetString("UserPhone");
 
+            // Validate location
+            if (string.IsNullOrWhiteSpace(request?.Location))
+            {
+                return Json(new { success = false, message = "Emergency location is required" });
+            }
+
             var emergencyIncident = new Incident
             {
                 Title = "🚨 EMERGENCY SOS - Immediate Assistance Required",
-                Description = $"🚨 EMERGENCY ALERT 🚨\n\nCitizen: {userName}\nContact: {userPhone ?? "Not provided"}\nEmail: {userEmail ?? "Not provided"}\n\n{userName} has requested immediate emergency assistance.",
-                Location = "Emergency Location - Please contact citizen for exact location",
+                Description = $"🚨 EMERGENCY ALERT 🚨\n\nCitizen: {userName}\nContact: {userPhone ?? "Not provided"}\nEmail: {userEmail ?? "Not provided"}\nLocation: {request.Location}\n\n{userName} has requested immediate emergency assistance at the above location.",
+                Location = request.Location,
                 Severity = "Critical",
                 Status = "Open",
                 ReportedBy = userId,
@@ -246,7 +252,7 @@ namespace SmartCityPulse.Controllers
             {
                 await _hubContext.Clients.All.SendAsync("ReceiveEmergencyAlert",
                     "🚨 EMERGENCY SOS",
-                    $"CRITICAL: {userName} has sent an emergency SOS alert! Immediate action required.",
+                    $"CRITICAL: {userName} has sent an emergency SOS alert from {request.Location}! Immediate action required.",
                     DateTime.Now,
                     emergencyIncident.Id);
             }
@@ -256,16 +262,16 @@ namespace SmartCityPulse.Controllers
             await NotificationService.SendAndSave(
                 _context, _hubContext,
                 "Emergency Submitted",
-                "Your emergency SOS alert has been sent. Rescue team is responding.",
+                $"Your emergency SOS alert has been sent. Rescue team is responding to: {request.Location}",
                 "success", "high",
                 targetUserId: userId
             );
 
-            // Send notification to RESCUE department (primary responder for SOS)
+            // Send notification to RESCUE department with location
             await NotificationService.SendAndSave(
                 _context, _hubContext,
                 "🚨 EMERGENCY SOS - Rescue Required",
-                $"CRITICAL: Citizen {userName} has raised an emergency SOS. Immediate rescue assistance required.",
+                $"CRITICAL: Citizen {userName} has raised an emergency SOS at: {request.Location}. Immediate rescue assistance required.",
                 "critical", "high",
                 targetRole: "Rescue"
             );
@@ -274,16 +280,18 @@ namespace SmartCityPulse.Controllers
             await NotificationService.SendAndSave(
                 _context, _hubContext,
                 "New Emergency SOS Alert",
-                $"Citizen {userName} (ID: {userId}) raised an emergency SOS at {DateTime.UtcNow:HH:mm}.",
+                $"Citizen {userName} (ID: {userId}) raised an emergency SOS at {request.Location} on {DateTime.UtcNow:HH:mm}.",
                 "critical", "high",
                 targetRole: "Admin"
             );
 
-            // Store success message in TempData for toast notification
-            TempData["SOSSuccess"] = "true";
-            TempData["SOSMessage"] = "🚨 SOS Emergency alert sent successfully! Rescue team has been notified and is responding.";
+            return Json(new { success = true, message = "🚨 SOS Emergency alert sent successfully! Rescue team has been notified and is responding to your location." });
+        }
 
-            return RedirectToAction("Index");
+        // Add this request model class inside CitizenController or at the end
+        public class SOSRequest
+        {
+            public string Location { get; set; } = string.Empty;
         }
 
         // ==================== NOTIFICATIONS ====================
