@@ -1,389 +1,365 @@
 ﻿@{
+    ViewData["Title"] = "My Notifications";
     Layout = null;
+    string operatorName = ViewBag.OperatorName ?? "";
+    string operatorEmail = ViewBag.OperatorEmail ?? "";
+    string dept = ViewBag.Department ?? "";
 }
 
-<style>
-    .notif-page-wrap {
-        font-family: 'Inter', sans-serif;
-        padding: 0;
-    }
-
-    .notif-page-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 14px;
-        margin-bottom: 20px;
-    }
-    .notif-page-title {
-        font-size: 18px;
-        font-weight: 700;
-        color: #111827;
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        margin: 0;
-    }
-
-    .notif-controls-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 14px;
-        flex-wrap: wrap;
-    }
-
-    .notif-filter-group {
-        display: flex;
-        gap: 6px;
-    }
-    /* ========== FILTER BUTTONS ========== */
-    .notif-filter-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 7px 16px;
-        border-radius: 20px;
-        border: 1.5px solid #2563EB;   /* blue border always */
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.15s ease;
-        background: #FFFFFF;           /* white background (default) */
-        color: #2563EB;
-        white-space: nowrap;
-        outline: none;
-    }
-    .notif-filter-pill.active {
-        background: #DBEAFE;           /* light-blue when active */
-        color: #1E40AF;
-        border-color: #2563EB;
-    }
-    .pill-badge {
-        font-size: 11px;
-        font-weight: 600;
-        padding: 1px 7px;
-        border-radius: 20px;
-        background: rgba(37,99,235,0.1);
-        color: #2563EB;
-        min-width: 18px;
-        text-align: center;
-    }
-    .notif-filter-pill.active .pill-badge {
-        background: rgba(37,99,235,0.2);
-        color: #1E40AF;
-    }
-
-    .mark-all-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        padding: 8px 16px;
-        border-radius: 10px;
-        border: 1.5px solid #E5E7EB;
-        background: #FFFFFF;
-        color: #374151;
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.15s ease;
-        white-space: nowrap;
-    }
-    .mark-all-btn:hover {
-        border-color: #6EE7B7;
-        background: #F0FDF4;
-        color: #059669;
-    }
-
-    .notification-list {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    /* ========== NOTIFICATION CARDS – ALL WHITE ========== */
-    .notification-card {
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        background: #FFFFFF;
-        border: 1px solid #E5E7EB;
-        border-radius: 14px;
-        padding: 13px 16px;
-        cursor: pointer;
-        transition: all 0.15s ease;
-        position: relative;
-    }
-    .notification-card:hover {
-        border-color: #BFDBFE;
-        box-shadow: 0 2px 12px rgba(37,99,235,0.07);
-    }
-    /* NO .unread special styling */
-
-    .notif-icon-bubble {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        flex-shrink: 0;
-        line-height: 1;
-    }
-    .notif-icon-bubble.type-critical { background: #FEF2F2; color: #991B1B; }
-    .notif-icon-bubble.type-sos      { background: #FFF7ED; color: #9A3412; }
-    .notif-icon-bubble.type-success  { background: #F0FDF4; color: #166534; }
-    .notif-icon-bubble.type-removed  { background: #FFF1F2; color: #BE123C; }
-    .notif-icon-bubble.type-warning  { background: #FFFBEB; color: #92400E; }
-    .notif-icon-bubble.type-default  { background: #F3F4F6; color: #6B7280; }
-
-    .notif-content { flex: 1; min-width: 0; }
-    .notif-title {
-        font-size: 13.5px;
-        font-weight: 600;
-        color: #111827;
-        margin: 0 0 2px;
-        padding-right: 16px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .notif-body {
-        font-size: 12px;
-        color: #9CA3AF;
-        margin: 0 0 6px;
-        line-height: 1.5;
-    }
-    .notif-meta {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-    .notif-time {
-        font-size: 11px;
-        color: #9CA3AF;
-    }
-    .notif-type-tag {
-        font-size: 11px;
-        font-weight: 600;
-        padding: 2px 8px;
-        border-radius: 6px;
-        white-space: nowrap;
-    }
-    .tag-critical { background: #FEE2E2; color: #B91C1C; }
-    .tag-sos      { background: #FFEDD5; color: #C2410C; }
-    .tag-added    { background: #DCFCE7; color: #15803D; }
-    .tag-removed  { background: #FFE4E6; color: #BE123C; }
-    .tag-warning  { background: #FEF3C7; color: #B45309; }
-
-    .notif-toggle-btn {
-        flex-shrink: 0;
-        width: 30px;
-        height: 30px;
-        border-radius: 8px;
-        border: 1px solid #E5E7EB;
-        background: #F9FAFB;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-        transition: all 0.14s ease;
-        margin-top: 1px;
-    }
-    .notif-toggle-btn:hover {
-        background: #EFF6FF;
-        border-color: #93C5FD;
-    }
-
-    /* View Incident button */
-    .notif-view-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 5px 12px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: 500;
-        cursor: pointer;
-        background: #EFF6FF;
-        color: #2563EB;
-        border: 1px solid #BFDBFE;
-        transition: all 0.15s ease;
-        margin-top: 8px;
-    }
-    .notif-view-btn:hover {
-        background: #2563EB;
-        color: white;
-        border-color: #2563EB;
-    }
-
-    .notif-empty {
-        text-align: center;
-        padding: 48px 20px;
-        color: #9CA3AF;
-    }
-    .notif-empty .empty-icon { font-size: 38px; display: block; margin-bottom: 10px; color: #93C5FD; }
-    .notif-empty p { font-size: 13px; margin: 0; }
-
-    .notif-loading {
-        text-align: center;
-        padding: 40px 20px;
-        color: #9CA3AF;
-        font-size: 13px;
-    }
-    .notif-loading i { color: #93C5FD; font-size: 20px; display: block; margin-bottom: 8px; }
-</style>
-
-<div class="notif-page-wrap">
-
-    <!-- Header -->
-    <div class="notif-page-header">
-        <h2 class="notif-page-title">
-            <i class="fas fa-bell" style="color: #2563EB; font-size: 20px;"></i> Notifications
-        </h2>
-        <button class="mark-all-btn" onclick="markAllNotificationsRead()">
-            <i class="fas fa-check-double"></i> Mark all as read
-        </button>
-    </div>
-
-    <!-- Filter pills -->
-    <div class="notif-controls-row">
-        <div class="notif-filter-group" id="notifFilterTabs">
-            <button class="notif-filter-pill active" data-filter="all" onclick="setNotifFilter('all', this)">
-                <i class="fas fa-list"></i> All
-                <span class="pill-badge" id="tabCountAll">0</span>
-            </button>
-            <button class="notif-filter-pill" data-filter="unread" onclick="setNotifFilter('unread', this)">
-                <i class="fas fa-envelope"></i> Unread
-                <span class="pill-badge" id="tabCountUnread">0</span>
-            </button>
-            <button class="notif-filter-pill" data-filter="read" onclick="setNotifFilter('read', this)">
-                <i class="fas fa-envelope-open"></i> Read
-                <span class="pill-badge" id="tabCountRead">0</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Notification list -->
-    <div class="notification-list" id="notificationList">
-        <div class="notif-loading">
-            <i class="fas fa-spinner fa-spin"></i>
-            Loading notifications…
-        </div>
-    </div>
-
-</div>
-
-<script>
-    (function () {
-
-        function getNotifDisplay(n) {
-            const title = (n.title || '').trim();
-            if (title === 'Unassigned Critical Incident')
-                return { icon: 'fa-clock', bubbleCls: 'type-warning', tagCls: 'tag-warning', tagLabel: 'Unassigned Alert' };
-            if (title === 'New Critical Incident' || title === 'Critical Incident')
-                return { icon: 'fa-exclamation-triangle', bubbleCls: 'type-critical', tagCls: 'tag-critical', tagLabel: 'Critical Incident' };
-            if (title === 'New Emergency SOS' || title === 'Emergency SOS')
-                return { icon: 'fa-ambulance', bubbleCls: 'type-sos', tagCls: 'tag-sos', tagLabel: 'Emergency SOS' };
-            if (title === 'Operator Added')
-                return { icon: 'fa-user-plus', bubbleCls: 'type-success', tagCls: 'tag-added', tagLabel: 'Operator Added' };
-            if (title === 'Operator Removed')
-                return { icon: 'fa-user-minus', bubbleCls: 'type-removed', tagCls: 'tag-removed', tagLabel: 'Operator Removed' };
-            return { icon: 'fa-bell', bubbleCls: 'type-default', tagCls: 'tag-warning', tagLabel: 'Notification' };
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Notifications - @dept Department</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #E8EDF5; color: #1A1F36; }
+        .dashboard { display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: #FFFFFF; border-right: 1px solid #EAECF0; position: fixed; height: 100vh; display: flex; flex-direction: column; transition: all 0.3s; z-index: 100; }
+        .sidebar.collapsed { width: 72px; }
+        .sidebar.collapsed .logo h2, .sidebar.collapsed .nav-item span, .sidebar.collapsed .footer-item span { display: none; }
+        .sidebar.collapsed .nav-item, .sidebar.collapsed .footer-item { justify-content: center; padding: 12px 0; }
+        .sidebar.collapsed .nav-item i, .sidebar.collapsed .footer-item i { margin: 0; font-size: 20px; }
+        .sidebar.collapsed .sidebar-header { justify-content: center; padding: 20px 0; }
+        .sidebar.collapsed .logo { justify-content: center; }
+        .sidebar-header { padding: 20px 16px; border-bottom: 1px solid #EAECF0; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 8px; }
+        .logo i { font-size: 24px; color: #2563EB; }
+        .logo h2 { font-size: 15px; font-weight: 700; color: #1A1F36; }
+        .logo span { color: #2563EB; }
+        .hamburger { cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: #6B7280; }
+        .hamburger:hover { background: #F1F5F9; color: #2563EB; }
+        .hamburger i { font-size: 18px; }
+        .nav-menu { flex: 1; padding: 20px 12px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; margin: 2px 0; color: #5A6A7F; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 10px; position: relative; }
+        .nav-item i { width: 20px; font-size: 16px; }
+        .nav-item:hover { background: #F1F5F9; color: #2563EB; }
+        .nav-item.active { background: #EFF6FF; color: #2563EB; }
+        .notification-badge-sidebar { position: absolute; right: 16px; top: 8px; background: #EF4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: 600; min-width: 18px; text-align: center; }
+        .nav-footer { padding: 16px 12px; border-top: 1px solid #EAECF0; }
+        .footer-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; color: #5A6A7F; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 10px; }
+        .footer-item:hover { background: #F1F5F9; color: #2563EB; }
+        .footer-item.logout { color: #DC2626; }
+        .footer-item.logout:hover { background: #FEF2F2; }
+        .dept-info { padding: 8px 16px; margin: 0 12px 12px 12px; background: #EFF6FF; border-radius: 10px; display: flex; align-items: center; gap: 8px; font-size: 12px; color: #2563EB; }
+        .main-content { margin-left: 260px; flex: 1; padding: 24px 32px; background: #E8EDF5; transition: margin-left 0.3s; min-height: 100vh; }
+        .sidebar.collapsed ~ .main-content { margin-left: 72px; }
+        .page-header { margin-bottom: 28px; }
+        .page-header h1 { font-size: 24px; font-weight: 700; color: #1A1F36; display: flex; align-items: center; gap: 12px; }
+        .page-header h1 i { color: #2563EB; }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: #6B7280; text-decoration: none; font-size: 13px; margin-bottom: 20px; }
+        .back-link:hover { color: #2563EB; }
+        .notifications-container { background: #FFFFFF; border-radius: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); overflow: hidden; }
+        .notifications-header { padding: 20px 24px; border-bottom: 1px solid #EAECF0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .notifications-stats { display: flex; gap: 20px; }
+        .stat-chip { background: #F1F5F9; padding: 8px 18px; border-radius: 40px; font-size: 13px; font-weight: 500; }
+        .stat-chip i { margin-right: 8px; }
+        .stat-chip .count { font-weight: 700; color: #2563EB; font-size: 16px; }
+        .btn-mark-all-read { background: #2563EB; color: white; border: none; padding: 8px 20px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-mark-all-read:hover { background: #1D4ED8; transform: translateY(-1px); }
+        .notification-item { display: flex; align-items: flex-start; gap: 16px; padding: 20px 24px; border-bottom: 1px solid #F1F5F9; transition: all 0.2s; }
+        .notification-item:hover { background: #F8FAFC; }
+        .notification-item.unread { background: #EFF6FF; border-left: 4px solid #2563EB; }
+        .notification-item.resolved { background: #F0FDF4; border-left: 4px solid #10B981; }
+        .notification-icon { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+        .notification-icon.critical { background: #FEF2F2; color: #DC2626; }
+        .notification-icon.high { background: #FEF3C7; color: #F97316; }
+        .notification-icon.medium { background: #DBEAFE; color: #2563EB; }
+        .notification-icon.low { background: #DCFCE7; color: #10B981; }
+        .notification-icon.resolved-icon { background: #DCFCE7; color: #10B981; }
+        .notification-content { flex: 1; }
+        .notification-title { font-size: 15px; font-weight: 600; color: #1A1F36; margin-bottom: 6px; }
+        .notification-message { font-size: 13px; color: #64748B; margin-bottom: 8px; line-height: 1.5; }
+        .notification-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+        .notification-time { font-size: 11px; color: #94A3B8; display: flex; align-items: center; gap: 4px; }
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 30px; font-size: 11px; font-weight: 600; }
+        .status-unread { background: #2563EB; color: white; }
+        .status-read { background: #E2E8F0; color: #64748B; }
+        .status-resolved { background: #DCFCE7; color: #166534; }
+        .notification-actions { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+        .btn-action { padding: 6px 16px; border-radius: 30px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; border: none; }
+        .btn-mark-read { background: #DBEAFE; color: #2563EB; }
+        .btn-mark-read:hover { background: #2563EB; color: white; }
+        .btn-mark-resolved { background: #DCFCE7; color: #10B981; }
+        .btn-mark-resolved:hover { background: #10B981; color: white; }
+        .btn-view { background: #F1F5F9; color: #6B7280; }
+        .btn-view:hover { background: #2563EB; color: white; }
+        .empty-notifications { text-align: center; padding: 60px; color: #94A3B8; }
+        .empty-notifications i { font-size: 64px; margin-bottom: 20px; display: block; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; border-radius: 24px; width: 420px; max-width: 90%; padding: 28px; animation: slideIn 0.3s ease; }
+        @@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @@media (max-width: 768px) {
+            .sidebar { width: 100%; position: relative; height: auto; }
+            .main-content { margin-left: 0; padding: 20px; }
+            .notifications-header { flex-direction: column; align-items: stretch; }
+            .notification-item { flex-direction: column; }
+            .notification-icon { width: 40px; height: 40px; }
+            .notification-actions { justify-content: flex-start; }
         }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo"><i class="fas fa-city"></i><h2>SMART CIVIC <span>ALERT</span></h2></div>
+                <div class="hamburger" id="toggleSidebar"><i class="fas fa-bars"></i></div>
+            </div>
+            <div class="nav-menu">
+                <a href="/Operator/Dashboard" class="nav-item"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
+                <a href="/Operator/Incidents" class="nav-item"><i class="fas fa-list-alt"></i> <span>Incidents</span></a>
+                <a href="/Operator/CreateIncident" class="nav-item"><i class="fas fa-plus-circle"></i> <span>Create Incident</span></a>
+                <a href="/Operator/Notifications" class="nav-item active">
+                    <i class="fas fa-bell"></i> <span>My Notifications</span>
+                    <span id="sidebarNotificationBadge" class="notification-badge-sidebar" style="display: none;">0</span>
+                </a>
+                <a href="#" class="nav-item" id="profileNavLink"><i class="fas fa-user-circle"></i> <span>My Profile</span></a>
+            </div>
+            <div class="dept-info"><i class="fas fa-building"></i><span>@dept Department</span></div>
+            <div class="nav-footer"><a href="/Account/Logout" class="footer-item logout"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></div>
+        </div>
 
-        function timeAgo(ts) {
-            if (!ts) return '';
-            const diff = Math.floor((Date.now() - new Date(ts)) / 1000);
-            if (diff < 60)    return 'just now';
-            if (diff < 3600)  return Math.floor(diff / 60) + 'm ago';
-            if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
-            return Math.floor(diff / 86400) + 'd ago';
-        }
+        <div class="main-content">
+            <a href="/Operator/Dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            
+            <div class="page-header">
+                <h1><i class="fas fa-bell"></i> My Notifications</h1>
+                <p>Stay updated with the latest status changes and incidents</p>
+            </div>
 
-        window.renderNotifications = function () {
-            const list        = document.getElementById('notificationList');
-            const all         = (typeof realNotifications !== 'undefined') ? realNotifications : [];
-            const filter      = window._notifFilter || 'all';
-            const unreadCount = all.filter(n => !n.isRead).length;
-            const readCount   = all.filter(n =>  n.isRead).length;
-
-            document.getElementById('tabCountAll').textContent    = all.length;
-            document.getElementById('tabCountUnread').textContent = unreadCount;
-            document.getElementById('tabCountRead').textContent   = readCount;
-
-            const filtered = all.filter(n => {
-                if (filter === 'unread') return !n.isRead;
-                if (filter === 'read')   return  n.isRead;
-                return true;
-            });
-
-            if (!filtered.length) {
-                list.innerHTML = `<div class="notif-empty">
-                    <i class="fas ${filter === 'unread' ? 'fa-envelope-open' : 'fa-bell-slash'} empty-icon"></i>
-                    <p>${filter === 'unread' ? 'No unread notifications!' : 'No notifications found.'}</p>
-                </div>`;
-                return;
-            }
-
-            list.innerHTML = filtered.map(n => {
-                const d   = getNotifDisplay(n);
-                const toggleIcon  = n.isRead ? 'fa-envelope' : 'fa-check';
-                const toggleTitle = n.isRead ? 'Mark as unread' : 'Mark as read';
-                // View incident button (only if incidentId exists)
-                const viewBtn = n.incidentId
-                    ? `<button class="notif-view-btn" onclick="event.stopPropagation(); window.location.href='/Admin/IncidentDetail/${n.incidentId}'">
-                         <i class="fas fa-eye"></i> View Incident
-                       </button>`
-                    : '';
-                return `
-                <div class="notification-card" data-id="${n.id}">
-                    <div class="notif-icon-bubble ${d.bubbleCls}">
-                        <i class="fas ${d.icon}"></i>
+            <div class="notifications-container">
+                <div class="notifications-header">
+                    <div class="notifications-stats">
+                        <div class="stat-chip"><i class="fas fa-bell"></i> Total: <span class="count" id="totalCount">0</span></div>
+                        <div class="stat-chip"><i class="fas fa-envelope"></i> Unread: <span class="count" id="unreadCount">0</span></div>
+                        <div class="stat-chip"><i class="fas fa-check-circle"></i> Resolved: <span class="count" id="resolvedCount">0</span></div>
                     </div>
-                    <div class="notif-content">
-                        <p class="notif-title">${n.title || 'Notification'}</p>
-                        <p class="notif-body">${n.message || ''}</p>
-                        <div class="notif-meta">
-                            <span class="notif-time"><i class="fas fa-clock" style="font-size:12px;vertical-align:-1px;margin-right:3px;"></i>${timeAgo(n.createdAt || n.timestamp)}</span>
-                            <span class="notif-type-tag ${d.tagCls}">${d.tagLabel}</span>
+                    <button class="btn-mark-all-read" id="markAllReadBtn"><i class="fas fa-check-double"></i> Mark All Read</button>
+                </div>
+                <div id="notificationsList">
+                    <div class="empty-notifications"><i class="fas fa-bell-slash"></i> Loading notifications...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 style="font-size: 20px; font-weight: 700;"><i class="fas fa-user-circle" style="color:#2563EB;"></i> My Profile</h2>
+                <button onclick="closeProfileModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #2563EB, #1D4ED8); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                    <i class="fas fa-user-tie" style="font-size: 40px; color: white;"></i>
+                </div>
+                <h3 style="margin-top: 12px;">@operatorName</h3>
+                <p style="font-size: 12px; color: #6B7280;">@dept Department</p>
+            </div>
+            <div style="margin-bottom: 15px; padding: 12px; background: #F8FAFC; border-radius: 12px;">
+                <div style="font-size: 11px; color: #6B7280;">Email</div>
+                <div style="font-size: 14px; font-weight: 500;">@operatorEmail</div>
+            </div>
+            <div style="margin-bottom: 15px; padding: 12px; background: #F8FAFC; border-radius: 12px;">
+                <div style="font-size: 11px; color: #6B7280;">Role</div>
+                <div style="font-size: 14px; font-weight: 500;">Operator</div>
+            </div>
+            <div style="padding: 12px; background: #F8FAFC; border-radius: 12px;">
+                <div style="font-size: 11px; color: #6B7280;">Status</div>
+                <div style="font-size: 14px; font-weight: 500; color: #10B981;"><i class="fas fa-circle" style="font-size: 8px;"></i> Active</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleSidebar');
+        if(toggleBtn) toggleBtn.addEventListener('click', function() { sidebar.classList.toggle('collapsed'); });
+
+        function escapeHtml(text) { if(!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+        function getIconAndColor(type, severity) {
+            if (severity === 'critical') return { icon: 'fas fa-exclamation-triangle', color: 'critical' };
+            if (severity === 'high') return { icon: 'fas fa-exclamation-circle', color: 'high' };
+            if (severity === 'medium') return { icon: 'fas fa-bell', color: 'medium' };
+            if (severity === 'low') return { icon: 'fas fa-info-circle', color: 'low' };
+            if (type === 'resolved') return { icon: 'fas fa-check-circle', color: 'resolved-icon' };
+            return { icon: 'fas fa-bell', color: 'medium' };
+        }
+
+        async function loadAllNotifications() {
+            try {
+                const response = await fetch('/Operator/GetNotifications');
+                const notifications = await response.json();
+                const container = document.getElementById('notificationsList');
+                const totalCountSpan = document.getElementById('totalCount');
+                const unreadCountSpan = document.getElementById('unreadCount');
+                const resolvedCountSpan = document.getElementById('resolvedCount');
+                
+                const unreadCount = notifications.filter(n => !n.isRead && !n.isResolved).length;
+                const resolvedCount = notifications.filter(n => n.isResolved === true).length;
+                
+                if (totalCountSpan) totalCountSpan.innerText = notifications.length;
+                if (unreadCountSpan) unreadCountSpan.innerText = unreadCount;
+                if (resolvedCountSpan) resolvedCountSpan.innerText = resolvedCount;
+                
+                const sidebarBadge = document.getElementById('sidebarNotificationBadge');
+                if (sidebarBadge) {
+                    if (unreadCount > 0) {
+                        sidebarBadge.style.display = 'inline';
+                        sidebarBadge.innerText = unreadCount > 99 ? '99+' : unreadCount;
+                    } else {
+                        sidebarBadge.style.display = 'none';
+                    }
+                }
+                
+                if (!notifications.length) {
+                    container.innerHTML = '<div class="empty-notifications"><i class="fas fa-bell-slash"></i> No notifications yet</div>';
+                    return;
+                }
+                
+                container.innerHTML = notifications.map(n => {
+                    const { icon, color } = getIconAndColor(n.type, n.severity);
+                    let notificationClass = '';
+                    let statusBadge = '';
+                    
+                    if (n.isResolved === true) {
+                        notificationClass = 'resolved';
+                        statusBadge = '<span class="status-badge status-resolved"><i class="fas fa-check-circle"></i> Resolved</span>';
+                    } else if (!n.isRead) {
+                        notificationClass = 'unread';
+                        statusBadge = '<span class="status-badge status-unread"><i class="fas fa-circle"></i> Unread</span>';
+                    } else {
+                        statusBadge = '<span class="status-badge status-read"><i class="fas fa-check-circle"></i> Read</span>';
+                    }
+                    
+                    return `
+                        <div class="notification-item ${notificationClass}" data-id="${n.id}">
+                            <div class="notification-icon ${color}">
+                                <i class="${icon}"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">${escapeHtml(n.title)}</div>
+                                <div class="notification-message">${escapeHtml(n.message || '')}</div>
+                                <div class="notification-meta">
+                                    <span class="notification-time"><i class="far fa-clock"></i> ${new Date(n.createdAt).toLocaleString()}</span>
+                                    ${statusBadge}
+                                </div>
+                                <div class="notification-actions">
+                                    ${!n.isRead && !n.isResolved ? 
+                                        `<button class="btn-action btn-mark-read" onclick="markAsRead('${n.id}')">
+                                            <i class="fas fa-check-circle"></i> Mark as Read
+                                        </button>` : ''
+                                    }
+                                    ${!n.isResolved ? 
+                                        `<button class="btn-action btn-mark-resolved" onclick="markAsResolved('${n.id}')">
+                                            <i class="fas fa-check-double"></i> Mark as Resolved
+                                        </button>` : ''
+                                    }
+                                    ${n.incidentId ? 
+                                        `<button class="btn-action btn-view" onclick="viewIncident('${n.incidentId}')">
+                                            <i class="fas fa-eye"></i> View Incident
+                                        </button>` : ''
+                                    }
+                                </div>
+                            </div>
                         </div>
-                        ${viewBtn}
-                    </div>
-                    <button class="notif-toggle-btn" title="${toggleTitle}"
-                        onclick="event.stopPropagation(); markNotificationRead('${n.id}')">
-                        <i class="fas ${toggleIcon}"></i>
-                    </button>
-                </div>`;
-            }).join('');
-        };
-
-        window.setNotifFilter = function (filter, btn) {
-            window._notifFilter = filter;
-            document.querySelectorAll('.notif-filter-pill').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            window.renderNotifications();
-        };
-
-        window._notifFilter = 'all';
-
-        const origLoad = window.loadNotifications;
-        if (typeof origLoad === 'function') {
-            window.loadNotifications = function () {
-                origLoad();
-                setTimeout(window.renderNotifications, 300);
-            };
+                    `;
+                }).join('');
+            } catch(err) {
+                console.error('Load error:', err);
+                document.getElementById('notificationsList').innerHTML = '<div class="empty-notifications"><i class="fas fa-exclamation-triangle"></i> Error loading notifications</div>';
+            }
         }
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => setTimeout(window.renderNotifications, 200));
-        } else {
-            setTimeout(window.renderNotifications, 200);
+        async function markAsRead(id) {
+            try {
+                const response = await fetch('/Operator/MarkNotificationRead', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'id=' + encodeURIComponent(id)
+                });
+                if (response.ok) {
+                    await loadAllNotifications();
+                }
+            } catch(err) { console.error(err); }
         }
-    })();
-</script>
+
+        async function markAsResolved(id) {
+            try {
+                const response = await fetch('/Operator/MarkNotificationResolved', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'id=' + encodeURIComponent(id)
+                });
+                if (response.ok) {
+                    await loadAllNotifications();
+                }
+            } catch(err) { console.error(err); }
+        }
+
+        async function markAllAsRead() {
+            try {
+                const response = await fetch('/Operator/MarkAllNotificationsRead', { method: 'POST' });
+                if (response.ok) {
+                    await loadAllNotifications();
+                }
+            } catch(err) { console.error(err); }
+        }
+
+        function viewIncident(incidentId) {
+            if (incidentId) {
+                window.location.href = `/Operator/IncidentDetail/${incidentId}`;
+            }
+        }
+
+        function openProfileModal() {
+            document.getElementById('profileModal').style.display = 'flex';
+        }
+        
+        function closeProfileModal() {
+            document.getElementById('profileModal').style.display = 'none';
+        }
+
+        document.getElementById('markAllReadBtn')?.addEventListener('click', markAllAsRead);
+        document.getElementById('profileNavLink')?.addEventListener('click', function(e) { e.preventDefault(); openProfileModal(); });
+        
+        let connection = null;
+        function startSignalR() {
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl("/notificationHub")
+                .withAutomaticReconnect()
+                .build();
+            
+            connection.on("ReceiveNotification", () => {
+                loadAllNotifications();
+            });
+            
+            connection.on("NewIncident", () => {
+                loadAllNotifications();
+            });
+            
+            connection.start()
+                .then(() => {
+                    console.log("✅ SignalR Connected!");
+                    const deptGroup = '@dept'.replace(/\s/g, '');
+                    connection.invoke("JoinGroup", deptGroup).catch(e => console.log(e));
+                    connection.invoke("JoinGroup", "Operator").catch(e => console.log(e));
+                })
+                .catch(err => {
+                    console.error("SignalR error:", err);
+                    setTimeout(startSignalR, 5000);
+                });
+        }
+        
+        startSignalR();
+        loadAllNotifications();
+    </script>
+</body>
+</html>
