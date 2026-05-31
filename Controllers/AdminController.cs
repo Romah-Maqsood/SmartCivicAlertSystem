@@ -41,11 +41,9 @@ namespace SmartCityPulse.Controllers
                 var todayStart = DateTime.UtcNow.Date;
                 var todayEnd = todayStart.AddDays(1);
 
-                // ✅ Total open incidents (all time)
                 var openIncidents = await _context.Incidents
                     .CountDocumentsAsync(i => i.Status == "Open");
 
-                // ✅ Resolved today
                 var resolvedToday = await _context.Incidents
                     .CountDocumentsAsync(i => i.Status == "Resolved" && i.UpdatedAt >= todayStart && i.UpdatedAt < todayEnd);
 
@@ -468,6 +466,55 @@ namespace SmartCityPulse.Controllers
                 _logger.LogError(ex, "ExportPdfReport error");
                 return StatusCode(500, $"PDF export failed: {ex.Message}");
             }
+        }
+
+        // ==================== AI REPORT SUMMARY ====================
+        [HttpPost]
+        public async Task<IActionResult> GenerateAIReportSummary(string startDate, string endDate, string department)
+        {
+            if (!IsAdmin()) return Unauthorized();
+
+            // 1. Filter incidents based on date range + department
+            var filterBuilder = Builders<Incident>.Filter;
+            var filter = filterBuilder.Empty;
+            if (DateTime.TryParse(startDate, out var start))
+                filter &= filterBuilder.Gte(i => i.ReportedAt, start);
+            if (DateTime.TryParse(endDate, out var end))
+                filter &= filterBuilder.Lte(i => i.ReportedAt, end);
+            if (!string.IsNullOrEmpty(department))
+                filter &= filterBuilder.Eq(i => i.Department, department);
+
+            var incidents = await _context.Incidents.Find(filter).ToListAsync();
+
+            // 2. Prepare a quick summary context
+            var summaryContext = $@"
+Period: {startDate} to {endDate}
+Department: {(string.IsNullOrEmpty(department) ? "All" : department)}
+Total incidents: {incidents.Count}
+Resolved: {incidents.Count(i => i.Status == "Resolved")}
+Open: {incidents.Count(i => i.Status == "Open")}
+In Progress: {incidents.Count(i => i.Status == "In Progress")}
+Critical: {incidents.Count(i => i.Severity == "Critical")}
+High: {incidents.Count(i => i.Severity == "High")}
+Medium: {incidents.Count(i => i.Severity == "Medium")}
+Low: {incidents.Count(i => i.Severity == "Low")}
+";
+
+            // 3. Call GeminiService (resolve from DI)
+            var geminiService = HttpContext.RequestServices.GetRequiredService<GeminiService>();
+            var prompt = $@"
+You are a professional city incident analyst.
+Based on the following data, write a concise, professional summary (4-6 lines) without emojis.
+Use standard icons like ✓ ✗ ⚠ where appropriate.
+
+Data:
+{summaryContext}
+
+Summary:
+";
+            var aiSummary = await geminiService.AskAsync(prompt, "");
+
+            return Json(new { success = true, summary = aiSummary });
         }
 
         // ==================== PROFILE UPDATE (PASSWORD CHANGE + NAME) ====================
