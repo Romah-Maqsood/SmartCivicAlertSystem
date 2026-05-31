@@ -16,90 +16,542 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #E8EDF5; color: #1A1F36; }
-        .dashboard { display: flex; min-height: 100vh; }
-        .sidebar { width: 260px; background: #FFFFFF; border-right: 1px solid #EAECF0; position: fixed; height: 100vh; display: flex; flex-direction: column; transition: all 0.3s; z-index: 100; }
-        .sidebar.collapsed { width: 72px; }
-        .sidebar.collapsed .logo h2, .sidebar.collapsed .nav-item span, .sidebar.collapsed .footer-item span { display: none; }
-        .sidebar.collapsed .nav-item, .sidebar.collapsed .footer-item { justify-content: center; padding: 12px 0; }
-        .sidebar.collapsed .nav-item i, .sidebar.collapsed .footer-item i { margin: 0; font-size: 20px; }
-        .sidebar.collapsed .sidebar-header { justify-content: center; padding: 20px 0; }
-        .sidebar.collapsed .logo { justify-content: center; }
-        .sidebar-header { padding: 20px 16px; border-bottom: 1px solid #EAECF0; display: flex; justify-content: space-between; align-items: center; }
-        .logo { display: flex; align-items: center; gap: 8px; }
-        .logo i { font-size: 24px; color: #2563EB; }
-        .logo h2 { font-size: 15px; font-weight: 700; color: #1A1F36; }
-        .logo span { color: #2563EB; }
-        .hamburger { cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: #6B7280; }
-        .hamburger:hover { background: #F1F5F9; color: #2563EB; }
-        .hamburger i { font-size: 18px; }
-        .nav-menu { flex: 1; padding: 20px 12px; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; margin: 2px 0; color: #5A6A7F; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 10px; position: relative; }
-        .nav-item i { width: 20px; font-size: 16px; }
-        .nav-item:hover { background: #F1F5F9; color: #2563EB; }
-        .nav-item.active { background: #EFF6FF; color: #2563EB; }
-        .notification-badge-sidebar { position: absolute; right: 16px; top: 8px; background: #EF4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: 600; min-width: 18px; text-align: center; }
-        .nav-footer { padding: 16px 12px; border-top: 1px solid #EAECF0; }
-        .footer-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; color: #5A6A7F; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 10px; }
-        .footer-item:hover { background: #F1F5F9; color: #2563EB; }
-        .footer-item.logout { color: #DC2626; }
-        .footer-item.logout:hover { background: #FEF2F2; }
-        .dept-info { padding: 8px 16px; margin: 0 12px 12px 12px; background: #EFF6FF; border-radius: 10px; display: flex; align-items: center; gap: 8px; font-size: 12px; color: #2563EB; }
-        .main-content { margin-left: 260px; flex: 1; padding: 24px 32px; background: #E8EDF5; transition: margin-left 0.3s; min-height: 100vh; }
-        .sidebar.collapsed ~ .main-content { margin-left: 72px; }
-        .page-header { margin-bottom: 28px; }
-        .page-header h1 { font-size: 24px; font-weight: 700; color: #1A1F36; display: flex; align-items: center; gap: 12px; }
-        .page-header h1 i { color: #2563EB; }
-        .back-link { display: inline-flex; align-items: center; gap: 8px; color: #6B7280; text-decoration: none; font-size: 13px; margin-bottom: 20px; }
-        .back-link:hover { color: #2563EB; }
-        .notifications-container { background: #FFFFFF; border-radius: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); overflow: hidden; }
-        .notifications-header { padding: 20px 24px; border-bottom: 1px solid #EAECF0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-        .notifications-stats { display: flex; gap: 20px; }
-        .stat-chip { background: #F1F5F9; padding: 8px 18px; border-radius: 40px; font-size: 13px; font-weight: 500; }
-        .stat-chip i { margin-right: 8px; }
-        .stat-chip .count { font-weight: 700; color: #2563EB; font-size: 16px; }
-        .btn-mark-all-read { background: #2563EB; color: white; border: none; padding: 8px 20px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-mark-all-read:hover { background: #1D4ED8; transform: translateY(-1px); }
-        .notification-item { display: flex; align-items: flex-start; gap: 16px; padding: 20px 24px; border-bottom: 1px solid #F1F5F9; transition: all 0.2s; }
-        .notification-item:hover { background: #F8FAFC; }
-        .notification-item.unread { background: #EFF6FF; border-left: 4px solid #2563EB; }
-        .notification-item.resolved { background: #F0FDF4; border-left: 4px solid #10B981; }
-        .notification-icon { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-        .notification-icon.critical { background: #FEF2F2; color: #DC2626; }
-        .notification-icon.high { background: #FEF3C7; color: #F97316; }
-        .notification-icon.medium { background: #DBEAFE; color: #2563EB; }
-        .notification-icon.low { background: #DCFCE7; color: #10B981; }
-        .notification-icon.resolved-icon { background: #DCFCE7; color: #10B981; }
-        .notification-content { flex: 1; }
-        .notification-title { font-size: 15px; font-weight: 600; color: #1A1F36; margin-bottom: 6px; }
-        .notification-message { font-size: 13px; color: #64748B; margin-bottom: 8px; line-height: 1.5; }
-        .notification-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
-        .notification-time { font-size: 11px; color: #94A3B8; display: flex; align-items: center; gap: 4px; }
-        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 30px; font-size: 11px; font-weight: 600; }
-        .status-unread { background: #2563EB; color: white; }
-        .status-read { background: #E2E8F0; color: #64748B; }
-        .status-resolved { background: #DCFCE7; color: #166534; }
-        .notification-actions { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
-        .btn-action { padding: 6px 16px; border-radius: 30px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; border: none; }
-        .btn-mark-read { background: #DBEAFE; color: #2563EB; }
-        .btn-mark-read:hover { background: #2563EB; color: white; }
-        .btn-mark-resolved { background: #DCFCE7; color: #10B981; }
-        .btn-mark-resolved:hover { background: #10B981; color: white; }
-        .btn-view { background: #F1F5F9; color: #6B7280; }
-        .btn-view:hover { background: #2563EB; color: white; }
-        .empty-notifications { text-align: center; padding: 60px; color: #94A3B8; }
-        .empty-notifications i { font-size: 64px; margin-bottom: 20px; display: block; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; border-radius: 24px; width: 420px; max-width: 90%; padding: 28px; animation: slideIn 0.3s ease; }
-        @@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @@media (max-width: 768px) {
-            .sidebar { width: 100%; position: relative; height: auto; }
-            .main-content { margin-left: 0; padding: 20px; }
-            .notifications-header { flex-direction: column; align-items: stretch; }
-            .notification-item { flex-direction: column; }
-            .notification-icon { width: 40px; height: 40px; }
-            .notification-actions { justify-content: flex-start; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #E8EDF5;
+            color: #1A1F36;
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #FFFFFF;
+            border-right: 1px solid #EAECF0;
+            position: fixed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .sidebar.collapsed {
+            width: 72px;
+        }
+
+        .sidebar.collapsed .logo h2, .sidebar.collapsed .nav-item span, .sidebar.collapsed .footer-item span {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-item, .sidebar.collapsed .footer-item {
+            justify-content: center;
+            padding: 12px 0;
+        }
+
+        .sidebar.collapsed .nav-item i, .sidebar.collapsed .footer-item i {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .sidebar.collapsed .sidebar-header {
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .sidebar.collapsed .logo {
+            justify-content: center;
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            border-bottom: 1px solid #EAECF0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo i {
+            font-size: 24px;
+            color: #2563EB;
+        }
+
+        .logo h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1A1F36;
+        }
+
+        .logo span {
+            color: #2563EB;
+        }
+
+        .hamburger {
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: #6B7280;
+        }
+
+        .hamburger:hover {
+            background: #F1F5F9;
+            color: #2563EB;
+        }
+
+        .hamburger i {
+            font-size: 18px;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 20px 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            margin: 2px 0;
+            color: #5A6A7F;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .nav-item i {
+            width: 20px;
+            font-size: 16px;
+        }
+
+        .nav-item:hover {
+            background: #F1F5F9;
+            color: #2563EB;
+        }
+
+        .nav-item.active {
+            background: #EFF6FF;
+            color: #2563EB;
+        }
+
+        .notification-badge-sidebar {
+            position: absolute;
+            right: 16px;
+            top: 8px;
+            background: #EF4444;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .nav-footer {
+            padding: 16px 12px;
+            border-top: 1px solid #EAECF0;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            color: #5A6A7F;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 10px;
+        }
+
+        .footer-item:hover {
+            background: #F1F5F9;
+            color: #2563EB;
+        }
+
+        .footer-item.logout {
+            color: #DC2626;
+        }
+
+        .footer-item.logout:hover {
+            background: #FEF2F2;
+        }
+
+        .dept-info {
+            padding: 8px 16px;
+            margin: 0 12px 12px 12px;
+            background: #EFF6FF;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #2563EB;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 24px 32px;
+            background: #E8EDF5;
+            transition: margin-left 0.3s;
+            min-height: 100vh;
+        }
+
+        .sidebar.collapsed ~ .main-content {
+            margin-left: 72px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1A1F36;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-header h1 i {
+            color: #2563EB;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #6B7280;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .back-link:hover {
+            color: #2563EB;
+        }
+
+        .notifications-container {
+            background: #FFFFFF;
+            border-radius: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            overflow: hidden;
+        }
+
+        .notifications-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #EAECF0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .notifications-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-chip {
+            background: #F1F5F9;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .stat-chip i {
+            margin-right: 8px;
+        }
+
+        .stat-chip .count {
+            font-weight: 700;
+            color: #2563EB;
+            font-size: 16px;
+        }
+
+        .btn-mark-all-read {
+            background: #2563EB;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-mark-all-read:hover {
+            background: #1D4ED8;
+            transform: translateY(-1px);
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px 24px;
+            border-bottom: 1px solid #F1F5F9;
+            transition: all 0.2s;
+        }
+
+        .notification-item:hover {
+            background: #F8FAFC;
+        }
+
+        .notification-item.unread {
+            background: #EFF6FF;
+            border-left: 4px solid #2563EB;
+        }
+
+        .notification-item.resolved {
+            background: #F0FDF4;
+            border-left: 4px solid #10B981;
+        }
+
+        .notification-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.critical {
+            background: #FEF2F2;
+            color: #DC2626;
+        }
+
+        .notification-icon.high {
+            background: #FEF3C7;
+            color: #F97316;
+        }
+
+        .notification-icon.medium {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .notification-icon.low {
+            background: #DCFCE7;
+            color: #10B981;
+        }
+
+        .notification-icon.resolved-icon {
+            background: #DCFCE7;
+            color: #10B981;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1A1F36;
+            margin-bottom: 6px;
+        }
+
+        .notification-message {
+            font-size: 13px;
+            color: #64748B;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .notification-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .notification-time {
+            font-size: 11px;
+            color: #94A3B8;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-unread {
+            background: #2563EB;
+            color: white;
+        }
+
+        .status-read {
+            background: #E2E8F0;
+            color: #64748B;
+        }
+
+        .status-resolved {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: none;
+        }
+
+        .btn-mark-read {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .btn-mark-read:hover {
+            background: #2563EB;
+            color: white;
+        }
+
+        .btn-mark-resolved {
+            background: #DCFCE7;
+            color: #10B981;
+        }
+
+        .btn-mark-resolved:hover {
+            background: #10B981;
+            color: white;
+        }
+
+        .btn-view {
+            background: #F1F5F9;
+            color: #6B7280;
+        }
+
+        .btn-view:hover {
+            background: #2563EB;
+            color: white;
+        }
+
+        .empty-notifications {
+            text-align: center;
+            padding: 60px;
+            color: #94A3B8;
+        }
+
+        .empty-notifications i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 420px;
+            max-width: 90%;
+            padding: 28px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            .notifications-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .notification-item {
+                flex-direction: column;
+            }
+            .notification-icon {
+                width: 40px;
+                height: 40px;
+            }
+            .notification-actions {
+                justify-content: flex-start;
+            }
         }
     </style>
 </head>
@@ -126,7 +578,7 @@
 
         <div class="main-content">
             <a href="/Operator/Dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
-            
+
             <div class="page-header">
                 <h1><i class="fas fa-bell"></i> My Notifications</h1>
                 <p>Stay updated with the latest status changes and incidents</p>
@@ -201,14 +653,14 @@
                 const totalCountSpan = document.getElementById('totalCount');
                 const unreadCountSpan = document.getElementById('unreadCount');
                 const resolvedCountSpan = document.getElementById('resolvedCount');
-                
+
                 const unreadCount = notifications.filter(n => !n.isRead && !n.isResolved).length;
                 const resolvedCount = notifications.filter(n => n.isResolved === true).length;
-                
+
                 if (totalCountSpan) totalCountSpan.innerText = notifications.length;
                 if (unreadCountSpan) unreadCountSpan.innerText = unreadCount;
                 if (resolvedCountSpan) resolvedCountSpan.innerText = resolvedCount;
-                
+
                 const sidebarBadge = document.getElementById('sidebarNotificationBadge');
                 if (sidebarBadge) {
                     if (unreadCount > 0) {
@@ -218,17 +670,17 @@
                         sidebarBadge.style.display = 'none';
                     }
                 }
-                
+
                 if (!notifications.length) {
                     container.innerHTML = '<div class="empty-notifications"><i class="fas fa-bell-slash"></i> No notifications yet</div>';
                     return;
                 }
-                
+
                 container.innerHTML = notifications.map(n => {
                     const { icon, color } = getIconAndColor(n.type, n.severity);
                     let notificationClass = '';
                     let statusBadge = '';
-                    
+
                     if (n.isResolved === true) {
                         notificationClass = 'resolved';
                         statusBadge = '<span class="status-badge status-resolved"><i class="fas fa-check-circle"></i> Resolved</span>';
@@ -238,7 +690,7 @@
                     } else {
                         statusBadge = '<span class="status-badge status-read"><i class="fas fa-check-circle"></i> Read</span>';
                     }
-                    
+
                     return `
                         <div class="notification-item ${notificationClass}" data-id="${n.id}">
                             <div class="notification-icon ${color}">
@@ -252,17 +704,17 @@
                                     ${statusBadge}
                                 </div>
                                 <div class="notification-actions">
-                                    ${!n.isRead && !n.isResolved ? 
+                                    ${!n.isRead && !n.isResolved ?
                                         `<button class="btn-action btn-mark-read" onclick="markAsRead('${n.id}')">
                                             <i class="fas fa-check-circle"></i> Mark as Read
                                         </button>` : ''
                                     }
-                                    ${!n.isResolved ? 
+                                    ${!n.isResolved ?
                                         `<button class="btn-action btn-mark-resolved" onclick="markAsResolved('${n.id}')">
                                             <i class="fas fa-check-double"></i> Mark as Resolved
                                         </button>` : ''
                                     }
-                                    ${n.incidentId ? 
+                                    ${n.incidentId ?
                                         `<button class="btn-action btn-view" onclick="viewIncident('${n.incidentId}')">
                                             <i class="fas fa-eye"></i> View Incident
                                         </button>` : ''
@@ -322,29 +774,29 @@
         function openProfileModal() {
             document.getElementById('profileModal').style.display = 'flex';
         }
-        
+
         function closeProfileModal() {
             document.getElementById('profileModal').style.display = 'none';
         }
 
         document.getElementById('markAllReadBtn')?.addEventListener('click', markAllAsRead);
         document.getElementById('profileNavLink')?.addEventListener('click', function(e) { e.preventDefault(); openProfileModal(); });
-        
+
         let connection = null;
         function startSignalR() {
             connection = new signalR.HubConnectionBuilder()
                 .withUrl("/notificationHub")
                 .withAutomaticReconnect()
                 .build();
-            
+
             connection.on("ReceiveNotification", () => {
                 loadAllNotifications();
             });
-            
+
             connection.on("NewIncident", () => {
                 loadAllNotifications();
             });
-            
+
             connection.start()
                 .then(() => {
                     console.log("✅ SignalR Connected!");
@@ -357,7 +809,7 @@
                     setTimeout(startSignalR, 5000);
                 });
         }
-        
+
         startSignalR();
         loadAllNotifications();
     </script>
