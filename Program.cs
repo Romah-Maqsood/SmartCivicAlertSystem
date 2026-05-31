@@ -5,10 +5,15 @@ using SmartCityPulse.Data;
 using SmartCityPulse.Hubs;
 using SmartCityPulse.Services;
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ==================== MongoDB ====================
 builder.Services.AddSingleton<MongoDbContext>();
+
+
+builder.Services.AddScoped<AICommentService>();
 
 // ==================== AI Services (Citizen) ====================
 builder.Services.AddScoped<AIVisionService>();

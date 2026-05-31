@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace SmartCityPulse.Models
 {
-    [BsonIgnoreExtraElements]                           // ← added to ignore unknown fields
+    [BsonIgnoreExtraElements]
     public class Incident
     {
         [BsonId]
@@ -50,7 +50,6 @@ namespace SmartCityPulse.Models
         [BsonElement("comments")]
         public List<IncidentComment> Comments { get; set; } = new();
 
-        // ==================== IMAGE PATH FIELD ====================
         [BsonElement("imagePath")]
         public string ImagePath { get; set; } = string.Empty;
 
@@ -135,13 +134,13 @@ namespace SmartCityPulse.Models
 
     public class IncidentComment
     {
-        [BsonElement("Text")]           // matches database "Text"
+        [BsonElement("Text")]
         public string Text { get; set; } = string.Empty;
 
-        [BsonElement("Author")]         // matches database "Author"
+        [BsonElement("Author")]
         public string Author { get; set; } = string.Empty;
 
-        [BsonElement("CreatedAt")]      // ✅ corrected to match database "CreatedAt"
+        [BsonElement("CreatedAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
