@@ -2,13 +2,13 @@
     Layout = null;
 }
 <style>
-    /* Breathing robot button – 90px, moved slightly away from corner */
+    /* Breathing robot button – 120px, moved slightly up & left */
     .chat-robot-btn {
         position: fixed;
-        bottom: 42px;          /* corner se upar */
-        right: 42px;           /* corner se left */
-        width: 90px;           /* bara button ha */
-        height: 90px;
+        bottom: 60px;          /* upar shift */
+        right: 60px;           /* left shift */
+        width: 120px;          /* bara */
+        height: 120px;
         background: transparent;
         border: none;
         cursor: pointer;
@@ -29,8 +29,8 @@
         left: 20px;
         bottom: auto;
         right: auto;
-        width: 50px;
-        height: 50px;
+        width: 55px;
+        height: 55px;
         animation: none;
         filter: drop-shadow(0 4px 12px rgba(37,99,235,0.3));
     }
@@ -43,8 +43,8 @@
     /* Chat widget – softer professional look */
     .chat-widget {
         position: fixed;
-        bottom: 130px;
-        right: 42px;
+        bottom: 200px;         /* button ke upar space */
+        right: 60px;
         width: 380px;
         max-height: 520px;
         background: #FFFFFF;
@@ -170,7 +170,7 @@
     .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
 
-<!-- Floating Cute Robot Button (90px, breathing, morph on chat open) -->
+<!-- Floating Cute Robot Button (120px, breathing, morph on chat open) -->
 <button class="chat-robot-btn" id="chatRobotIcon" onclick="toggleChatWidget()" title="AI Assistant" aria-label="Open AI Assistant">
     <svg viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
         <ellipse cx="34" cy="64" rx="16" ry="4" fill="rgba(0,0,0,0.10)" id="robot-shadow"/>
