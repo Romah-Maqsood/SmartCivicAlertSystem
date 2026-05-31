@@ -122,8 +122,6 @@
         canvas { height:100% !important; width:100% !important; }
         .chart-error { color:var(--red); font-size:13px; text-align:center; padding:40px 0; }
         .hide { display:none !important; }
-
-        /* TABLE — status column fix */
         .table-wrapper table { width:100%; border-collapse:collapse; table-layout:auto; }
         .table-wrapper thead { background:#F3F6FB; }
         .table-wrapper thead th { padding:13px 20px; text-align:left; font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.7px; border-bottom:2px solid #DDE3ED; white-space:nowrap; }
@@ -134,7 +132,6 @@
         .table-wrapper tbody tr:hover { background:#F8FAFC; }
         .table-wrapper tbody td { padding:13px 20px; font-size:13px; color:var(--text-primary); vertical-align:middle; }
         .td-muted { color:var(--text-secondary) !important; }
-
         .badge { display:inline-block; padding:4px 10px; border-radius:50px; font-size:11px; font-weight:600; white-space:nowrap; }
         .badge-critical { background:#FEE2E2; color:#991B1B; }
         .badge-high { background:#FFEDD5; color:#9A3412; }
@@ -144,7 +141,6 @@
         .status-open { background:#DBEAFE; color:#1E40AF; }
         .status-inprogress { background:var(--yellow-light); color:var(--yellow-dark); }
         .status-resolved { background:var(--green-light); color:var(--green-dark); }
-
         .btn-primary { background:var(--blue); color:white; padding:9px 18px; border-radius:var(--radius-btn); font-size:13px; font-weight:600; border:none; cursor:pointer; transition:var(--transition); display:inline-flex; align-items:center; gap:7px; }
         .btn-primary:hover { background:var(--blue-dark); transform:translateY(-1px); box-shadow:0 4px 12px rgba(37,99,235,0.25); }
         .btn-sm { padding:7px 14px; font-size:12px; border-radius:8px; }
@@ -295,8 +291,6 @@
         .btn-cancel-del:hover { border-color:var(--text-secondary); color:var(--text-primary); background:white; }
         .btn-confirm-del { flex:1; background:var(--red); color:white; border:none; padding:11px 20px; border-radius:var(--radius-btn); font-size:13px; font-weight:600; cursor:pointer; transition:var(--transition); display:inline-flex; align-items:center; justify-content:center; gap:8px; }
         .btn-confirm-del:hover { background:var(--red-dark); }
-
-        /* ===== NOTIFICATIONS — Improved UI ===== */
         .notif-page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
         .notif-filter-tabs { display:flex; gap:3px; background:#F1F5F9; border-radius:12px; padding:4px; }
         .notif-filter-tab { padding:7px 18px; border-radius:9px; border:none; background:transparent; cursor:pointer; font-size:12px; font-weight:600; color:var(--text-secondary); transition:var(--transition); font-family:inherit; display:flex; align-items:center; gap:6px; white-space:nowrap; }
@@ -306,8 +300,6 @@
         .notif-filter-tab.active .tab-count { background:#DBEAFE; color:var(--blue); }
         .notif-mark-all-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:var(--radius-btn); border:1.5px solid var(--border); background:white; color:var(--text-secondary); font-size:12px; font-weight:600; cursor:pointer; transition:var(--transition); font-family:inherit; }
         .notif-mark-all-btn:hover { border-color:var(--blue); color:var(--blue); background:var(--blue-light); }
-
-        /* Summary bar */
         .notif-summary-bar { display:flex; align-items:center; justify-content:space-between; background:white; border:1px solid var(--border); border-radius:14px; padding:12px 20px; margin-bottom:16px; }
         .notif-summary-stats { display:flex; align-items:center; gap:20px; }
         .notif-stat-item { display:flex; align-items:center; gap:8px; }
@@ -318,24 +310,12 @@
         .notif-stat-num { font-size:15px; font-weight:800; color:var(--text-primary); }
         .notif-hint { font-size:11px; color:var(--text-secondary); display:flex; align-items:center; gap:5px; }
         .notif-hint i { color:var(--blue); }
-
-        /* Notification cards */
         .notification-list { display:flex; flex-direction:column; gap:10px; }
-        .notification-card {
-            display:flex; align-items:flex-start; gap:14px;
-            padding:16px 18px;
-            background:white;
-            border:1px solid var(--border);
-            border-radius:14px;
-            transition:var(--transition);
-            position:relative;
-            overflow:hidden;
-        }
+        .notification-card { display:flex; align-items:flex-start; gap:14px; padding:16px 18px; background:white; border:1px solid var(--border); border-radius:14px; transition:var(--transition); position:relative; overflow:hidden; }
         .notification-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:transparent; border-radius:3px 0 0 3px; }
         .notification-card.unread { background:#F0F7FF; border-color:#BFDBFE; }
         .notification-card.unread::before { background:var(--blue); }
         .notification-card:hover { box-shadow:0 4px 16px rgba(37,99,235,0.1); transform:translateY(-1px); }
-
         .notif-card-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
         .notif-card-icon.type-critical { background:#FEE2E2; color:#991B1B; }
         .notif-card-icon.type-high     { background:#FFEDD5; color:#9A3412; }
@@ -343,10 +323,8 @@
         .notif-card-icon.type-success  { background:var(--green-light); color:var(--green-dark); }
         .notif-card-icon.type-warning  { background:var(--yellow-light); color:var(--yellow-dark); }
         .notif-card-icon.type-default  { background:#F3F4F6; color:var(--text-secondary); }
-
         .notif-unread-dot { width:8px; height:8px; background:var(--blue); border-radius:50%; flex-shrink:0; margin-top:4px; }
         .notif-unread-dot.hidden { visibility:hidden; }
-
         .notif-card-body { flex:1; min-width:0; }
         .notif-card-title { font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:4px; line-height:1.4; }
         .notification-card.unread .notif-card-title { color:#1E3A5F; }
@@ -354,13 +332,11 @@
         .notif-card-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
         .notif-card-time { font-size:11px; color:var(--text-secondary); display:flex; align-items:center; gap:4px; }
         .notif-card-time i { font-size:10px; color:var(--blue); }
-
         .notif-sev-badge { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; padding:2px 9px; border-radius:20px; }
         .notif-sev-badge.critical { background:#FEE2E2; color:#991B1B; }
         .notif-sev-badge.high     { background:#FFEDD5; color:#9A3412; }
         .notif-sev-badge.medium   { background:#FEF3C7; color:var(--yellow-dark); }
         .notif-sev-badge.low      { background:var(--green-light); color:var(--green-dark); }
-
         .notif-card-actions { display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0; }
         .notif-read-toggle { display:inline-flex; align-items:center; background:#F1F5F9; border-radius:20px; padding:3px; cursor:pointer; border:1px solid var(--border); transition:var(--transition); user-select:none; }
         .notif-read-toggle:hover { border-color:var(--blue-mid); }
@@ -369,18 +345,17 @@
         .notif-read-toggle.is-read .toggle-option.opt-unread { color:#CBD5E1; }
         .notif-read-toggle.is-unread .toggle-option.opt-unread { background:#FEE2E2; color:#991B1B; }
         .notif-read-toggle.is-unread .toggle-option.opt-read { color:#CBD5E1; }
-
         .notif-empty { text-align:center; padding:60px 20px; background:white; border-radius:14px; border:1.5px dashed var(--border); }
         .notif-empty-icon { width:60px; height:60px; background:var(--blue-light); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:24px; color:var(--blue); }
         .notif-empty h4 { font-size:15px; font-weight:700; color:var(--text-primary); margin-bottom:6px; }
         .notif-empty p { font-size:13px; color:var(--text-secondary); }
 
-        /* REPORTS */
+        /* ===== REPORTS ===== */
         .report-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:18px; }
         .form-group label { display:block; font-size:12px; font-weight:600; color:var(--text-secondary); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.4px; }
         .form-group input,.form-group select { width:100%; padding:10px 14px; background:var(--bg-page); border:1px solid var(--border); color:var(--text-primary); border-radius:10px; font-size:13px; font-family:inherit; transition:var(--transition); }
         .form-group input:focus,.form-group select:focus { outline:none; border-color:var(--blue); background:white; }
-        .report-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:24px; }
+        .report-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:4px; }
         .report-card { padding:26px 20px; text-align:center; transition:var(--transition); }
         .report-card:hover { border-color:var(--blue-mid); box-shadow:var(--shadow-hover); transform:translateY(-3px); }
         .report-card .rc-icon { width:52px; height:52px; border-radius:14px; background:var(--blue-light); color:var(--blue); font-size:22px; display:flex; align-items:center; justify-content:center; margin:0 auto 14px; }
@@ -392,6 +367,23 @@
         .download-menu a { display:flex; align-items:center; gap:10px; padding:11px 16px; color:var(--text-nav); text-decoration:none; font-size:13px; transition:var(--transition); }
         .download-menu a:hover { background:var(--blue-light); color:var(--blue); }
         .download-menu a i { width:16px; text-align:center; }
+        .ai-loading-box { display:none; align-items:center; gap:12px; margin-top:16px; padding:14px 16px; background:#F5F3FF; border:1px solid #DDD6FE; border-radius:12px; }
+        .ai-loading-box span { font-size:13px; font-weight:600; color:#5B21B6; }
+        .ai-loading-box small { display:block; font-size:11px; color:#7C3AED; margin-top:2px; }
+        .ai-result-box { margin-top:16px; background:#F0F7FF; border:1px solid #BFDBFE; border-radius:12px; overflow:hidden; } /* display controlled by inline style */
+        .ai-result-header { display:flex; align-items:center; justify-content:space-between; padding:11px 16px; border-bottom:1px solid #DBEAFE; background:#EFF6FF; }
+        .ai-result-header-left { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; color:#1E40AF; text-transform:uppercase; letter-spacing:.5px; }
+        .ai-result-header-left i { color:#7C3AED; font-size:13px; }
+        .ai-result-timestamp { font-size:11px; color:#93C5FD; }
+        .ai-result-body { padding:16px; }
+        .ai-result-text { font-size:13px; color:var(--text-primary); line-height:1.75; margin-bottom:14px; white-space:pre-wrap; }
+        .ai-result-tags { display:flex; gap:7px; flex-wrap:wrap; }
+        .ai-tag { background:#DBEAFE; color:#1E40AF; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+        .report-divider { height:1px; background:var(--border); margin:20px 0; }
+        .report-step-label { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+        .report-step-title { font-size:14px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px; margin-bottom:0; }
+        .report-step-title i { color:#7C3AED; font-size:14px; }
+        .ai-filter-tag { font-size:10px; font-weight:700; color:#7C3AED; background:#EDE9FE; border:1px solid #DDD6FE; padding:2px 10px; border-radius:20px; }
         .empty-state { text-align:center; padding:60px 20px; color:var(--text-secondary); }
         .empty-state i { font-size:40px; margin-bottom:14px; display:block; color:#CBD5E1; }
         .empty-state p { font-size:14px; }
@@ -478,42 +470,27 @@
     </div>
 
     <div class="content-area">
-        <!-- DASHBOARD (FIXED) -->
+
+        <!-- DASHBOARD -->
         <div id="dashboardSection">
             <div class="stats-grid">
-                <!-- Open Incidents (fixed) -->
                 <div class="stat-card blue">
-                    <div class="stat-card-top">
-                        <span class="stat-label">Open</span>
-                        <div class="stat-icon"><i class="fas fa-folder-open"></i></div>
-                    </div>
+                    <div class="stat-card-top"><span class="stat-label">Open</span><div class="stat-icon"><i class="fas fa-folder-open"></i></div></div>
                     <div class="stat-value">@ViewBag.OpenIncidents</div>
                     <div class="stat-desc">Total open incidents</div>
                 </div>
-                <!-- Resolved Today (fixed) -->
                 <div class="stat-card green">
-                    <div class="stat-card-top">
-                        <span class="stat-label">Resolved Today</span>
-                        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
-                    </div>
+                    <div class="stat-card-top"><span class="stat-label">Resolved Today</span><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div>
                     <div class="stat-value">@ViewBag.ResolvedToday</div>
                     <div class="stat-desc">Successfully resolved</div>
                 </div>
-                <!-- Critical Open -->
                 <div class="stat-card red">
-                    <div class="stat-card-top">
-                        <span class="stat-label">Critical Open</span>
-                        <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                    </div>
+                    <div class="stat-card-top"><span class="stat-label">Critical Open</span><div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div></div>
                     <div class="stat-value">@ViewBag.CriticalIncidents</div>
                     <div class="stat-desc">Critical incidents pending</div>
                 </div>
-                <!-- Pending -->
                 <div class="stat-card yellow">
-                    <div class="stat-card-top">
-                        <span class="stat-label">Pending</span>
-                        <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
-                    </div>
+                    <div class="stat-card-top"><span class="stat-label">Pending</span><div class="stat-icon"><i class="fas fa-hourglass-half"></i></div></div>
                     <div class="stat-value">@ViewBag.PendingIncidents</div>
                     <div class="stat-desc">Open or in progress</div>
                 </div>
@@ -529,10 +506,7 @@
             <div class="table-wrapper">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Title</th><th>Location</th><th>Severity</th>
-                            <th class="col-status">Status</th><th>Reported At</th><th>Action</th>
-                        </tr>
+                        <tr><th>Title</th><th>Location</th><th>Severity</th><th class="col-status">Status</th><th>Reported At</th><th>Action</th></tr>
                     </thead>
                     <tbody>
                         @if (ViewBag.RecentIncidents != null && ViewBag.RecentIncidents.Count > 0)
@@ -567,10 +541,7 @@
             <div class="table-wrapper">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Title</th><th>Location</th><th>Department</th>
-                            <th>Severity</th><th class="col-status">Status</th><th>Reported At</th><th>Action</th>
-                        </tr>
+                        <tr><th>Title</th><th>Location</th><th>Department</th><th>Severity</th><th class="col-status">Status</th><th>Reported At</th><th>Action</th></tr>
                     </thead>
                     <tbody id="allIncidentsTable"><tr><td colspan="7"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody>
                 </table>
@@ -612,23 +583,59 @@
             <div class="chart-card" style="margin-top:20px;"><div class="chart-title"><i class="fas fa-chart-area"></i> Weekly Trend — Total vs Resolved</div><div class="chart-canvas-wrapper"><canvas id="trendDetailChart"></canvas></div><div id="trendDetailError" class="chart-error hide"></div></div>
         </div>
 
-        <!-- REPORTS -->
+        <!-- ============================================================
+             REPORTS SECTION — Redesigned with AI Summary
+             ============================================================ -->
         <div id="reportsSection" class="hide">
-            <div class="section-header"><h2 class="section-title"><i class="fas fa-file-alt"></i> Generate Reports</h2></div>
-            <p style="color:var(--text-secondary);font-size:13px;margin-bottom:24px;">Export filtered incident reports in CSV, JSON, or PDF format.</p>
-            <div class="chart-card report-custom" style="margin-bottom:28px;">
-                <div class="chart-title"><i class="fas fa-sliders-h"></i> Custom Report</div>
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-file-alt"></i> Generate Reports</h2>
+            </div>
+            <p style="color:var(--text-secondary);font-size:13px;margin-bottom:24px;">
+                Filter incidents, preview the count, download in your preferred format, or generate an AI-powered summary.
+            </p>
+
+            <!-- Card 1: Filters + Download + AI Summary -->
+            <div class="chart-card report-custom" style="margin-bottom:20px;">
+
+                <!-- Step 1: Filters -->
+                <div class="chart-title" style="margin-bottom:14px;">
+                    <i class="fas fa-sliders-h"></i> Step 1 — Set Filters
+                </div>
                 <div class="report-form-grid">
                     <div class="form-group"><label>Start Date</label><input type="date" id="reportStartDate" /></div>
                     <div class="form-group"><label>End Date</label><input type="date" id="reportEndDate" /></div>
-                    <div class="form-group"><label>Department</label><select id="reportDepartment"><option value="">All Departments</option><option value="Fire Department">Fire</option><option value="Police Department">Police</option><option value="Rescue Department">Rescue</option></select></div>
-                    <div class="form-group"><label>Severity</label><select id="reportSeverity"><option value="">All Severities</option><option value="Critical">Critical</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option></select></div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select id="reportDepartment">
+                            <option value="">All Departments</option>
+                            <option value="Fire Department">Fire Department</option>
+                            <option value="Police Department">Police Department</option>
+                            <option value="Rescue Department">Rescue Department</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Severity</label>
+                        <select id="reportSeverity">
+                            <option value="">All Severities</option>
+                            <option value="Critical">Critical</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
                 </div>
-                <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-                    <button class="btn-ghost" onclick="previewCount()"><i class="fas fa-eye"></i> Preview Count</button>
+
+                <!-- Preview + Download -->
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--border);">
+                    <button class="btn-ghost" onclick="previewCount()">
+                        <i class="fas fa-eye"></i> Preview Count
+                    </button>
                     <span id="previewResult" class="preview-result"></span>
+                    <div style="flex:1;"></div>
                     <div class="download-dropdown">
-                        <button class="btn-primary" onclick="toggleDownloadMenu()"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button>
+                        <button class="btn-primary" onclick="toggleDownloadMenu()">
+                            <i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i>
+                        </button>
                         <div class="download-menu" id="downloadMenu">
                             <a href="#" onclick="downloadCustomReport('csv');return false;"><i class="fas fa-file-csv"></i> CSV</a>
                             <a href="#" onclick="downloadCustomReport('json');return false;"><i class="fas fa-file-code"></i> JSON</a>
@@ -636,20 +643,110 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <h3 style="font-size:15px;font-weight:700;color:#374151;margin-bottom:14px;">Quick Presets</h3>
-            <div class="report-cards">
-                <div class="report-card"><div class="rc-icon"><i class="fas fa-calendar-day"></i></div><h3>Today's Report</h3><p>All incidents reported today</p><div class="download-dropdown"><button class="btn-primary" onclick="toggleQuickMenu('today')"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button><div class="download-menu" id="quickMenu-today"><a href="#" onclick="downloadQuickReport('today','csv');return false;"><i class="fas fa-file-csv"></i> CSV</a><a href="#" onclick="downloadQuickReport('today','json');return false;"><i class="fas fa-file-code"></i> JSON</a><a href="#" onclick="downloadQuickReport('today','pdf');return false;"><i class="fas fa-file-pdf"></i> PDF</a></div></div></div>
-                <div class="report-card"><div class="rc-icon"><i class="fas fa-calendar-week"></i></div><h3>Weekly Report</h3><p>Last 7 days summary</p><div class="download-dropdown"><button class="btn-primary" onclick="toggleQuickMenu('weekly')"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button><div class="download-menu" id="quickMenu-weekly"><a href="#" onclick="downloadQuickReport('weekly','csv');return false;"><i class="fas fa-file-csv"></i> CSV</a><a href="#" onclick="downloadQuickReport('weekly','json');return false;"><i class="fas fa-file-code"></i> JSON</a><a href="#" onclick="downloadQuickReport('weekly','pdf');return false;"><i class="fas fa-file-pdf"></i> PDF</a></div></div></div>
-                <div class="report-card"><div class="rc-icon"><i class="fas fa-calendar-alt"></i></div><h3>Monthly Report</h3><p>Last 30 days overview</p><div class="download-dropdown"><button class="btn-primary" onclick="toggleQuickMenu('monthly')"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button><div class="download-menu" id="quickMenu-monthly"><a href="#" onclick="downloadQuickReport('monthly','csv');return false;"><i class="fas fa-file-csv"></i> CSV</a><a href="#" onclick="downloadQuickReport('monthly','json');return false;"><i class="fas fa-file-code"></i> JSON</a><a href="#" onclick="downloadQuickReport('monthly','pdf');return false;"><i class="fas fa-file-pdf"></i> PDF</a></div></div></div>
-            </div>
-            <p style="margin-top:20px;color:#9CA3AF;text-align:center;font-size:12px;"><i class="fas fa-info-circle"></i> PDF export requires iTextSharp.</p>
-        </div>
 
-        <!-- NOTIFICATIONS – Partial view -->
+                <div class="report-divider"></div>
+
+                <!-- Step 2: AI Summary -->
+                <div class="report-step-label">
+                    <div class="report-step-title">
+                        <i class="fas fa-robot"></i> Step 2 — AI Summary
+                    </div>
+                    <span class="ai-filter-tag">Uses above filters</span>
+                </div>
+                <p style="font-size:12px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6;">
+                    Generates a professional narrative summary of all incidents matching your selected filters.
+                    Leave filters empty for a complete system overview.
+                </p>
+                <button class="btn-primary" id="aiSummaryBtn" onclick="generateAISummary()"
+                    style="background:linear-gradient(135deg,#7C3AED,#6366F1);border:none;">
+                    <i class="fas fa-magic"></i> Generate AI Summary
+                </button>
+
+                <!-- Loading state -->
+                <div class="ai-loading-box" id="aiSummaryLoading">
+                    <i class="fas fa-spinner fa-spin" style="color:#7C3AED;font-size:16px;flex-shrink:0;"></i>
+                    <div>
+                        <span>Analyzing incidents…</span>
+                        <small>Gemini is reviewing your incident data</small>
+                    </div>
+                </div>
+
+                <!-- Result box (initially hidden) -->
+                <div class="ai-result-box" id="aiSummaryResult" style="display:none;">
+                    <div class="ai-result-header">
+                        <div class="ai-result-header-left">
+                            <i class="fas fa-robot"></i> AI-Generated Summary
+                        </div>
+                        <span class="ai-result-timestamp" id="aiSummaryTimestamp"></span>
+                    </div>
+                    <div class="ai-result-body">
+                        <p class="ai-result-text" id="aiSummaryText"></p>
+                        <div class="ai-result-tags" id="aiSummaryTags"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Card 2: Quick Presets -->
+            <div class="chart-card">
+                <div class="chart-title"><i class="fas fa-bolt"></i> Quick Presets</div>
+                <p style="font-size:12px;color:var(--text-secondary);margin-bottom:16px;margin-top:-8px;">
+                    One-click download for common date ranges — no filter setup needed.
+                </p>
+                <div class="report-cards">
+                    <div class="report-card">
+                        <div class="rc-icon"><i class="fas fa-calendar-day"></i></div>
+                        <h3>Today's Report</h3>
+                        <p>All incidents reported today</p>
+                        <div class="download-dropdown">
+                            <button class="btn-primary" onclick="toggleQuickMenu('today')"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button>
+                            <div class="download-menu" id="quickMenu-today">
+                                <a href="#" onclick="downloadQuickReport('today','csv');return false;"><i class="fas fa-file-csv"></i> CSV</a>
+                                <a href="#" onclick="downloadQuickReport('today','json');return false;"><i class="fas fa-file-code"></i> JSON</a>
+                                <a href="#" onclick="downloadQuickReport('today','pdf');return false;"><i class="fas fa-file-pdf"></i> PDF</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="report-card">
+                        <div class="rc-icon"><i class="fas fa-calendar-week"></i></div>
+                        <h3>Weekly Report</h3>
+                        <p>Last 7 days summary</p>
+                        <div class="download-dropdown">
+                            <button class="btn-primary" onclick="toggleQuickMenu('weekly')"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button>
+                            <div class="download-menu" id="quickMenu-weekly">
+                                <a href="#" onclick="downloadQuickReport('weekly','csv');return false;"><i class="fas fa-file-csv"></i> CSV</a>
+                                <a href="#" onclick="downloadQuickReport('weekly','json');return false;"><i class="fas fa-file-code"></i> JSON</a>
+                                <a href="#" onclick="downloadQuickReport('weekly','pdf');return false;"><i class="fas fa-file-pdf"></i> PDF</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="report-card">
+                        <div class="rc-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <h3>Monthly Report</h3>
+                        <p>Last 30 days overview</p>
+                        <div class="download-dropdown">
+                            <button class="btn-primary" onclick="toggleQuickMenu('monthly')"><i class="fas fa-download"></i> Download <i class="fas fa-chevron-down" style="font-size:11px;"></i></button>
+                            <div class="download-menu" id="quickMenu-monthly">
+                                <a href="#" onclick="downloadQuickReport('monthly','csv');return false;"><i class="fas fa-file-csv"></i> CSV</a>
+                                <a href="#" onclick="downloadQuickReport('monthly','json');return false;"><i class="fas fa-file-code"></i> JSON</a>
+                                <a href="#" onclick="downloadQuickReport('monthly','pdf');return false;"><i class="fas fa-file-pdf"></i> PDF</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p style="margin-top:16px;color:#9CA3AF;text-align:center;font-size:12px;">
+                    <i class="fas fa-info-circle"></i> PDF export requires iTextSharp.
+                </p>
+            </div>
+
+        </div>
+        <!-- END REPORTS SECTION -->
+
+        <!-- NOTIFICATIONS -->
         <div id="notificationsSection" class="hide">
             @await Html.PartialAsync("_NotificationsPartial")
         </div>
+
     </div>
 </div>
 
@@ -769,6 +866,7 @@
     </div>
 </div>
 
+<!-- CONFIRM DELETE MODAL -->
 <div id="confirmModal" class="modal">
     <div class="modal-content" style="width:420px;">
         <div class="delete-modal-body">
@@ -785,6 +883,7 @@
     </div>
 </div>
 
+<!-- OPERATOR MODAL -->
 <div id="operatorModal" class="modal">
     <div class="modal-content">
         <h3 id="modalTitle">Add New Operator</h3>
@@ -802,6 +901,7 @@
     </div>
 </div>
 
+<!-- INCIDENT DETAIL MODAL -->
 <div id="incidentDetailModal" class="modal">
     <div class="modal-content" style="max-width:700px;width:700px;max-height:85vh;overflow-y:auto;">
         <button type="button" onclick="closeIncidentDetailModal()" style="position:absolute;top:14px;right:14px;width:30px;height:30px;background:#F3F4F6;border:none;border-radius:50%;cursor:pointer;color:#6B7280;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;"><i class="fas fa-times"></i></button>
@@ -810,82 +910,66 @@
 </div>
 
 <script>
-    const ACTIVITY_KEY='sc_admin_activity';
-    const ACTIVITY_ICONS={login:'fa-sign-in-alt',edit:'fa-edit',create:'fa-plus-circle',delete:'fa-trash',report:'fa-file-alt',view:'fa-eye',filter:'fa-filter'};
-    function loadActivityLog(){try{return JSON.parse(sessionStorage.getItem(ACTIVITY_KEY)||'[]');}catch{return[];}}
-    function saveActivityLog(log){try{sessionStorage.setItem(ACTIVITY_KEY,JSON.stringify(log.slice(0,20)));}catch{}}
-    function logActivity(type,title,meta){const log=loadActivityLog();log.unshift({type,title,meta,time:new Date().toISOString()});saveActivityLog(log);}
-    function timeAgo(iso){const diff=Math.floor((Date.now()-new Date(iso))/1000);if(diff<60)return'Just now';if(diff<3600)return Math.floor(diff/60)+' min ago';if(diff<86400)return Math.floor(diff/3600)+' hrs ago';return Math.floor(diff/86400)+'d ago';}
-    function renderActivityLog(){const el=document.getElementById('pmActivityList');if(!el)return;const log=loadActivityLog();const last5=log.slice(0,5);if(!last5.length){el.innerHTML='<div class="pm-act-empty"><i class="fas fa-history"></i>No activity recorded yet</div>';return;}el.innerHTML=last5.map(a=>`<div class="pm-activity-item"><div class="pm-act-icon ${a.type}"><i class="fas ${ACTIVITY_ICONS[a.type]||'fa-circle'}"></i></div><div class="pm-act-text"><div class="pm-act-title">${a.title}</div><div class="pm-act-meta">${a.meta}</div></div><span class="pm-act-badge ${a.type}">${a.type.charAt(0).toUpperCase()+a.type.slice(1)}</span><span class="pm-act-time">${timeAgo(a.time)}</span></div>`).join('');}
-    function clearActivityLog(){sessionStorage.removeItem(ACTIVITY_KEY);renderActivityLog();showToast('Activity log cleared.','success');}
-    logActivity('login','Logged into Admin Dashboard','Smart Civic · Admin Panel');
+    const ACTIVITY_KEY = 'sc_admin_activity';
+    const ACTIVITY_ICONS = { login:'fa-sign-in-alt', edit:'fa-edit', create:'fa-plus-circle', delete:'fa-trash', report:'fa-file-alt', view:'fa-eye', filter:'fa-filter' };
+    function loadActivityLog() { try { return JSON.parse(sessionStorage.getItem(ACTIVITY_KEY) || '[]'); } catch { return []; } }
+    function saveActivityLog(log) { try { sessionStorage.setItem(ACTIVITY_KEY, JSON.stringify(log.slice(0, 20))); } catch {} }
+    function logActivity(type, title, meta) { const log = loadActivityLog(); log.unshift({ type, title, meta, time: new Date().toISOString() }); saveActivityLog(log); }
+    function timeAgo(iso) { const diff = Math.floor((Date.now() - new Date(iso)) / 1000); if (diff < 60) return 'Just now'; if (diff < 3600) return Math.floor(diff / 60) + ' min ago'; if (diff < 86400) return Math.floor(diff / 3600) + ' hrs ago'; return Math.floor(diff / 86400) + 'd ago'; }
+    function renderActivityLog() { const el = document.getElementById('pmActivityList'); if (!el) return; const log = loadActivityLog(); const last5 = log.slice(0, 5); if (!last5.length) { el.innerHTML = '<div class="pm-act-empty"><i class="fas fa-history"></i>No activity recorded yet</div>'; return; } el.innerHTML = last5.map(a => `<div class="pm-activity-item"><div class="pm-act-icon ${a.type}"><i class="fas ${ACTIVITY_ICONS[a.type] || 'fa-circle'}"></i></div><div class="pm-act-text"><div class="pm-act-title">${a.title}</div><div class="pm-act-meta">${a.meta}</div></div><span class="pm-act-badge ${a.type}">${a.type.charAt(0).toUpperCase() + a.type.slice(1)}</span><span class="pm-act-time">${timeAgo(a.time)}</span></div>`).join(''); }
+    function clearActivityLog() { sessionStorage.removeItem(ACTIVITY_KEY); renderActivityLog(); showToast('Activity log cleared.', 'success'); }
+    logActivity('login', 'Logged into Admin Dashboard', 'Smart Civic · Admin Panel');
 
-    let realNotifications=[];
-    let currentFilter='all';
+    let realNotifications = [];
+    let currentFilter = 'all';
 
-    function getNotifIconInfo(n){
-        const sev=(n.severity||'').toLowerCase();
-        const type=(n.type||'').toLowerCase();
-        if(sev==='critical')return{cls:'type-critical',icon:'fa-exclamation-triangle'};
-        if(sev==='high')return{cls:'type-high',icon:'fa-exclamation-circle'};
-        if(type==='success')return{cls:'type-success',icon:'fa-check-circle'};
-        if(type==='warning')return{cls:'type-warning',icon:'fa-bell'};
-        return{cls:'type-info',icon:'fa-bell'};
+    function getNotifIconInfo(n) {
+        const sev = (n.severity || '').toLowerCase(), type = (n.type || '').toLowerCase();
+        if (sev === 'critical') return { cls: 'type-critical', icon: 'fa-exclamation-triangle' };
+        if (sev === 'high') return { cls: 'type-high', icon: 'fa-exclamation-circle' };
+        if (type === 'success') return { cls: 'type-success', icon: 'fa-check-circle' };
+        if (type === 'warning') return { cls: 'type-warning', icon: 'fa-bell' };
+        return { cls: 'type-info', icon: 'fa-bell' };
     }
-
-    function getSevBadge(n){
-        const sev=(n.severity||'').toLowerCase();
-        if(!sev)return'';
-        const labels={critical:'Critical',high:'High',medium:'Medium',low:'Low'};
-        const label=labels[sev]||sev;
-        return`<span class="notif-sev-badge ${sev}"><i class="fas fa-circle" style="font-size:6px;"></i> ${label}</span>`;
+    function getSevBadge(n) {
+        const sev = (n.severity || '').toLowerCase();
+        if (!sev) return '';
+        const labels = { critical: 'Critical', high: 'High', medium: 'Medium', low: 'Low' };
+        return `<span class="notif-sev-badge ${sev}"><i class="fas fa-circle" style="font-size:6px;"></i> ${labels[sev] || sev}</span>`;
     }
-
-    function updateNotifCounts(){
-        const total=realNotifications.length;
-        const unread=realNotifications.filter(n=>!n.read).length;
-        const read=total-unread;
-        const badge=document.getElementById('notifBadge');
-        const dot=document.getElementById('notifDotTop');
-        if(badge){badge.innerText=unread;badge.style.display=unread>0?'inline-block':'none';}
-        if(dot)dot.style.display=unread>0?'block':'none';
-        const setCount=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
-        setCount('tabCountAll',total);
-        setCount('tabCountUnread',unread);
-        setCount('tabCountRead',read);
-        setCount('summaryUnread',unread);
-        setCount('summaryTotal',total);
+    function updateNotifCounts() {
+        const total = realNotifications.length, unread = realNotifications.filter(n => !n.read).length, read = total - unread;
+        const badge = document.getElementById('notifBadge'), dot = document.getElementById('notifDotTop');
+        if (badge) { badge.innerText = unread; badge.style.display = unread > 0 ? 'inline-block' : 'none'; }
+        if (dot) dot.style.display = unread > 0 ? 'block' : 'none';
+        const setCount = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        setCount('tabCountAll', total); setCount('tabCountUnread', unread); setCount('tabCountRead', read);
+        setCount('summaryUnread', unread); setCount('summaryTotal', total);
     }
-
-    function renderNotifications(){
-        const container=document.getElementById('notificationList');
-        if(!container)return;
-        let filtered=realNotifications;
-        if(currentFilter==='unread')filtered=realNotifications.filter(n=>!n.read);
-        else if(currentFilter==='read')filtered=realNotifications.filter(n=>n.read);
-        if(!filtered.length){
-            const msgs={all:'No notifications yet',unread:'No unread notifications',read:'No read notifications'};
-            const icons={all:'fa-bell-slash',unread:'fa-envelope-open',read:'fa-check-double'};
-            container.innerHTML=`<div class="notif-empty"><div class="notif-empty-icon"><i class="fas ${icons[currentFilter]}"></i></div><h4>${msgs[currentFilter]}</h4><p>You're all caught up! New notifications will appear here.</p></div>`;
+    function renderNotifications() {
+        const container = document.getElementById('notificationList');
+        if (!container) return;
+        let filtered = realNotifications;
+        if (currentFilter === 'unread') filtered = realNotifications.filter(n => !n.read);
+        else if (currentFilter === 'read') filtered = realNotifications.filter(n => n.read);
+        if (!filtered.length) {
+            const msgs = { all: 'No notifications yet', unread: 'No unread notifications', read: 'No read notifications' };
+            const icons = { all: 'fa-bell-slash', unread: 'fa-envelope-open', read: 'fa-check-double' };
+            container.innerHTML = `<div class="notif-empty"><div class="notif-empty-icon"><i class="fas ${icons[currentFilter]}"></i></div><h4>${msgs[currentFilter]}</h4><p>You're all caught up! New notifications will appear here.</p></div>`;
             return;
         }
-        container.innerHTML=filtered.map(n=>{
-            const iconInfo=getNotifIconInfo(n);
-            const sevBadge=getSevBadge(n);
-            const readClass=n.read?'is-read':'is-unread';
-            return`<div class="notification-card ${n.read?'':'unread'}" id="notif-card-${n.id}">
-                <div class="notif-card-icon ${iconInfo.cls}"><i class="fas ${iconInfo.icon}"></i></div>
+        container.innerHTML = filtered.map(n => {
+            const ii = getNotifIconInfo(n), sb = getSevBadge(n), rc = n.read ? 'is-read' : 'is-unread';
+            return `<div class="notification-card ${n.read ? '' : 'unread'}" id="notif-card-${n.id}">
+                <div class="notif-card-icon ${ii.cls}"><i class="fas ${ii.icon}"></i></div>
                 <div class="notif-card-body">
                     <div class="notif-card-title">${escapeHtml(n.title)}</div>
-                    ${n.message?`<div class="notif-card-message">${escapeHtml(n.message)}</div>`:''}
-                    <div class="notif-card-meta">
-                        <span class="notif-card-time"><i class="far fa-clock"></i>${escapeHtml(n.time)}</span>
-                        ${sevBadge}
-                    </div>
+                    ${n.message ? `<div class="notif-card-message">${escapeHtml(n.message)}</div>` : ''}
+                    <div class="notif-card-meta"><span class="notif-card-time"><i class="far fa-clock"></i>${escapeHtml(n.time)}</span>${sb}</div>
                 </div>
                 <div class="notif-card-actions">
-                    <div class="notif-unread-dot ${n.read?'hidden':''}"></div>
-                    <div class="notif-read-toggle ${readClass}" onclick="markNotificationRead('${n.id}')" title="${n.read?'Mark as unread':'Mark as read'}">
+                    <div class="notif-unread-dot ${n.read ? 'hidden' : ''}"></div>
+                    <div class="notif-read-toggle ${rc}" onclick="markNotificationRead('${n.id}')" title="${n.read ? 'Mark as unread' : 'Mark as read'}">
                         <div class="toggle-option opt-read"><i class="fas fa-check" style="font-size:9px;"></i> Read</div>
                         <div class="toggle-option opt-unread"><i class="fas fa-circle" style="font-size:7px;"></i> Unread</div>
                     </div>
@@ -893,85 +977,254 @@
             </div>`;
         }).join('');
     }
+    function setNotifFilter(filter, btn) { currentFilter = filter; document.querySelectorAll('.notif-filter-tab').forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); renderNotifications(); }
+    async function markNotificationRead(id) { try { const res = await fetch('/Admin/MarkNotificationRead', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'id=' + encodeURIComponent(id) }); if (!res.ok) return; const result = await res.json(); const n = realNotifications.find(x => x.id === id); if (n) { n.read = result.isRead; updateNotifCounts(); renderNotifications(); } } catch (err) { console.error(err); } }
+    async function markAllNotificationsRead() { const unread = realNotifications.filter(n => !n.read); if (!unread.length) { showToast('All notifications are already marked as read.', 'success'); return; } for (const n of unread) { try { await fetch('/Admin/MarkNotificationRead', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'id=' + encodeURIComponent(n.id) }); n.read = true; } catch {} } updateNotifCounts(); renderNotifications(); showToast('All notifications marked as read.', 'success'); }
+    function addNotification(notification) { if (realNotifications.some(n => n.id === notification.id)) return; realNotifications.unshift({ id: notification.id, title: notification.title, message: notification.message || '', time: notification.time || 'Just now', read: notification.read !== undefined ? notification.read : false, severity: notification.severity, type: notification.type }); updateNotifCounts(); const ns = document.getElementById('notificationsSection'); if (ns && !ns.classList.contains('hide')) renderNotifications(); }
+    async function loadNotifications() { try { const res = await fetch('/Admin/GetNotifications'); if (!res.ok) return; const data = await res.json(); realNotifications = data.map(n => ({ id: n.id, title: n.title, message: n.message || '', time: new Date(n.createdAt).toLocaleString(), read: n.isRead, severity: n.severity, type: n.type })); updateNotifCounts(); } catch (err) { console.error('Failed to load notifications:', err); } }
 
-    function setNotifFilter(filter,btn){currentFilter=filter;document.querySelectorAll('.notif-filter-tab').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');renderNotifications();}
+    let confirmCallback = null, dashboardChartsLoaded = false, analyticsChartsLoaded = false;
+    let allCitizens = [], allOperators = [];
 
-    async function markNotificationRead(id){try{const res=await fetch('/Admin/MarkNotificationRead',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'id='+encodeURIComponent(id)});if(!res.ok)return;const result=await res.json();const n=realNotifications.find(x=>x.id===id);if(n){n.read=result.isRead;updateNotifCounts();renderNotifications();}}catch(err){console.error(err);}}
+    function updateClock() { const now = new Date(), h = now.getHours(), m = now.getMinutes(), ampm = h >= 12 ? 'PM' : 'AM', hh = (h % 12 || 12).toString().padStart(2, '0'), mm = m.toString().padStart(2, '0'); const el = document.getElementById('clockDisplay'); if (el) el.textContent = `${hh}:${mm} ${ampm}`; const dt = document.getElementById('dropdownTime'); if (dt) dt.textContent = now.toLocaleDateString('en-PK', { day: 'numeric', month: 'short', year: 'numeric' }); }
+    setInterval(updateClock, 1000); updateClock();
 
-    async function markAllNotificationsRead(){const unread=realNotifications.filter(n=>!n.read);if(!unread.length){showToast('All notifications are already marked as read.','success');return;}for(const n of unread){try{await fetch('/Admin/MarkNotificationRead',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'id='+encodeURIComponent(n.id)});n.read=true;}catch{}}updateNotifCounts();renderNotifications();showToast('All notifications marked as read.','success');}
+    function showToast(message, type = 'success') { const container = document.getElementById('toastContainer'); const toast = document.createElement('div'); toast.className = `toast ${type}`; const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'; toast.innerHTML = `<i class="fas ${icon}"></i><span class="toast-msg">${message}</span><i class="fas fa-times toast-close" onclick="this.parentElement.remove()"></i>`; container.appendChild(toast); setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4000); }
 
-    function addNotification(notification){if(realNotifications.some(n=>n.id===notification.id))return;realNotifications.unshift({id:notification.id,title:notification.title,message:notification.message||'',time:notification.time||'Just now',read:notification.read!==undefined?notification.read:false,severity:notification.severity,type:notification.type});updateNotifCounts();const notifSection=document.getElementById('notificationsSection');if(notifSection&&!notifSection.classList.contains('hide'))renderNotifications();}
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); document.getElementById('mainContent').classList.toggle('expanded'); }
+    function toggleDropdown(event) { event.stopPropagation(); document.getElementById('adminDropdown').classList.toggle('active'); document.getElementById('profileTrigger').classList.toggle('open'); }
+    function closeDropdown() { document.getElementById('adminDropdown').classList.remove('active'); document.getElementById('profileTrigger').classList.remove('open'); }
+    window.addEventListener('click', e => { if (!e.target.closest('.user-menu')) closeDropdown(); });
 
-    async function loadNotifications(){try{const res=await fetch('/Admin/GetNotifications');if(!res.ok)return;const data=await res.json();realNotifications=data.map(n=>({id:n.id,title:n.title,message:n.message||'',time:new Date(n.createdAt).toLocaleString(),read:n.isRead,severity:n.severity,type:n.type}));updateNotifCounts();}catch(err){console.error('Failed to load notifications:',err);}}
+    function showProfile() { closeDropdown(); renderActivityLog(); const meta = document.getElementById('currentSessionMeta'); if (meta) { const ua = navigator.userAgent; const br = ua.includes('Edg') ? 'Edge' : ua.includes('Chrome') ? 'Chrome' : ua.includes('Firefox') ? 'Firefox' : ua.includes('Safari') ? 'Safari' : 'Browser'; const os = ua.includes('Windows') ? 'Windows' : ua.includes('Mac') ? 'macOS' : ua.includes('Linux') ? 'Linux' : 'Unknown'; meta.textContent = `${br} · ${os} · ${new Date().toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit', hour12: true })}`; } fetch('/Admin/GetOperatorsJson', { credentials: 'same-origin' }).then(r => r.json()).then(ops => { const el = document.getElementById('pmStatOperators'); if (el) el.textContent = ops.length; }).catch(() => {}); document.getElementById('profileModal').classList.add('active'); logActivity('view', 'Opened My Profile', 'Profile Modal'); }
+    function switchPmTab(tab, btn) { document.querySelectorAll('.pm-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.pm-panel').forEach(p => p.classList.remove('active')); btn.classList.add('active'); document.getElementById('pmPanel-' + tab).classList.add('active'); if (tab === 'activity') renderActivityLog(); }
+    function previewAvatar(event) { const file = event.target.files[0]; if (!file) return; if (file.size > 2 * 1024 * 1024) { showToast('Image must be under 2MB.', 'error'); return; } const reader = new FileReader(); reader.onload = e => { const src = e.target.result; ['pmAvatarLarge', 'topbarAvatar'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = `<img src="${src}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`; }); }; reader.readAsDataURL(file); logActivity('edit', 'Updated profile photo', 'Profile Settings'); }
+    function togglePwVisibility(inputId, btnId) { const input = document.getElementById(inputId), btn = document.getElementById(btnId); if (!input || !btn) return; const isHidden = input.type === 'password'; input.type = isHidden ? 'text' : 'password'; btn.innerHTML = isHidden ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>'; }
+    function checkPasswordStrength() { const pwd = document.getElementById('editPassword').value; const fill = document.getElementById('pwStrengthFill'), text = document.getElementById('pwStrengthText'); const hasLen = pwd.length >= 8, hasUp = /[A-Z]/.test(pwd), hasNum = /[0-9]/.test(pwd), hasSp = /[^A-Za-z0-9]/.test(pwd); const score = [hasLen, hasUp, hasNum, hasSp].filter(Boolean).length; const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'], colors = ['', '#DC2626', '#F97316', '#3B82F6', '#10B981'], widths = ['0%', '25%', '55%', '78%', '100%']; if (fill) { fill.style.width = widths[score]; fill.style.background = colors[score]; } if (text) { text.textContent = pwd ? labels[score] : ''; text.style.color = colors[score]; } [['req-len', hasLen], ['req-up', hasUp], ['req-num', hasNum], ['req-sp', hasSp]].forEach(([id, met]) => { const el = document.getElementById(id); if (el) el.classList.toggle('met', met); }); }
+    async function saveProfile() { const name = document.getElementById('editName').value.trim(); const currentPwd = document.getElementById('currentPassword').value; const newPwd = document.getElementById('editPassword').value; const confirmPwd = document.getElementById('editPasswordConfirm').value; if (!name) { showToast('Name cannot be empty.', 'error'); return; } if (newPwd || confirmPwd || currentPwd) { if (!currentPwd) { showToast('Please enter your current password.', 'error'); return; } if (newPwd !== confirmPwd) { showToast('New passwords do not match.', 'error'); return; } if (newPwd.length < 6) { showToast('Password must be at least 6 characters.', 'error'); return; } } const payload = { Name: name, CurrentPassword: currentPwd, NewPassword: newPwd }; try { const response = await fetch('/Admin/UpdateProfile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), credentials: 'same-origin' }); const result = await response.json(); if (result.success) { showToast(result.message || 'Profile updated!', 'success'); logActivity('edit', 'Updated profile', (newPwd ? 'Name + Password changed' : 'Name: ' + name)); closeModal('profileModal'); } else { showToast(result.message || 'Update failed.', 'error'); } } catch (err) { showToast('Network error.', 'error'); console.error(err); } }
 
-    let confirmCallback=null,dashboardChartsLoaded=false,analyticsChartsLoaded=false;
-    let allCitizens=[],allOperators=[];
+    function showSection(section) {
+        document.querySelectorAll('.nav-item').forEach(item => { item.classList.toggle('active', item.getAttribute('data-page') === section); });
+        ['dashboard', 'incidents', 'operators', 'citizens', 'analytics', 'reports', 'notifications'].forEach(s => { document.getElementById(s + 'Section').classList.toggle('hide', s !== section); });
+        const subtitles = { dashboard: "Manage your city's incident response", incidents: "All Incidents", operators: "Operators Management", citizens: "Citizens Management", analytics: "Analytics & Insights", reports: "Generate Reports", notifications: "Notifications" };
+        const sub = document.getElementById('topbarSubtitle'); if (sub) sub.textContent = subtitles[section] || '';
+        if (section === 'incidents') { loadAllIncidents(); logActivity('view', 'Viewed All Incidents', 'Incidents Section'); }
+        if (section === 'operators') { loadOperators(); logActivity('view', 'Viewed Operators', 'Operators Section'); }
+        if (section === 'citizens') { loadCitizens(); logActivity('view', 'Viewed Citizens', 'Citizens Section'); }
+        if (section === 'analytics') { if (!analyticsChartsLoaded) loadAnalytics(); else resizeAnalyticsCharts(); logActivity('view', 'Opened Analytics Dashboard', 'Analytics Section'); }
+        if (section === 'dashboard') { if (!dashboardChartsLoaded) loadDashboardCharts(); else resizeDashboardCharts(); }
+        if (section === 'reports') logActivity('view', 'Opened Reports Section', 'Reports');
+        if (section === 'notifications') { renderNotifications(); logActivity('view', 'Viewed Notifications', 'Notifications'); }
+    }
+    function resizeDashboardCharts() { [window.trendChart, window.severityChart].forEach(c => c && c.resize()); }
+    function resizeAnalyticsCharts() { [window.deptChart, window.analyticsSevChart, window.trendDetailChart].forEach(c => c && c.resize()); }
 
-    function updateClock(){const now=new Date();const h=now.getHours(),m=now.getMinutes();const ampm=h>=12?'PM':'AM';const hh=(h%12||12).toString().padStart(2,'0'),mm=m.toString().padStart(2,'0');const el=document.getElementById('clockDisplay');if(el)el.textContent=`${hh}:${mm} ${ampm}`;const dt=document.getElementById('dropdownTime');if(dt)dt.textContent=now.toLocaleDateString('en-PK',{day:'numeric',month:'short',year:'numeric'});}
-    setInterval(updateClock,1000);updateClock();
+    function showChartError(cId, eId, msg) { const c = document.getElementById(cId), e = document.getElementById(eId); if (c) c.style.display = 'none'; if (e) { e.classList.remove('hide'); e.innerText = msg; } }
+    function hideChartError(cId, eId) { const c = document.getElementById(cId), e = document.getElementById(eId); if (c) c.style.display = 'block'; if (e) e.classList.add('hide'); }
+    function safeDestroy(chart) { if (chart && typeof chart.destroy === 'function') chart.destroy(); }
+    const CHART_DEFAULTS = { plugins: { legend: { labels: { color: '#6B7280', font: { family: 'Plus Jakarta Sans', size: 12 }, boxWidth: 12 } } }, scales: { y: { ticks: { color: '#6B7280', font: { family: 'Plus Jakarta Sans' } }, grid: { color: '#F1F5F9' } }, x: { ticks: { color: '#6B7280', font: { family: 'Plus Jakarta Sans' } }, grid: { color: '#F1F5F9' } } } };
 
-    function showToast(message,type='success'){const container=document.getElementById('toastContainer');const toast=document.createElement('div');toast.className=`toast ${type}`;const icon=type==='success'?'fa-check-circle':'fa-exclamation-circle';toast.innerHTML=`<i class="fas ${icon}"></i><span class="toast-msg">${message}</span><i class="fas fa-times toast-close" onclick="this.parentElement.remove()"></i>`;container.appendChild(toast);setTimeout(()=>{if(toast.parentElement)toast.remove();},4000);}
+    function loadDashboardCharts() {
+        fetch('/Admin/GetAnalyticsJson', { credentials: 'same-origin' }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }).then(data => {
+            if (!data.trend || !data.severity) throw new Error('Invalid data format');
+            hideChartError('trendChart', 'trendChartError'); safeDestroy(window.trendChart);
+            window.trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), { type: 'line', data: { labels: data.trend.map(t => t.date), datasets: [{ label: 'Incidents', data: data.trend.map(t => t.total), borderColor: '#2563EB', backgroundColor: 'rgba(37,99,235,0.08)', fill: true, tension: 0.4, pointBackgroundColor: '#2563EB', pointRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, ...CHART_DEFAULTS } });
+            hideChartError('severityChart', 'severityChartError'); safeDestroy(window.severityChart);
+            window.severityChart = new Chart(document.getElementById('severityChart').getContext('2d'), { type: 'doughnut', data: { labels: ['Critical', 'High', 'Medium', 'Low'], datasets: [{ data: [data.severity.critical, data.severity.high, data.severity.medium, data.severity.low], backgroundColor: ['#DC2626', '#F97316', '#F59E0B', '#10B981'], borderWidth: 0, hoverOffset: 6 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: CHART_DEFAULTS.plugins } });
+            dashboardChartsLoaded = true;
+        }).catch(err => { showChartError('trendChart', 'trendChartError', 'Could not load trend data: ' + err.message); showChartError('severityChart', 'severityChartError', 'Could not load severity data: ' + err.message); });
+    }
 
-    function toggleSidebar(){document.getElementById('sidebar').classList.toggle('collapsed');document.getElementById('mainContent').classList.toggle('expanded');}
-    function toggleDropdown(event){event.stopPropagation();document.getElementById('adminDropdown').classList.toggle('active');document.getElementById('profileTrigger').classList.toggle('open');}
-    function closeDropdown(){document.getElementById('adminDropdown').classList.remove('active');document.getElementById('profileTrigger').classList.remove('open');}
-    window.addEventListener('click',e=>{if(!e.target.closest('.user-menu'))closeDropdown();});
+    async function loadAllIncidents() {
+        const status = document.getElementById('statusFilter').value, severity = document.getElementById('severityFilter').value;
+        let url = '/Admin/GetAllIncidentsJson';
+        const params = []; if (status) params.push(`status=${encodeURIComponent(status)}`); if (severity) params.push(`severity=${encodeURIComponent(severity)}`); if (params.length) url += '?' + params.join('&');
+        const tbody = document.getElementById('allIncidentsTable');
+        tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>';
+        try { const res = await fetch(url, { credentials: 'same-origin' }); const incidents = await res.json(); tbody.innerHTML = ''; if (!incidents.length) { tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-folder-open"></i><p>No incidents found</p></div></td></tr>'; return; } incidents.forEach(i => { const row = tbody.insertRow(); row.innerHTML = `<td><strong>${escapeHtml(i.title)}</strong></td><td class="td-muted">${escapeHtml(i.location)}</td><td class="td-muted">${i.department || '--'}</td><td><span class="badge badge-${i.severity?.toLowerCase()}">${i.severity}</span></td><td class="col-status"><span class="status-badge status-${i.status?.toLowerCase().replace(/ /g, '')}">${i.status}</span></td><td class="td-muted">${new Date(i.reportedAt).toLocaleString()}</td><td><button class="btn-view" onclick="viewIncidentDetail('${i.id}')"><i class="fas fa-eye"></i> View</button></td>`; }); if (status || severity) logActivity('filter', `Filtered incidents (${incidents.length} results)`, 'Status: ' + (status || 'All') + ' · Severity: ' + (severity || 'All')); } catch (err) { console.error(err); }
+    }
+    function clearFilters() { document.getElementById('statusFilter').value = ''; document.getElementById('severityFilter').value = ''; loadAllIncidents(); }
+    function escapeHtml(text) { return text ? String(text).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])) : ''; }
 
-    function showProfile(){closeDropdown();renderActivityLog();const meta=document.getElementById('currentSessionMeta');if(meta){const ua=navigator.userAgent;const br=ua.includes('Edg')?'Edge':ua.includes('Chrome')?'Chrome':ua.includes('Firefox')?'Firefox':ua.includes('Safari')?'Safari':'Browser';const os=ua.includes('Windows')?'Windows':ua.includes('Mac')?'macOS':ua.includes('Linux')?'Linux':'Unknown';meta.textContent=`${br} \u00b7 ${os} \u00b7 ${new Date().toLocaleTimeString('en-PK',{hour:'2-digit',minute:'2-digit',hour12:true})}`;}fetch('/Admin/GetOperatorsJson',{credentials:'same-origin'}).then(r=>r.json()).then(ops=>{const el=document.getElementById('pmStatOperators');if(el)el.textContent=ops.length;}).catch(()=>{});document.getElementById('profileModal').classList.add('active');logActivity('view','Opened My Profile','Profile Modal');}
-    function switchPmTab(tab,btn){document.querySelectorAll('.pm-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.pm-panel').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('pmPanel-'+tab).classList.add('active');if(tab==='activity')renderActivityLog();}
-    function previewAvatar(event){const file=event.target.files[0];if(!file)return;if(file.size>2*1024*1024){showToast('Image must be under 2MB.','error');return;}const reader=new FileReader();reader.onload=e=>{const src=e.target.result;['pmAvatarLarge','topbarAvatar'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=`<img src="${src}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;});};reader.readAsDataURL(file);logActivity('edit','Updated profile photo','Profile Settings');}
-    function togglePwVisibility(inputId,btnId){const input=document.getElementById(inputId),btn=document.getElementById(btnId);if(!input||!btn)return;const isHidden=input.type==='password';input.type=isHidden?'text':'password';btn.innerHTML=isHidden?'<i class="fas fa-eye-slash"></i>':'<i class="fas fa-eye"></i>';}
-    function checkPasswordStrength(){const pwd=document.getElementById('editPassword').value;const fill=document.getElementById('pwStrengthFill'),text=document.getElementById('pwStrengthText');const hasLen=pwd.length>=8,hasUp=/[A-Z]/.test(pwd),hasNum=/[0-9]/.test(pwd),hasSp=/[^A-Za-z0-9]/.test(pwd);const score=[hasLen,hasUp,hasNum,hasSp].filter(Boolean).length;const labels=['','Weak','Fair','Good','Strong'],colors=['','#DC2626','#F97316','#3B82F6','#10B981'],widths=['0%','25%','55%','78%','100%'];if(fill){fill.style.width=widths[score];fill.style.background=colors[score];}if(text){text.textContent=pwd?labels[score]:'';text.style.color=colors[score];}[['req-len',hasLen],['req-up',hasUp],['req-num',hasNum],['req-sp',hasSp]].forEach(([id,met])=>{const el=document.getElementById(id);if(el)el.classList.toggle('met',met);});}
-    async function saveProfile(){const name=document.getElementById('editName').value.trim();const currentPwd=document.getElementById('currentPassword').value;const newPwd=document.getElementById('editPassword').value;const confirmPwd=document.getElementById('editPasswordConfirm').value;if(!name){showToast('Name cannot be empty.','error');return;}if(newPwd||confirmPwd||currentPwd){if(!currentPwd){showToast('Please enter your current password.','error');return;}if(newPwd!==confirmPwd){showToast('New passwords do not match.','error');return;}if(newPwd.length<6){showToast('Password must be at least 6 characters.','error');return;}}const payload={Name:name,CurrentPassword:currentPwd,NewPassword:newPwd};try{const response=await fetch('/Admin/UpdateProfile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),credentials:'same-origin'});const result=await response.json();if(result.success){showToast(result.message||'Profile updated!','success');logActivity('edit','Updated profile',(newPwd?'Name + Password changed':'Name: '+name));closeModal('profileModal');}else{showToast(result.message||'Update failed.','error');}}catch(err){showToast('Network error.','error');console.error(err);}}
+    async function loadOperators() { try { const res = await fetch('/Admin/GetOperatorsJson', { credentials: 'same-origin' }); allOperators = await res.json(); renderOperatorsTable(allOperators); } catch (err) { console.error(err); } }
+    function renderOperatorsTable(operators) { const tbody = document.getElementById('operatorsTable'); if (!operators.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fas fa-users-slash"></i><p>No operators found</p></div></td></tr>'; return; } tbody.innerHTML = ''; operators.forEach(op => { const row = tbody.insertRow(); row.innerHTML = `<td><strong>${escapeHtml(op.name)}</strong></td><td class="td-muted">${escapeHtml(op.email)}</td><td class="td-muted">${escapeHtml(op.phone || '--')}</td><td>${op.department || '--'}</td><td><div class="action-buttons"><button class="btn-edit" onclick="editOperator('${op.id}')"><i class="fas fa-edit"></i> Edit</button><button class="btn-delete" onclick="deleteOperator('${op.id}','${escapeHtml(op.name)}')"><i class="fas fa-trash"></i> Delete</button></div></td>`; }); }
+    function openAddOperatorModal() { document.getElementById('entityType').value = 'operator'; document.getElementById('entityId').value = ''; document.getElementById('modalTitle').innerText = 'Add New Operator'; ['opName', 'opEmail', 'opPhone', 'opPassword'].forEach(id => document.getElementById(id).value = ''); document.getElementById('opDepartment').value = ''; document.getElementById('opDepartment').style.display = 'block'; document.getElementById('operatorModal').classList.add('active'); }
+    function editOperator(id) { const op = allOperators.find(o => o.id === id); if (!op) return; document.getElementById('entityType').value = 'operator'; document.getElementById('entityId').value = op.id; document.getElementById('modalTitle').innerText = 'Edit Operator'; document.getElementById('opName').value = op.name || ''; document.getElementById('opEmail').value = op.email || ''; document.getElementById('opPhone').value = op.phone || ''; document.getElementById('opDepartment').value = op.department || ''; document.getElementById('opDepartment').style.display = 'block'; document.getElementById('opPassword').value = ''; document.getElementById('operatorModal').classList.add('active'); }
+    async function deleteOperator(id, name) { showConfirmModal('You are about to permanently delete this operator:', name, async () => { const res = await fetch('/Admin/DeleteOperator', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }), credentials: 'same-origin' }); const result = await res.json(); if (result.success) { showToast('Operator deleted successfully.', 'success'); logActivity('delete', 'Deleted Operator: ' + name, 'Operators Management'); } else showToast(result.message, 'error'); loadOperators(); }); }
 
-    function showSection(section){document.querySelectorAll('.nav-item').forEach(item=>{item.classList.toggle('active',item.getAttribute('data-page')===section);});['dashboard','incidents','operators','citizens','analytics','reports','notifications'].forEach(s=>{document.getElementById(s+'Section').classList.toggle('hide',s!==section);});const subtitles={dashboard:"Manage your city's incident response",incidents:"All Incidents",operators:"Operators Management",citizens:"Citizens Management",analytics:"Analytics & Insights",reports:"Generate Reports",notifications:"Notifications"};const sub=document.getElementById('topbarSubtitle');if(sub)sub.textContent=subtitles[section]||'';if(section==='incidents'){loadAllIncidents();logActivity('view','Viewed All Incidents','Incidents Section');}if(section==='operators'){loadOperators();logActivity('view','Viewed Operators','Operators Section');}if(section==='citizens'){loadCitizens();logActivity('view','Viewed Citizens','Citizens Section');}if(section==='analytics'){if(!analyticsChartsLoaded)loadAnalytics();else resizeAnalyticsCharts();logActivity('view','Opened Analytics Dashboard','Analytics Section');}if(section==='dashboard'){if(!dashboardChartsLoaded)loadDashboardCharts();else resizeDashboardCharts();}if(section==='reports')logActivity('view','Opened Reports Section','Reports');if(section==='notifications'){renderNotifications();logActivity('view','Viewed Notifications','Notifications');}}
-    function resizeDashboardCharts(){[window.trendChart,window.severityChart].forEach(c=>c&&c.resize());}
-    function resizeAnalyticsCharts(){[window.deptChart,window.analyticsSevChart,window.trendDetailChart].forEach(c=>c&&c.resize());}
+    async function loadCitizens() { try { const res = await fetch('/Admin/GetCitizensJson', { credentials: 'same-origin' }); allCitizens = await res.json(); renderCitizensTable(allCitizens); } catch (err) { console.error(err); } }
+    function renderCitizensTable(citizens) { const tbody = document.getElementById('citizensTable'); if (!citizens.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fas fa-user-slash"></i><p>No citizens found</p></div></td></tr>'; return; } tbody.innerHTML = ''; citizens.forEach(c => { const row = tbody.insertRow(); row.innerHTML = `<td><strong>${escapeHtml(c.name)}</strong></td><td class="td-muted">${escapeHtml(c.email)}</td><td class="td-muted">${escapeHtml(c.phone || '--')}</td><td><span class="badge badge-low">${escapeHtml(c.role)}</span></td><td><div class="action-buttons"><button class="btn-delete" onclick="deleteCitizen('${c.id}','${escapeHtml(c.name)}')"><i class="fas fa-trash"></i> Delete</button></div></td>`; }); }
+    async function deleteCitizen(id, name) { showConfirmModal('You are about to permanently delete this citizen:', name, async () => { const res = await fetch('/Admin/DeleteCitizen', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }), credentials: 'same-origin' }); const result = await res.json(); if (result.success) { showToast('Citizen deleted successfully.', 'success'); logActivity('delete', 'Deleted Citizen: ' + name, 'Citizens Management'); } else showToast(result.message, 'error'); loadCitizens(); }); }
 
-    function showChartError(cId,eId,msg){const c=document.getElementById(cId),e=document.getElementById(eId);if(c)c.style.display='none';if(e){e.classList.remove('hide');e.innerText=msg;}}
-    function hideChartError(cId,eId){const c=document.getElementById(cId),e=document.getElementById(eId);if(c)c.style.display='block';if(e)e.classList.add('hide');}
-    function safeDestroy(chart){if(chart&&typeof chart.destroy==='function')chart.destroy();}
-    const CHART_DEFAULTS={plugins:{legend:{labels:{color:'#6B7280',font:{family:'Plus Jakarta Sans',size:12},boxWidth:12}}},scales:{y:{ticks:{color:'#6B7280',font:{family:'Plus Jakarta Sans'}},grid:{color:'#F1F5F9'}},x:{ticks:{color:'#6B7280',font:{family:'Plus Jakarta Sans'}},grid:{color:'#F1F5F9'}}}};
-    function loadDashboardCharts(){fetch('/Admin/GetAnalyticsJson',{credentials:'same-origin'}).then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();}).then(data=>{if(!data.trend||!data.severity)throw new Error('Invalid data format');hideChartError('trendChart','trendChartError');safeDestroy(window.trendChart);window.trendChart=new Chart(document.getElementById('trendChart').getContext('2d'),{type:'line',data:{labels:data.trend.map(t=>t.date),datasets:[{label:'Incidents',data:data.trend.map(t=>t.total),borderColor:'#2563EB',backgroundColor:'rgba(37,99,235,0.08)',fill:true,tension:0.4,pointBackgroundColor:'#2563EB',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,...CHART_DEFAULTS}});hideChartError('severityChart','severityChartError');safeDestroy(window.severityChart);window.severityChart=new Chart(document.getElementById('severityChart').getContext('2d'),{type:'doughnut',data:{labels:['Critical','High','Medium','Low'],datasets:[{data:[data.severity.critical,data.severity.high,data.severity.medium,data.severity.low],backgroundColor:['#DC2626','#F97316','#F59E0B','#10B981'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:CHART_DEFAULTS.plugins}});dashboardChartsLoaded=true;}).catch(err=>{showChartError('trendChart','trendChartError','Could not load trend data: '+err.message);showChartError('severityChart','severityChartError','Could not load severity data: '+err.message);});}
+    async function saveEntity() {
+        const entityType = document.getElementById('entityType').value, id = document.getElementById('entityId').value;
+        const data = { Id: id, Name: document.getElementById('opName').value.trim(), Email: document.getElementById('opEmail').value.trim(), Phone: document.getElementById('opPhone').value.trim(), PasswordHash: document.getElementById('opPassword').value, Department: entityType === 'operator' ? document.getElementById('opDepartment').value : null, Role: entityType === 'operator' ? 'Operator' : 'Citizen' };
+        const url = entityType === 'operator' ? (id ? '/Admin/UpdateOperator?id=' + id : '/Admin/CreateOperator') : (id ? '/Admin/UpdateCitizen?id=' + id : '/Admin/CreateCitizen');
+        try { const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data), credentials: 'same-origin' }); const result = await res.json(); if (result.success) { showToast(result.message, 'success'); const action = id ? 'edit' : 'create'; logActivity(action, (id ? 'Updated' : 'Created') + ' ' + (entityType === 'operator' ? 'Operator' : 'Citizen') + ': ' + data.Name, (entityType === 'operator' ? 'Operators' : 'Citizens') + ' Management'); closeModal('operatorModal'); entityType === 'operator' ? loadOperators() : loadCitizens(); } else showToast(result.message, 'error'); } catch { showToast('Network error', 'error'); }
+    }
 
-    async function loadAllIncidents(){const status=document.getElementById('statusFilter').value,severity=document.getElementById('severityFilter').value;let url='/Admin/GetAllIncidentsJson';const params=[];if(status)params.push(`status=${encodeURIComponent(status)}`);if(severity)params.push(`severity=${encodeURIComponent(severity)}`);if(params.length)url+='?'+params.join('&');const tbody=document.getElementById('allIncidentsTable');tbody.innerHTML='<tr><td colspan="7"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>';try{const res=await fetch(url,{credentials:'same-origin'});const incidents=await res.json();tbody.innerHTML='';if(!incidents.length){tbody.innerHTML='<tr><td colspan="7"><div class="empty-state"><i class="fas fa-folder-open"></i><p>No incidents found</p></div></td></tr>';return;}incidents.forEach(i=>{const row=tbody.insertRow();row.innerHTML=`<td><strong>${escapeHtml(i.title)}</strong></td><td class="td-muted">${escapeHtml(i.location)}</td><td class="td-muted">${i.department||'--'}</td><td><span class="badge badge-${i.severity?.toLowerCase()}">${i.severity}</span></td><td class="col-status"><span class="status-badge status-${i.status?.toLowerCase().replace(/ /g,'')}">${i.status}</span></td><td class="td-muted">${new Date(i.reportedAt).toLocaleString()}</td><td><button class="btn-view" onclick="viewIncidentDetail('${i.id}')"><i class="fas fa-eye"></i> View</button></td>`;});if(status||severity)logActivity('filter',`Filtered incidents (${incidents.length} results)`,'Status: '+(status||'All')+' \u00b7 Severity: '+(severity||'All'));}catch(err){console.error(err);}}
-    function clearFilters(){document.getElementById('statusFilter').value='';document.getElementById('severityFilter').value='';loadAllIncidents();}
-    function escapeHtml(text){return text?String(text).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])):'';}
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    function showConfirmModal(message, entityName, onConfirm) { document.getElementById('confirmMessage').innerText = message; const chip = document.getElementById('deleteNameChip'); if (entityName) { chip.innerText = entityName; chip.style.display = 'inline-block'; } else { chip.style.display = 'none'; } confirmCallback = onConfirm; document.getElementById('confirmModal').classList.add('active'); }
+    function closeConfirmModal() { document.getElementById('confirmModal').classList.remove('active'); confirmCallback = null; }
+    document.getElementById('confirmDeleteBtn').addEventListener('click', () => { if (confirmCallback) { confirmCallback(); closeConfirmModal(); } });
+    window.onclick = e => { if (e.target.classList.contains('modal')) { e.target.classList.remove('active'); if (e.target.id === 'confirmModal') closeConfirmModal(); } if (e.target.classList.contains('profile-modal-overlay')) e.target.classList.remove('active'); };
 
-    async function loadOperators(){try{const res=await fetch('/Admin/GetOperatorsJson',{credentials:'same-origin'});allOperators=await res.json();renderOperatorsTable(allOperators);}catch(err){console.error(err);}}
-    function renderOperatorsTable(operators){const tbody=document.getElementById('operatorsTable');if(!operators.length){tbody.innerHTML='<tr><td colspan="5"><div class="empty-state"><i class="fas fa-users-slash"></i><p>No operators found</p></div></td></tr>';return;}tbody.innerHTML='';operators.forEach(op=>{const row=tbody.insertRow();row.innerHTML=`<td><strong>${escapeHtml(op.name)}</strong></td><td class="td-muted">${escapeHtml(op.email)}</td><td class="td-muted">${escapeHtml(op.phone||'--')}</td><td>${op.department||'--'}</td><td><div class="action-buttons"><button class="btn-edit" onclick="editOperator('${op.id}')"><i class="fas fa-edit"></i> Edit</button><button class="btn-delete" onclick="deleteOperator('${op.id}','${escapeHtml(op.name)}')"><i class="fas fa-trash"></i> Delete</button></div></td>`;});}
-    function openAddOperatorModal(){document.getElementById('entityType').value='operator';document.getElementById('entityId').value='';document.getElementById('modalTitle').innerText='Add New Operator';['opName','opEmail','opPhone','opPassword'].forEach(id=>document.getElementById(id).value='');document.getElementById('opDepartment').value='';document.getElementById('opDepartment').style.display='block';document.getElementById('operatorModal').classList.add('active');}
-    function editOperator(id){const op=allOperators.find(o=>o.id===id);if(!op)return;document.getElementById('entityType').value='operator';document.getElementById('entityId').value=op.id;document.getElementById('modalTitle').innerText='Edit Operator';document.getElementById('opName').value=op.name||'';document.getElementById('opEmail').value=op.email||'';document.getElementById('opPhone').value=op.phone||'';document.getElementById('opDepartment').value=op.department||'';document.getElementById('opDepartment').style.display='block';document.getElementById('opPassword').value='';document.getElementById('operatorModal').classList.add('active');}
-    async function deleteOperator(id,name){showConfirmModal('You are about to permanently delete this operator:',name,async()=>{const res=await fetch('/Admin/DeleteOperator',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id}),credentials:'same-origin'});const result=await res.json();if(result.success){showToast('Operator deleted successfully.','success');logActivity('delete','Deleted Operator: '+name,'Operators Management');}else showToast(result.message,'error');loadOperators();});}
+    function loadAnalytics() {
+        fetch('/Admin/GetAnalyticsJson', { credentials: 'same-origin' }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }).then(data => {
+            if (!data.departments || !data.severity || !data.trend) throw new Error('Invalid data');
+            const allowedDepts = ['Fire Department', 'Police Department', 'Rescue Department', 'Unassigned'];
+            const deptCounts = {}; allowedDepts.forEach(d => deptCounts[d] = 0); let othersCount = 0;
+            data.departments.forEach(d => { if (allowedDepts.includes(d.department)) deptCounts[d.department] += d.count; else othersCount += d.count; });
+            deptCounts['Unassigned'] += othersCount;
+            const deptLabels = [], deptData = []; for (const [dept, cnt] of Object.entries(deptCounts)) { deptLabels.push(dept); deptData.push(cnt); }
+            hideChartError('deptChart', 'deptChartError'); safeDestroy(window.deptChart);
+            window.deptChart = new Chart(document.getElementById('deptChart').getContext('2d'), { type: 'doughnut', data: { labels: deptLabels, datasets: [{ data: deptData, backgroundColor: ['#6366F1', '#EC4899', '#10B981', '#F59E0B'], borderWidth: 0, hoverOffset: 6 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: CHART_DEFAULTS.plugins } });
+            hideChartError('analyticsSeverityChart', 'analyticsSeverityError'); safeDestroy(window.analyticsSevChart);
+            window.analyticsSevChart = new Chart(document.getElementById('analyticsSeverityChart').getContext('2d'), { type: 'bar', data: { labels: ['Critical', 'High', 'Medium', 'Low'], datasets: [{ label: 'Count', data: [data.severity.critical, data.severity.high, data.severity.medium, data.severity.low], backgroundColor: ['#DC2626', '#F97316', '#F59E0B', '#10B981'], borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, ...CHART_DEFAULTS, plugins: { legend: { display: false } } } });
+            hideChartError('trendDetailChart', 'trendDetailError'); safeDestroy(window.trendDetailChart);
+            window.trendDetailChart = new Chart(document.getElementById('trendDetailChart').getContext('2d'), { type: 'line', data: { labels: data.trend.map(t => t.date), datasets: [{ label: 'Total', data: data.trend.map(t => t.total), borderColor: '#2563EB', backgroundColor: 'rgba(37,99,235,0.07)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#2563EB' }, { label: 'Resolved', data: data.trend.map(t => t.resolved), borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.07)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#10B981' }] }, options: { responsive: true, maintainAspectRatio: false, ...CHART_DEFAULTS } });
+            analyticsChartsLoaded = true;
+        }).catch(err => { showChartError('deptChart', 'deptChartError', 'Could not load department data: ' + err.message); showChartError('analyticsSeverityChart', 'analyticsSeverityError', 'Could not load severity data: ' + err.message); showChartError('trendDetailChart', 'trendDetailError', 'Could not load trend data: ' + err.message); });
+    }
 
-    async function loadCitizens(){try{const res=await fetch('/Admin/GetCitizensJson',{credentials:'same-origin'});allCitizens=await res.json();renderCitizensTable(allCitizens);}catch(err){console.error(err);}}
-    function renderCitizensTable(citizens){const tbody=document.getElementById('citizensTable');if(!citizens.length){tbody.innerHTML='<tr><td colspan="5"><div class="empty-state"><i class="fas fa-user-slash"></i><p>No citizens found</p></div></td></tr>';return;}tbody.innerHTML='';citizens.forEach(c=>{const row=tbody.insertRow();row.innerHTML=`<td><strong>${escapeHtml(c.name)}</strong></td><td class="td-muted">${escapeHtml(c.email)}</td><td class="td-muted">${escapeHtml(c.phone||'--')}</td><td><span class="badge badge-low">${escapeHtml(c.role)}</span></td><td><div class="action-buttons"><button class="btn-delete" onclick="deleteCitizen('${c.id}','${escapeHtml(c.name)}')"><i class="fas fa-trash"></i> Delete</button></div></td>`;});}
-    async function deleteCitizen(id,name){showConfirmModal('You are about to permanently delete this citizen:',name,async()=>{const res=await fetch('/Admin/DeleteCitizen',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id}),credentials:'same-origin'});const result=await res.json();if(result.success){showToast('Citizen deleted successfully.','success');logActivity('delete','Deleted Citizen: '+name,'Citizens Management');}else showToast(result.message,'error');loadCitizens();});}
+    function toggleDownloadMenu() { const menu = document.getElementById('downloadMenu'); menu.style.display = menu.style.display === 'block' ? 'none' : 'block'; setTimeout(() => { window.addEventListener('click', function closeMenu(e) { if (!e.target.closest('.download-dropdown')) { menu.style.display = 'none'; window.removeEventListener('click', closeMenu); } }); }, 10); }
+    function toggleQuickMenu(type) { const menu = document.getElementById('quickMenu-' + type); const isOpen = menu.style.display === 'block'; document.querySelectorAll('[id^="quickMenu-"]').forEach(m => m.style.display = 'none'); if (!isOpen) { menu.style.display = 'block'; } setTimeout(() => { window.addEventListener('click', function closeQuick(e) { if (!e.target.closest('.download-dropdown')) { menu.style.display = 'none'; window.removeEventListener('click', closeQuick); } }); }, 10); }
+    function downloadQuickReport(type, format) {
+        const today = new Date().toISOString().split('T')[0]; let start, end = today;
+        if (type === 'today') start = today;
+        if (type === 'weekly') start = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
+        if (type === 'monthly') start = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0];
+        logActivity('report', `Downloaded ${type} ${format.toUpperCase()} report`, 'Reports');
+        if (format === 'csv') { window.open(`/Admin/ExportReport?startDate=${start}&endDate=${end}`, '_blank'); }
+        else if (format === 'json') { fetch(`/Admin/GetAllIncidentsJson?startDate=${start}&endDate=${end}`, { credentials: 'same-origin' }).then(r => r.json()).then(data => { const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `IncidentReport_${new Date().toISOString().slice(0, 10)}.json`; link.click(); URL.revokeObjectURL(link.href); }).catch(() => showToast('Error generating JSON report.', 'error')); }
+        else if (format === 'pdf') { window.open(`/Admin/ExportPdfReport?startDate=${start}&endDate=${end}`, '_blank'); }
+        const menu = document.getElementById('quickMenu-' + type); if (menu) menu.style.display = 'none';
+    }
+    async function previewCount() {
+        const start = document.getElementById('reportStartDate').value, end = document.getElementById('reportEndDate').value, dept = document.getElementById('reportDepartment').value, sev = document.getElementById('reportSeverity').value;
+        let url = '/Admin/GetAllIncidentsJson'; const params = [];
+        if (start) params.push(`startDate=${start}`); if (end) params.push(`endDate=${end}`); if (dept) params.push(`department=${encodeURIComponent(dept)}`); if (sev) params.push(`severity=${encodeURIComponent(sev)}`);
+        if (params.length) url += '?' + params.join('&');
+        const resultEl = document.getElementById('previewResult');
+        resultEl.textContent = 'Checking…';
+        try { const res = await fetch(url, { credentials: 'same-origin' }); const incidents = await res.json(); resultEl.textContent = `${incidents.length} incident${incidents.length !== 1 ? 's' : ''} found`; }
+        catch { resultEl.textContent = 'Error fetching count'; }
+    }
+    async function downloadCustomReport(format) {
+        const start = document.getElementById('reportStartDate').value, end = document.getElementById('reportEndDate').value, dept = document.getElementById('reportDepartment').value, sev = document.getElementById('reportSeverity').value;
+        const buildQuery = () => { const p = []; if (start) p.push(`startDate=${start}`); if (end) p.push(`endDate=${end}`); if (dept) p.push(`department=${encodeURIComponent(dept)}`); if (sev) p.push(`severity=${encodeURIComponent(sev)}`); return p.join('&'); };
+        logActivity('report', 'Downloaded Custom ' + format.toUpperCase() + ' Report', 'Reports');
+        if (format === 'csv') { window.open('/Admin/ExportReport?' + buildQuery(), '_blank'); }
+        else if (format === 'json') { try { const res = await fetch('/Admin/GetAllIncidentsJson?' + buildQuery(), { credentials: 'same-origin' }); const data = await res.json(); const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `IncidentReport_${new Date().toISOString().slice(0, 10)}.json`; link.click(); URL.revokeObjectURL(link.href); } catch { showToast('Error generating JSON report.', 'error'); } }
+        else if (format === 'pdf') { window.open('/Admin/ExportPdfReport?' + buildQuery(), '_blank'); }
+        document.getElementById('downloadMenu').style.display = 'none';
+    }
 
-    async function saveEntity(){const entityType=document.getElementById('entityType').value,id=document.getElementById('entityId').value;const data={Id:id,Name:document.getElementById('opName').value.trim(),Email:document.getElementById('opEmail').value.trim(),Phone:document.getElementById('opPhone').value.trim(),PasswordHash:document.getElementById('opPassword').value,Department:entityType==='operator'?document.getElementById('opDepartment').value:null,Role:entityType==='operator'?'Operator':'Citizen'};const url=entityType==='operator'?(id?'/Admin/UpdateOperator?id='+id:'/Admin/CreateOperator'):(id?'/Admin/UpdateCitizen?id='+id:'/Admin/CreateCitizen');try{const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),credentials:'same-origin'});const result=await res.json();if(result.success){showToast(result.message,'success');const action=id?'edit':'create';logActivity(action,(id?'Updated':'Created')+' '+(entityType==='operator'?'Operator':'Citizen')+': '+data.Name,(entityType==='operator'?'Operators':'Citizens')+' Management');closeModal('operatorModal');entityType==='operator'?loadOperators():loadCitizens();}else showToast(result.message,'error');}catch{showToast('Network error','error');}}
 
-    function closeModal(id){document.getElementById(id).classList.remove('active');}
-    function showConfirmModal(message,entityName,onConfirm){document.getElementById('confirmMessage').innerText=message;const chip=document.getElementById('deleteNameChip');if(entityName){chip.innerText=entityName;chip.style.display='inline-block';}else{chip.style.display='none';}confirmCallback=onConfirm;document.getElementById('confirmModal').classList.add('active');}
-    function closeConfirmModal(){document.getElementById('confirmModal').classList.remove('active');confirmCallback=null;}
-    document.getElementById('confirmDeleteBtn').addEventListener('click',()=>{if(confirmCallback){confirmCallback();closeConfirmModal();}});
-    window.onclick=e=>{if(e.target.classList.contains('modal')){e.target.classList.remove('active');if(e.target.id==='confirmModal')closeConfirmModal();}if(e.target.classList.contains('profile-modal-overlay'))e.target.classList.remove('active');};
+    // =====================================================
+    // AI SUMMARY — Updated with proper loading/result UI
+    // =====================================================
+    async function generateAISummary() {
+        const start  = document.getElementById('reportStartDate').value;
+        const end    = document.getElementById('reportEndDate').value;
+        const dept   = document.getElementById('reportDepartment').value;
+        const sev    = document.getElementById('reportSeverity').value;
 
-    function loadAnalytics(){fetch('/Admin/GetAnalyticsJson',{credentials:'same-origin'}).then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();}).then(data=>{if(!data.departments||!data.severity||!data.trend)throw new Error('Invalid data');const allowedDepts=['Fire Department','Police Department','Rescue Department','Unassigned'];const deptCounts={};allowedDepts.forEach(d=>deptCounts[d]=0);let othersCount=0;data.departments.forEach(d=>{if(allowedDepts.includes(d.department))deptCounts[d.department]+=d.count;else othersCount+=d.count;});deptCounts['Unassigned']+=othersCount;const deptLabels=[],deptData=[];for(const[dept,cnt]of Object.entries(deptCounts)){deptLabels.push(dept);deptData.push(cnt);}hideChartError('deptChart','deptChartError');safeDestroy(window.deptChart);window.deptChart=new Chart(document.getElementById('deptChart').getContext('2d'),{type:'doughnut',data:{labels:deptLabels,datasets:[{data:deptData,backgroundColor:['#6366F1','#EC4899','#10B981','#F59E0B'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:CHART_DEFAULTS.plugins}});hideChartError('analyticsSeverityChart','analyticsSeverityError');safeDestroy(window.analyticsSevChart);window.analyticsSevChart=new Chart(document.getElementById('analyticsSeverityChart').getContext('2d'),{type:'bar',data:{labels:['Critical','High','Medium','Low'],datasets:[{label:'Count',data:[data.severity.critical,data.severity.high,data.severity.medium,data.severity.low],backgroundColor:['#DC2626','#F97316','#F59E0B','#10B981'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,...CHART_DEFAULTS,plugins:{legend:{display:false}}}});hideChartError('trendDetailChart','trendDetailError');safeDestroy(window.trendDetailChart);window.trendDetailChart=new Chart(document.getElementById('trendDetailChart').getContext('2d'),{type:'line',data:{labels:data.trend.map(t=>t.date),datasets:[{label:'Total',data:data.trend.map(t=>t.total),borderColor:'#2563EB',backgroundColor:'rgba(37,99,235,0.07)',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:'#2563EB'},{label:'Resolved',data:data.trend.map(t=>t.resolved),borderColor:'#10B981',backgroundColor:'rgba(16,185,129,0.07)',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:'#10B981'}]},options:{responsive:true,maintainAspectRatio:false,...CHART_DEFAULTS}});analyticsChartsLoaded=true;}).catch(err=>{showChartError('deptChart','deptChartError','Could not load department data: '+err.message);showChartError('analyticsSeverityChart','analyticsSeverityError','Could not load severity data: '+err.message);showChartError('trendDetailChart','trendDetailError','Could not load trend data: '+err.message);});}
+        const btn       = document.getElementById('aiSummaryBtn');
+        const loading   = document.getElementById('aiSummaryLoading');
+        const resultBox = document.getElementById('aiSummaryResult');
+        const textEl    = document.getElementById('aiSummaryText');
+        const tagsEl    = document.getElementById('aiSummaryTags');
+        const tsEl      = document.getElementById('aiSummaryTimestamp');
 
-    function toggleDownloadMenu(){const menu=document.getElementById('downloadMenu');menu.style.display=menu.style.display==='block'?'none':'block';setTimeout(()=>{window.addEventListener('click',function closeMenu(e){if(!e.target.closest('.download-dropdown')){menu.style.display='none';window.removeEventListener('click',closeMenu);}});},10);}
-    function toggleQuickMenu(type){const menu=document.getElementById('quickMenu-'+type);const isOpen=menu.style.display==='block';document.querySelectorAll('[id^="quickMenu-"]').forEach(m=>m.style.display='none');if(!isOpen){menu.style.display='block';}setTimeout(()=>{window.addEventListener('click',function closeQuick(e){if(!e.target.closest('.download-dropdown')){menu.style.display='none';window.removeEventListener('click',closeQuick);}});},10);}
-    function downloadQuickReport(type,format){const today=new Date().toISOString().split('T')[0];let start,end=today;if(type==='today')start=today;if(type==='weekly')start=new Date(Date.now()-7*86400000).toISOString().split('T')[0];if(type==='monthly')start=new Date(Date.now()-30*86400000).toISOString().split('T')[0];logActivity('report',`Downloaded ${type} ${format.toUpperCase()} report`,'Reports');if(format==='csv'){window.open(`/Admin/ExportReport?startDate=${start}&endDate=${end}`,'_blank');}else if(format==='json'){fetch(`/Admin/GetAllIncidentsJson?startDate=${start}&endDate=${end}`,{credentials:'same-origin'}).then(r=>r.json()).then(data=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=`IncidentReport_${new Date().toISOString().slice(0,10)}.json`;link.click();URL.revokeObjectURL(link.href);}).catch(()=>showToast('Error generating JSON report.','error'));}else if(format==='pdf'){window.open(`/Admin/ExportPdfReport?startDate=${start}&endDate=${end}`,'_blank');}const menu=document.getElementById('quickMenu-'+type);if(menu)menu.style.display='none';}
-    async function previewCount(){const start=document.getElementById('reportStartDate').value,end=document.getElementById('reportEndDate').value,dept=document.getElementById('reportDepartment').value,sev=document.getElementById('reportSeverity').value;let url='/Admin/GetAllIncidentsJson';const params=[];if(start)params.push(`startDate=${start}`);if(end)params.push(`endDate=${end}`);if(dept)params.push(`department=${encodeURIComponent(dept)}`);if(sev)params.push(`severity=${encodeURIComponent(sev)}`);if(params.length)url+='?'+params.join('&');try{const res=await fetch(url,{credentials:'same-origin'});const incidents=await res.json();document.getElementById('previewResult').innerText=`${incidents.length} incidents found`;}catch{document.getElementById('previewResult').innerText='Error fetching count';}}
-    async function downloadCustomReport(format){const start=document.getElementById('reportStartDate').value,end=document.getElementById('reportEndDate').value,dept=document.getElementById('reportDepartment').value,sev=document.getElementById('reportSeverity').value;const buildQuery=()=>{const p=[];if(start)p.push(`startDate=${start}`);if(end)p.push(`endDate=${end}`);if(dept)p.push(`department=${encodeURIComponent(dept)}`);if(sev)p.push(`severity=${encodeURIComponent(sev)}`);return p.join('&');};logActivity('report','Downloaded Custom '+format.toUpperCase()+' Report','Reports');if(format==='csv'){window.open('/Admin/ExportReport?'+buildQuery(),'_blank');}else if(format==='json'){try{const res=await fetch('/Admin/GetAllIncidentsJson?'+buildQuery(),{credentials:'same-origin'});const data=await res.json();const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=`IncidentReport_${new Date().toISOString().slice(0,10)}.json`;link.click();URL.revokeObjectURL(link.href);}catch{showToast('Error generating JSON report.','error');}}else if(format==='pdf'){window.open('/Admin/ExportPdfReport?'+buildQuery(),'_blank');}document.getElementById('downloadMenu').style.display='none';}
+        // Show loading state
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
+        loading.style.display  = 'flex';
+        resultBox.style.display = 'none';
 
-    async function viewIncidentDetail(incidentId){const modal=document.getElementById('incidentDetailModal');const content=document.getElementById('incidentDetailModalContent');content.innerHTML='<div style="text-align:center;padding:50px 20px;color:#9CA3AF;"><i class="fas fa-spinner fa-spin" style="font-size:24px;display:block;margin-bottom:12px;color:var(--blue);"></i>Loading incident details...</div>';modal.classList.add('active');try{const res=await fetch(`/Admin/GetIncidentDetailJson?id=${incidentId}`,{credentials:'same-origin'});if(!res.ok)throw new Error('Incident not found');const inc=await res.json();const sevClass=`badge-${inc.severity.toLowerCase()}`;const statClass=`status-${inc.status.toLowerCase().replace(' ','')}`;const statIcon=inc.status==='Resolved'?'fa-check-circle':'fa-hourglass-half';let citizenHtml='';if(inc.citizen){citizenHtml=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;"><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-user"></i> Name</div><div class="incident-detail-value">${escapeHtml(inc.citizen.name)}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-envelope"></i> Email</div><div class="incident-detail-value">${escapeHtml(inc.citizen.email)}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-phone"></i> Phone</div><div class="incident-detail-value">${escapeHtml(inc.citizen.phone||'N/A')}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-id-badge"></i> Role</div><div class="incident-detail-value">${escapeHtml(inc.citizen.role)}</div></div></div>`;}else{citizenHtml='<div style="color:#9CA3AF;font-style:italic;font-size:13px;display:flex;align-items:center;gap:6px;padding:10px 0;"><i class="fas fa-user-slash"></i> Unknown -- reported without login</div>';}content.innerHTML=`<div style="margin-bottom:16px;"><div style="font-size:18px;font-weight:700;color:#374151;margin-bottom:8px;padding-right:30px;">${escapeHtml(inc.title)}</div><div style="display:flex;gap:7px;flex-wrap:wrap;"><span class="badge ${sevClass}">${escapeHtml(inc.severity)}</span><span class="status-badge ${statClass}"><i class="fas ${statIcon}" style="font-size:10px;"></i> ${escapeHtml(inc.status)}</span></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;"><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-map-marker-alt"></i> Location</div><div class="incident-detail-value">${escapeHtml(inc.location||'Not specified')}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-building"></i> Department</div><div class="incident-detail-value">${escapeHtml(inc.department||'Unassigned')}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-calendar-alt"></i> Reported At</div><div class="incident-detail-value">${new Date(inc.reportedAt).toLocaleString()}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-clock"></i> Last Updated</div><div class="incident-detail-value">${new Date(inc.updatedAt).toLocaleString()}</div></div><div class="incident-info-card" style="grid-column:span 2;"><div class="incident-detail-label"><i class="fas fa-align-left"></i> Description</div><div class="incident-detail-value" style="white-space:pre-wrap;font-weight:400;color:#6B7280;">${escapeHtml(inc.description||'No description provided.')}</div></div></div><div style="border-top:1px solid #E5E7EB;padding-top:14px;"><div class="incident-detail-label" style="margin-bottom:4px;"><i class="fas fa-user"></i> Reported By</div>${citizenHtml}</div>`;logActivity('view','Viewed Incident: '+inc.title,'Incident #'+incidentId);}catch(err){content.innerHTML='<div style="text-align:center;padding:40px 20px;color:#DC2626;"><i class="fas fa-exclamation-circle" style="font-size:24px;display:block;margin-bottom:10px;"></i>Could not load incident details.</div>';console.error(err);}}
-    function closeIncidentDetailModal(){document.getElementById('incidentDetailModal').classList.remove('active');}
+        try {
+            const res = await fetch('/Admin/GenerateAIReportSummary', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: [
+                    `startDate=${encodeURIComponent(start)}`,
+                    `endDate=${encodeURIComponent(end)}`,
+                    `department=${encodeURIComponent(dept)}`,
+                    `severity=${encodeURIComponent(sev)}`
+                ].join('&')
+            });
 
-    document.addEventListener('DOMContentLoaded',()=>{
+            const data = await res.json();
+            loading.style.display = 'none';
+
+            if (data.success) {
+                // Populate text
+                textEl.textContent = data.summary;
+
+                // Build filter context tags
+                const tags = [];
+                tags.push(dept  ? dept  : 'All Departments');
+                tags.push(sev   ? sev   : 'All Severities');
+                if (start && end)   tags.push(`${start} → ${end}`);
+                else if (start)     tags.push(`From ${start}`);
+                else if (end)       tags.push(`Until ${end}`);
+                else                tags.push('All Dates');
+
+                tagsEl.innerHTML = tags.map(t =>
+                    `<span class="ai-tag">${escapeHtml(t)}</span>`
+                ).join('');
+
+                // Timestamp
+                tsEl.textContent = 'Generated at ' + new Date().toLocaleTimeString('en-PK', {
+                    hour: '2-digit', minute: '2-digit', hour12: true
+                });
+
+                resultBox.style.display = 'block';
+                logActivity('report', 'Generated AI Summary', 'Reports — ' + (dept || 'All Depts') + ' · ' + (sev || 'All Severities'));
+            } else {
+                showToast(data.message || 'Failed to generate AI summary.', 'error');
+            }
+        } catch (err) {
+            loading.style.display = 'none';
+            showToast('Network error while generating summary.', 'error');
+            console.error(err);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-magic"></i> Generate AI Summary';
+        }
+    }
+
+    async function viewIncidentDetail(incidentId) {
+        const modal = document.getElementById('incidentDetailModal');
+        const content = document.getElementById('incidentDetailModalContent');
+        content.innerHTML = '<div style="text-align:center;padding:50px 20px;color:#9CA3AF;"><i class="fas fa-spinner fa-spin" style="font-size:24px;display:block;margin-bottom:12px;color:var(--blue);"></i>Loading incident details...</div>';
+        modal.classList.add('active');
+        try {
+            const res = await fetch(`/Admin/GetIncidentDetailJson?id=${incidentId}`, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error('Incident not found');
+            const inc = await res.json();
+            const sevClass = `badge-${inc.severity.toLowerCase()}`, statClass = `status-${inc.status.toLowerCase().replace(' ', '')}`, statIcon = inc.status === 'Resolved' ? 'fa-check-circle' : 'fa-hourglass-half';
+            let citizenHtml = '';
+            if (inc.citizen) { citizenHtml = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;"><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-user"></i> Name</div><div class="incident-detail-value">${escapeHtml(inc.citizen.name)}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-envelope"></i> Email</div><div class="incident-detail-value">${escapeHtml(inc.citizen.email)}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-phone"></i> Phone</div><div class="incident-detail-value">${escapeHtml(inc.citizen.phone || 'N/A')}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-id-badge"></i> Role</div><div class="incident-detail-value">${escapeHtml(inc.citizen.role)}</div></div></div>`; }
+            else { citizenHtml = '<div style="color:#9CA3AF;font-style:italic;font-size:13px;display:flex;align-items:center;gap:6px;padding:10px 0;"><i class="fas fa-user-slash"></i> Unknown -- reported without login</div>'; }
+            content.innerHTML = `<div style="margin-bottom:16px;"><div style="font-size:18px;font-weight:700;color:#374151;margin-bottom:8px;padding-right:30px;">${escapeHtml(inc.title)}</div><div style="display:flex;gap:7px;flex-wrap:wrap;"><span class="badge ${sevClass}">${escapeHtml(inc.severity)}</span><span class="status-badge ${statClass}"><i class="fas ${statIcon}" style="font-size:10px;"></i> ${escapeHtml(inc.status)}</span></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;"><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-map-marker-alt"></i> Location</div><div class="incident-detail-value">${escapeHtml(inc.location || 'Not specified')}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-building"></i> Department</div><div class="incident-detail-value">${escapeHtml(inc.department || 'Unassigned')}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-calendar-alt"></i> Reported At</div><div class="incident-detail-value">${new Date(inc.reportedAt).toLocaleString()}</div></div><div class="incident-info-card"><div class="incident-detail-label"><i class="fas fa-clock"></i> Last Updated</div><div class="incident-detail-value">${new Date(inc.updatedAt).toLocaleString()}</div></div><div class="incident-info-card" style="grid-column:span 2;"><div class="incident-detail-label"><i class="fas fa-align-left"></i> Description</div><div class="incident-detail-value" style="white-space:pre-wrap;font-weight:400;color:#6B7280;">${escapeHtml(inc.description || 'No description provided.')}</div></div></div><div style="border-top:1px solid #E5E7EB;padding-top:14px;"><div class="incident-detail-label" style="margin-bottom:4px;"><i class="fas fa-user"></i> Reported By</div>${citizenHtml}</div>`;
+            logActivity('view', 'Viewed Incident: ' + inc.title, 'Incident #' + incidentId);
+        } catch (err) {
+            content.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#DC2626;"><i class="fas fa-exclamation-circle" style="font-size:24px;display:block;margin-bottom:10px;"></i>Could not load incident details.</div>';
+            console.error(err);
+        }
+    }
+    function closeIncidentDetailModal() { document.getElementById('incidentDetailModal').classList.remove('active'); }
+
+    document.addEventListener('DOMContentLoaded', () => {
         loadNotifications();
         updateNotifCounts();
-        if(typeof Chart==='undefined'){document.querySelectorAll('.chart-canvas-wrapper').forEach(w=>{w.innerHTML='<p class="chart-error">Chart.js failed to load.</p>';});}
-        else{loadDashboardCharts();}
+        if (typeof Chart === 'undefined') {
+            document.querySelectorAll('.chart-canvas-wrapper').forEach(w => { w.innerHTML = '<p class="chart-error">Chart.js failed to load.</p>'; });
+        } else {
+            loadDashboardCharts();
+        }
     });
 </script>
 @await Html.PartialAsync("_SignalRClient")
