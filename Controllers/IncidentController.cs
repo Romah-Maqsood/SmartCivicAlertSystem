@@ -40,22 +40,18 @@ namespace SmartCityPulse.Controllers
         {
             try
             {
-                // Get user information from session
                 var userId = HttpContext.Session.GetString("UserId");
                 var userName = HttpContext.Session.GetString("UserName");
 
-                // Set incident properties
                 incident.Id = null;
                 incident.ReportedAt = DateTime.UtcNow;
                 incident.UpdatedAt = DateTime.UtcNow;
                 incident.Status = "Open";
                 incident.Comments = new List<IncidentComment>();
 
-                // Save image if uploaded (OPTIONAL)
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
                     string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "incidents");
-
                     if (!Directory.Exists(uploadsFolder))
                         Directory.CreateDirectory(uploadsFolder);
 
@@ -70,7 +66,6 @@ namespace SmartCityPulse.Controllers
                     incident.ImagePath = $"/uploads/incidents/{uniqueFileName}";
                 }
 
-                // Save citizen information if logged in
                 if (!string.IsNullOrEmpty(userId))
                 {
                     incident.ReportedBy = userId;
@@ -81,7 +76,6 @@ namespace SmartCityPulse.Controllers
                     incident.ReportedByName = "Anonymous User";
                 }
 
-                // Auto-assign department based on severity if not selected
                 if (string.IsNullOrEmpty(incident.Department))
                 {
                     incident.Department = GetDepartmentBySeverity(incident.Severity);
@@ -89,20 +83,9 @@ namespace SmartCityPulse.Controllers
 
                 await _context.Incidents.InsertOneAsync(incident);
 
-                // Send SignalR notification
-                try
-                {
-                    await _hubContext.Clients.All.SendAsync("ReceiveNotification",
-                        "New Incident Reported",
-                        $"New {incident.Severity} incident: {incident.Title} at {incident.Location}",
-                        DateTime.Now);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Notification error: {ex.Message}");
-                }
+                // Send notification to operators
+                await SendNotificationToOperators(incident);
 
-                // ALWAYS RETURN JSON FOR AJAX REQUESTS
                 return Json(new
                 {
                     success = true,
@@ -112,12 +95,94 @@ namespace SmartCityPulse.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error creating incident: {ex.Message}");
                 return Json(new
                 {
                     success = false,
                     message = $"Error: {ex.Message}"
                 });
+            }
+        }
+
+        // ========== Send Notification to Operators ==========
+        private async Task SendNotificationToOperators(Incident incident)
+        {
+            try
+            {
+                string deptGroup = "";
+
+                if (incident.Department.Contains("Police"))
+                {
+                    deptGroup = "Police";
+                }
+                else if (incident.Department.Contains("Fire"))
+                {
+                    deptGroup = "Fire";
+                }
+                else if (incident.Department.Contains("Rescue"))
+                {
+                    deptGroup = "Rescue";
+                }
+                else
+                {
+                    switch (incident.Severity?.ToLower())
+                    {
+                        case "critical":
+                            deptGroup = "EmergencyResponse";
+                            break;
+                        case "high":
+                            deptGroup = "Police";
+                            break;
+                        case "medium":
+                            deptGroup = "Fire";
+                            break;
+                        default:
+                            deptGroup = "GeneralServices";
+                            break;
+                    }
+                }
+
+                // Save notification to database
+                var notification = new Notification
+                {
+                    Id = null,
+                    Title = $"New {incident.Severity} Incident: {incident.Title}",
+                    Message = $"{incident.Title} at {incident.Location}. Reported by {incident.ReportedByName}.",
+                    Type = "incident",
+                    Severity = incident.Severity?.ToLower() ?? "medium",
+                    TargetRole = deptGroup,
+                    TargetUserId = null,
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow,
+                    IncidentId = incident.Id
+                };
+
+                await _context.Notifications.InsertOneAsync(notification);
+
+                // Send real-time via SignalR
+                await _hubContext.Clients.Group(deptGroup).SendAsync("ReceiveNotification",
+                    notification.Title,
+                    notification.Message,
+                    DateTime.UtcNow,
+                    notification.Id);
+
+                await _hubContext.Clients.Group(deptGroup).SendAsync("NewIncident", new
+                {
+                    id = incident.Id,
+                    title = incident.Title,
+                    location = incident.Location,
+                    severity = incident.Severity,
+                    status = incident.Status
+                });
+
+                await _hubContext.Clients.Group("Operator").SendAsync("ReceiveNotification",
+                    notification.Title,
+                    notification.Message,
+                    DateTime.UtcNow,
+                    notification.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Notification error: {ex.Message}");
             }
         }
 
@@ -154,7 +219,7 @@ namespace SmartCityPulse.Controllers
             return View(incident);
         }
 
-        // ==================== GET: Incident Details JSON (For AJAX) ====================
+        // ==================== GET: Incident Details JSON ====================
         [HttpGet]
         public async Task<IActionResult> GetIncidentJson(string id)
         {
@@ -184,7 +249,7 @@ namespace SmartCityPulse.Controllers
             });
         }
 
-        // ==================== GET: My Incidents (For Citizen) ====================
+        // ==================== GET: My Incidents ====================
         [HttpGet]
         public async Task<IActionResult> MyIncidents()
         {
@@ -227,18 +292,7 @@ namespace SmartCityPulse.Controllers
             };
 
             await _context.Incidents.InsertOneAsync(emergencyIncident);
-
-            try
-            {
-                await _hubContext.Clients.All.SendAsync("ReceiveNotification",
-                    "🚨 EMERGENCY SOS",
-                    $"Emergency alert from {userName}. Immediate assistance required!",
-                    DateTime.Now);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Emergency notification error: {ex.Message}");
-            }
+            await SendNotificationToOperators(emergencyIncident);
 
             TempData["SuccessMessage"] = "🚨 Emergency alert sent! Authorities have been notified.";
 

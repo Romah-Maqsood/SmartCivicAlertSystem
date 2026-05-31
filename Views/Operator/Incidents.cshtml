@@ -4,6 +4,7 @@
     Layout = null;
     string dept = ViewBag.Department ?? "";
     string operatorName = ViewBag.OperatorName ?? "";
+    string operatorEmail = ViewBag.OperatorEmail ?? "";
 }
 
 <!DOCTYPE html>
@@ -48,10 +49,11 @@
         .hamburger:hover { background: #F1F5F9; color: #2563EB; }
         .hamburger i { font-size: 18px; }
         .nav-menu { flex: 1; padding: 20px 12px; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; margin: 2px 0; color: #5A6A7F; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s ease; border-radius: 10px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; margin: 2px 0; color: #5A6A7F; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s ease; border-radius: 10px; position: relative; }
         .nav-item i { width: 20px; font-size: 16px; }
         .nav-item:hover { background: #F1F5F9; color: #2563EB; }
         .nav-item.active { background: #EFF6FF; color: #2563EB; }
+        .notification-badge-sidebar { position: absolute; right: 16px; top: 8px; background: #EF4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: 600; min-width: 18px; text-align: center; }
         .nav-footer { padding: 16px 12px; border-top: 1px solid #EAECF0; }
         .footer-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; color: #5A6A7F; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 10px; transition: all 0.2s ease; }
         .footer-item:hover { background: #F1F5F9; color: #2563EB; }
@@ -93,9 +95,38 @@
         .empty-state i { font-size: 48px; margin-bottom: 16px; display: block; }
         .count-badge { background: #2563EB; color: white; padding: 2px 10px; border-radius: 20px; font-size: 12px; margin-left: 8px; }
         .fir-number { font-family: monospace; font-weight: 600; color: #2563EB; background: #EFF6FF; padding: 2px 6px; border-radius: 6px; font-size: 11px; }
+        
+        /* Priority Badge Styles */
+        .priority-1 { background: #DC2626; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
+        .priority-2 { background: #F97316; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
+        .priority-3 { background: #EAB308; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
+        .priority-4 { background: #10B981; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
+        
         .fire-type-badge { background: #FEE2E2; color: #DC2626; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 500; }
         .rescue-type-badge { background: #D1FAE5; color: #10B981; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 500; }
         .police-type-badge { background: #DBEAFE; color: #2563EB; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 500; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; border-radius: 24px; width: 420px; max-width: 90%; padding: 0; animation: slideIn 0.3s ease; overflow: hidden; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid #EAECF0; background: #F8FAFC; }
+        .modal-header h2 { font-size: 18px; font-weight: 700; color: #1A1F36; }
+        .modal-header h2 i { color: #2563EB; margin-right: 8px; }
+        .close-modal { background: none; border: none; font-size: 24px; cursor: pointer; color: #94A3B8; }
+        .close-modal:hover { color: #DC2626; }
+        .profile-body { padding: 24px; }
+        .profile-avatar { text-align: center; margin-bottom: 24px; }
+        .profile-avatar .avatar-circle { width: 80px; height: 80px; background: linear-gradient(135deg, #2563EB, #1D4ED8); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+        .profile-avatar .avatar-circle i { font-size: 40px; color: white; }
+        .profile-avatar h3 { margin-top: 12px; font-size: 18px; font-weight: 700; }
+        .profile-avatar p { font-size: 12px; color: #6B7280; margin-top: 4px; }
+        .info-section { background: #F8FAFC; border-radius: 16px; padding: 4px 0; }
+        .info-row { display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid #EAECF0; }
+        .info-row:last-child { border-bottom: none; }
+        .info-icon { width: 36px; color: #2563EB; font-size: 16px; }
+        .info-text { flex: 1; }
+        .info-label { font-size: 11px; color: #6B7280; margin-bottom: 2px; text-transform: uppercase; }
+        .info-value { font-size: 14px; font-weight: 600; color: #1A1F36; }
+        .status-online { display: inline-flex; align-items: center; gap: 6px; background: #DCFCE7; padding: 4px 12px; border-radius: 30px; font-size: 11px; font-weight: 600; color: #166534; }
+        @@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @@media (max-width: 768px) {
             .sidebar { width: 100%; position: relative; height: auto; }
             .main-content { margin-left: 0; padding: 20px; }
@@ -121,6 +152,11 @@
                 <a href="/Operator/Dashboard" class="nav-item"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
                 <a href="/Operator/Incidents" class="nav-item active"><i class="fas fa-list-alt"></i> <span>Incidents</span></a>
                 <a href="/Operator/CreateIncident" class="nav-item"><i class="fas fa-plus-circle"></i> <span>Create Incident</span></a>
+                <a href="/Operator/Notifications" class="nav-item">
+                    <i class="fas fa-bell"></i> <span>My Notifications</span>
+                    <span id="sidebarNotificationBadge" class="notification-badge-sidebar" style="display: none;">0</span>
+                </a>
+                <a href="#" class="nav-item" id="profileNavLink"><i class="fas fa-user-circle"></i> <span>My Profile</span></a>
             </div>
             <div class="dept-info">
                 <i class="fas fa-building"></i>
@@ -138,7 +174,7 @@
             </div>
 
             <div class="filter-bar">
-                <form method="get" action="/Operator/Incidents">
+                <form method="get" action="/Operator/Incidents" id="filterForm">
                     <select name="status">
                         <option value="">All Status</option>
                         <option value="Open" selected="@(ViewBag.SelectedStatus == "Open")">Open</option>
@@ -151,6 +187,13 @@
                         <option value="High" selected="@(ViewBag.SelectedSeverity == "High")">High</option>
                         <option value="Medium" selected="@(ViewBag.SelectedSeverity == "Medium")">Medium</option>
                         <option value="Low" selected="@(ViewBag.SelectedSeverity == "Low")">Low</option>
+                    </select>
+                    <select name="priority">
+                        <option value="">All Priorities</option>
+                        <option value="1" selected="@(ViewBag.SelectedPriority == "1")">Priority 1 (Critical)</option>
+                        <option value="2" selected="@(ViewBag.SelectedPriority == "2")">Priority 2 (High)</option>
+                        <option value="3" selected="@(ViewBag.SelectedPriority == "3")">Priority 3 (Medium)</option>
+                        <option value="4" selected="@(ViewBag.SelectedPriority == "4")">Priority 4 (Low)</option>
                     </select>
                     
                     @if (dept == "Police")
@@ -200,6 +243,7 @@
                 <table class="incident-table">
                     <thead>
                         <tr>
+                            <th>Priority</th>
                             @if (dept == "Police")
                             {
                                 <th>FIR #</th>
@@ -226,20 +270,33 @@
                     <tbody>
                         @if (!Model.Any())
                         {
-                            <tr>
-                                <td colspan="10">
-                                    <div class="empty-state">
-                                        <i class="fas fa-inbox"></i>
-                                        No incidents found
-                                    </div>
-                                </td>
-                            </tr>
+                            <tr><td colspan="11" class="empty-state"><i class="fas fa-inbox"></i> No incidents found</td></tr>
                         }
                         else
                         {
-                            @foreach (var i in Model)
+                            var sortedIncidents = Model.OrderBy(i => GetPriorityScore(i)).ThenByDescending(i => i.ReportedAt).ToList();
+                            @foreach (var i in sortedIncidents)
                             {
+                                int priorityScore = GetPriorityScore(i);
                                 <tr>
+                                    <td>
+                                        @if (priorityScore == 1)
+                                        {
+                                            <span class="priority-1"><i class="fas fa-exclamation-triangle"></i> Priority 1</span>
+                                        }
+                                        else if (priorityScore == 2)
+                                        {
+                                            <span class="priority-2"><i class="fas fa-arrow-up"></i> Priority 2</span>
+                                        }
+                                        else if (priorityScore == 3)
+                                        {
+                                            <span class="priority-3"><i class="fas fa-minus"></i> Priority 3</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="priority-4"><i class="fas fa-arrow-down"></i> Priority 4</span>
+                                        }
+                                    </td>
                                     @if (dept == "Police")
                                     {
                                         <td><span class="fir-number">@i.FIRNumber</span></td>
@@ -266,7 +323,7 @@
                                             {
                                                 <span style="color:#10B981;">🟢 Stable</span>
                                             }
-                                        </td>
+                                         </td>
                                     }
                                     <td><strong>@i.Title</strong></td>
                                     <td><i class="fas fa-map-marker-alt" style="color:#2563EB; margin-right:6px;"></i>@i.Location</td>
@@ -276,10 +333,10 @@
                                             var sc = i.Status == "Open" ? "status-open" : i.Status == "In Progress" ? "status-inprogress" : "status-resolved";
                                         }
                                         <span class="@sc">@i.Status</span>
-                                    </td>
+                                     </td>
                                     <td>@i.ReportedAt.ToString("dd MMM yyyy")</td>
                                     <td><a href="/Operator/IncidentDetail/@i.Id" class="btn-detail"><i class="fas fa-eye"></i> View</a></td>
-                                </tr>
+                                 </tr>
                             }
                         }
                     </tbody>
@@ -287,10 +344,90 @@
             </div>
         </div>
     </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-circle"></i> My Profile</h2>
+                <button class="close-modal" onclick="closeProfileModal()">&times;</button>
+            </div>
+            <div class="profile-body">
+                <div class="profile-avatar">
+                    <div class="avatar-circle"><i class="fas fa-user-tie"></i></div>
+                    <h3>@operatorName</h3>
+                    <p><i class="fas fa-shield-alt"></i> @dept Department</p>
+                </div>
+                <div class="info-section">
+                    <div class="info-row"><div class="info-icon"><i class="fas fa-user"></i></div><div class="info-text"><div class="info-label">Full Name</div><div class="info-value">@operatorName</div></div></div>
+                    <div class="info-row"><div class="info-icon"><i class="fas fa-envelope"></i></div><div class="info-text"><div class="info-label">Email</div><div class="info-value">@operatorEmail</div></div></div>
+                    <div class="info-row"><div class="info-icon"><i class="fas fa-building"></i></div><div class="info-text"><div class="info-label">Department</div><div class="info-value">@dept Department</div></div></div>
+                    <div class="info-row"><div class="info-icon"><i class="fas fa-user-tag"></i></div><div class="info-text"><div class="info-label">Role</div><div class="info-value">Operator</div></div></div>
+                    <div class="info-row"><div class="info-icon"><i class="fas fa-circle"></i></div><div class="info-text"><div class="info-label">Status</div><div class="info-value"><span class="status-online"><i class="fas fa-circle"></i> Online</span></div></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const sidebar = document.getElementById('sidebar');
         const toggleBtn = document.getElementById('toggleSidebar');
         toggleBtn.addEventListener('click', function() { sidebar.classList.toggle('collapsed'); });
+        
+        function openProfileModal() { document.getElementById('profileModal').style.display = 'flex'; }
+        function closeProfileModal() { document.getElementById('profileModal').style.display = 'none'; }
+        
+        document.getElementById('profileNavLink')?.addEventListener('click', function(e) { e.preventDefault(); openProfileModal(); });
+        
+        async function updateNotificationCount() {
+            try {
+                const response = await fetch('/Operator/GetNotificationCount');
+                const data = await response.json();
+                const sidebarBadge = document.getElementById('sidebarNotificationBadge');
+                if (sidebarBadge) {
+                    if (data.count > 0) { sidebarBadge.style.display = 'inline'; sidebarBadge.innerText = data.count > 99 ? '99+' : data.count; }
+                    else { sidebarBadge.style.display = 'none'; }
+                }
+            } catch(err) {
+                console.error('Count error:', err);
+            }
+        }
+        
+        updateNotificationCount();
     </script>
 </body>
 </html>
+
+@functions {
+    public int GetPriorityScore(SmartCityPulse.Models.Incident incident)
+    {
+        int score = 3;
+        
+        if (incident.Severity == "Critical") score = 1;
+        else if (incident.Severity == "High") score = 2;
+        else if (incident.Severity == "Medium") score = 3;
+        else if (incident.Severity == "Low") score = 4;
+        
+        string text = (incident.Title + " " + incident.Description).ToLower();
+        
+        if (text.Contains("murder") || text.Contains("shooting") || text.Contains("bomb") ||
+            text.Contains("explosion") || text.Contains("kidnap") || text.Contains("hostage") ||
+            text.Contains("emergency") || text.Contains("critical"))
+        {
+            score = 1;
+        }
+        else if (text.Contains("robbery") || text.Contains("weapon") || text.Contains("assault") ||
+                 text.Contains("gas leak") || text.Contains("electrical fire") || text.Contains("major accident"))
+        {
+            if (score > 2) score = 2;
+        }
+        else if (text.Contains("theft") || text.Contains("snatching") || text.Contains("stolen") ||
+                 text.Contains("burglary") || text.Contains("missing") || text.Contains("accident") ||
+                 text.Contains("fire") || text.Contains("crash") || text.Contains("vehicle"))
+        {
+            if (score > 3) score = 3;
+        }
+        
+        return score;
+    }
+}

@@ -3,6 +3,7 @@
     ViewData["Title"] = "Incident Detail";
     Layout = null;
     string operatorName = ViewBag.OperatorName ?? "";
+    string operatorEmail = ViewBag.OperatorEmail ?? "";
     string dept = ViewBag.Department ?? "";
 }
 
@@ -14,6 +15,8 @@
     <title>Incident Detail - @dept Department</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -48,10 +51,11 @@
         .hamburger:hover { background: #F1F5F9; color: #2563EB; }
         .hamburger i { font-size: 18px; }
         .nav-menu { flex: 1; padding: 20px 12px; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; margin: 2px 0; color: #5A6A7F; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s ease; border-radius: 10px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; margin: 2px 0; color: #5A6A7F; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s ease; border-radius: 10px; position: relative; }
         .nav-item i { width: 20px; font-size: 16px; }
         .nav-item:hover { background: #F1F5F9; color: #2563EB; }
         .nav-item.active { background: #EFF6FF; color: #2563EB; }
+        .notification-badge-sidebar { position: absolute; right: 16px; top: 8px; background: #EF4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: 600; min-width: 18px; text-align: center; }
         .nav-footer { padding: 16px 12px; border-top: 1px solid #EAECF0; }
         .footer-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; color: #5A6A7F; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 10px; transition: all 0.2s ease; }
         .footer-item:hover { background: #F1F5F9; color: #2563EB; }
@@ -95,6 +99,8 @@
         .btn-save:hover { background: #1D4ED8; transform: translateY(-1px); }
         .btn-update { background: #10B981; color: white; border: none; padding: 8px 20px; border-radius: 40px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; margin-left: 10px; }
         .btn-update:hover { background: #059669; }
+        .btn-show-map { background: #2563EB; color: white; border: none; padding: 6px 16px; border-radius: 20px; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; transition: all 0.2s; }
+        .btn-show-map:hover { background: #1D4ED8; transform: translateY(-1px); }
         .comment-item { padding: 14px 0; border-bottom: 1px solid #EAECF0; }
         .comment-item:last-child { border-bottom: none; }
         .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
@@ -107,11 +113,76 @@
         .fire-badge { background: #FEE2E2; color: #DC2626; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
         .rescue-badge { background: #D1FAE5; color: #10B981; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
         .police-badge { background: #DBEAFE; color: #2563EB; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
+        
+        /* AI Button Styles */
+        .ai-generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .ai-generate-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .ai-generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Map Modal Styles */
+        .map-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
+        .map-modal-content { background: white; border-radius: 16px; width: 85%; max-width: 1000px; max-height: 90%; overflow: hidden; animation: slideIn 0.3s ease; }
+        .map-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #2563EB; color: white; }
+        .map-modal-header h4 { margin: 0; font-size: 16px; }
+        .map-modal-close { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+        .map-modal-footer { padding: 12px 20px; background: #F8FAFC; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .map-modal-footer p { margin: 0; font-size: 13px; color: #1A1F36; }
+        .btn-google-maps { background: #DB4437; color: white; border: none; padding: 8px 16px; border-radius: 30px; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-google-maps:hover { background: #C53929; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; border-radius: 24px; width: 420px; max-width: 90%; padding: 0; animation: slideIn 0.3s ease; overflow: hidden; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid #EAECF0; background: #F8FAFC; }
+        .modal-header h2 { font-size: 18px; font-weight: 700; color: #1A1F36; }
+        .modal-header h2 i { color: #2563EB; margin-right: 8px; }
+        .close-modal { background: none; border: none; font-size: 24px; cursor: pointer; color: #94A3B8; }
+        .close-modal:hover { color: #DC2626; }
+        .profile-body { padding: 24px; }
+        .profile-avatar { text-align: center; margin-bottom: 24px; }
+        .profile-avatar .avatar-circle { width: 80px; height: 80px; background: linear-gradient(135deg, #2563EB, #1D4ED8); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+        .profile-avatar .avatar-circle i { font-size: 40px; color: white; }
+        .profile-avatar h3 { margin-top: 12px; font-size: 18px; font-weight: 700; }
+        .profile-avatar p { font-size: 12px; color: #6B7280; margin-top: 4px; }
+        .info-section { background: #F8FAFC; border-radius: 16px; padding: 4px 0; }
+        .info-row { display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid #EAECF0; }
+        .info-row:last-child { border-bottom: none; }
+        .info-icon { width: 36px; color: #2563EB; font-size: 16px; }
+        .info-text { flex: 1; }
+        .info-label { font-size: 11px; color: #6B7280; margin-bottom: 2px; text-transform: uppercase; }
+        .info-value { font-size: 14px; font-weight: 600; color: #1A1F36; }
+        .status-online { display: inline-flex; align-items: center; gap: 6px; background: #DCFCE7; padding: 4px 12px; border-radius: 30px; font-size: 11px; font-weight: 600; color: #166534; }
+        @@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @@keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            50% { transform: scale(1.3); opacity: 0.3; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
         @@media (max-width: 1024px) { .detail-grid { grid-template-columns: 1fr; } }
         @@media (max-width: 768px) {
             .sidebar { width: 100%; position: relative; height: auto; }
             .main-content { margin-left: 0; padding: 20px; }
             .detail-grid { grid-template-columns: 1fr; }
+            .map-modal-content { width: 95%; }
         }
     </style>
 </head>
@@ -129,8 +200,13 @@
             </div>
             <div class="nav-menu">
                 <a href="/Operator/Dashboard" class="nav-item"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
-                <a href="/Operator/Incidents" class="nav-item active"><i class="fas fa-list-alt"></i> <span>Incidents</span></a>
+                <a href="/Operator/Incidents" class="nav-item"><i class="fas fa-list-alt"></i> <span>Incidents</span></a>
                 <a href="/Operator/CreateIncident" class="nav-item"><i class="fas fa-plus-circle"></i> <span>Create Incident</span></a>
+                <a href="/Operator/Notifications" class="nav-item">
+                    <i class="fas fa-bell"></i> <span>My Notifications</span>
+                    <span id="sidebarNotificationBadge" class="notification-badge-sidebar" style="display: none;">0</span>
+                </a>
+                <a href="#" class="nav-item" id="profileNavLink"><i class="fas fa-user-circle"></i> <span>My Profile</span></a>
             </div>
             <div class="dept-info">
                 <i class="fas fa-building"></i>
@@ -163,7 +239,16 @@
                         <div class="incident-title">@Model.Title</div>
                         <div class="incident-id">Incident ID: @Model.Id</div>
                         <div class="detail-row"><div class="detail-icon"><i class="fas fa-align-left"></i></div><div><div class="detail-label">Description</div><div class="detail-value">@Model.Description</div></div></div>
-                        <div class="detail-row"><div class="detail-icon"><i class="fas fa-map-marker-alt"></i></div><div><div class="detail-label">Location</div><div class="detail-value">@Model.Location</div></div></div>
+                        <div class="detail-row">
+                            <div class="detail-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div>
+                                <div class="detail-label">Location</div>
+                                <div class="detail-value">@Model.Location</div>
+                                <button type="button" id="showMapBtn" class="btn-show-map">
+                                    <i class="fas fa-map"></i> View on Map
+                                </button>
+                            </div>
+                        </div>
                         <div class="detail-row"><div class="detail-icon"><i class="fas fa-exclamation-triangle"></i></div><div><div class="detail-label">Severity</div><div class="detail-value"><span class="badge badge-@Model.Severity.ToLower()">@Model.Severity</span></div></div></div>
                         <div class="detail-row"><div class="detail-icon"><i class="fas fa-traffic-light"></i></div><div><div class="detail-label">Status</div><div class="detail-value">@{ var sc = Model.Status == "Open" ? "status-open" : Model.Status == "In Progress" ? "status-inprogress" : "status-resolved"; }<span class="@sc">@Model.Status</span></div></div></div>
                         <div class="detail-row"><div class="detail-icon"><i class="fas fa-building"></i></div><div><div class="detail-label">Department</div><div class="detail-value"><span class="@(Model.Department == "Fire" ? "fire-badge" : Model.Department == "Police" ? "police-badge" : "rescue-badge")">@Model.Department</span></div></div></div>
@@ -265,7 +350,7 @@
                         </div>
                     }
 
-                    <!-- COMMENTS SECTION -->
+                    <!-- COMMENTS SECTION with AI Button -->
                     <div class="card">
                         <div class="card-title"><i class="fas fa-comments"></i> Comments & Timeline</div>
                         @if (!Model.Comments.Any()){ <p style="color: #6B7280; text-align: center; padding: 20px;">No comments yet.</p> }
@@ -280,9 +365,20 @@
                             }
                         }
                         <div class="add-comment">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-robot" style="color: #667eea;"></i>
+                                    <span style="font-size: 13px; font-weight: 500;">AI Smart Comment</span>
+                                </div>
+                                <button type="button" id="aiGenerateCommentBtn" class="ai-generate-btn" onclick="generateAIComment()">
+                                    <i class="fas fa-magic"></i> Generate with AI
+                                </button>
+                            </div>
                             <form method="post" action="/Operator/AddComment">
                                 <input type="hidden" name="id" value="@Model.Id" />
-                                <div class="form-group"><textarea name="commentText" placeholder="Write your update here..." required></textarea></div>
+                                <div class="form-group">
+                                    <textarea id="commentText" name="commentText" placeholder="Write your update here... Or click 'Generate with AI' for auto-suggestion..." required style="min-height: 100px;"></textarea>
+                                </div>
                                 <button type="submit" class="btn-save" style="background: #F1F5F9; color: #2563EB;"><i class="fas fa-paper-plane"></i> Add Comment</button>
                             </form>
                         </div>
@@ -305,12 +401,291 @@
         </div>
     </div>
 
+    <!-- Map Modal -->
+    <div id="mapModal" class="map-modal">
+        <div class="map-modal-content">
+            <div class="map-modal-header">
+                <h4><i class="fas fa-map-marker-alt"></i> Incident Location: @Model.Location</h4>
+                <button class="map-modal-close" onclick="closeMapModal()">&times;</button>
+            </div>
+            <div id="locationMap" style="height: 500px; width: 100%;"></div>
+            <div class="map-modal-footer">
+                <p><i class="fas fa-location-dot"></i> @Model.Location</p>
+                <button onclick="openInGoogleMaps()" class="btn-google-maps">
+                    <i class="fab fa-google"></i> Open in Google Maps
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-circle"></i> My Profile</h2>
+                <button class="close-modal" onclick="closeProfileModal()">&times;</button>
+            </div>
+            <div class="profile-body">
+                <div class="profile-avatar">
+                    <div class="avatar-circle"><i class="fas fa-user-tie"></i></div>
+                    <h3>@operatorName</h3>
+                    <p><i class="fas fa-shield-alt"></i> @dept Department</p>
+                </div>
+                <div class="info-section">
+                    <div class="info-row"><div class="info-icon"><i class="fas fa-user"></i></div><div class="info-text"><div class="info-label">Full Name</div><div class="info-value">@operatorName</div></div></div>
+                    <div class="info-row"><div class="info-icon"><i class="fas fa-envelope"></i></div><div class="info-text"><div class="info-label">Email</div><div class="info-value">@operatorEmail</div></div></div>
+                    <div class="info-row"><div class="info-icon"><i class="fas fa-building"></i></div><div class="info-text"><div class="info-label">Department</div><div class="info-value">@dept Department</div></div></div>
+                    <div class="info-row"><div class="info-icon"><i class="fas fa-user-tag"></i></div><div class="info-text"><div class="info-label">Role</div><div class="info-value">Operator</div></div></div>
+                    <div class="info-row"><div class="info-icon"><i class="fas fa-circle"></i></div><div class="info-text"><div class="info-label">Status</div><div class="info-value"><span class="status-online"><i class="fas fa-circle"></i> Online</span></div></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         const sidebar = document.getElementById('sidebar');
         const toggleBtn = document.getElementById('toggleSidebar');
         toggleBtn.addEventListener('click', function() { sidebar.classList.toggle('collapsed'); });
 
-        // Police Investigation Status Update
+        function openProfileModal() { document.getElementById('profileModal').style.display = 'flex'; }
+        function closeProfileModal() { document.getElementById('profileModal').style.display = 'none'; }
+        
+        document.getElementById('profileNavLink')?.addEventListener('click', function(e) { e.preventDefault(); openProfileModal(); });
+        
+        async function updateNotificationCount() {
+            try {
+                const response = await fetch('/Operator/GetNotificationCount');
+                const data = await response.json();
+                const sidebarBadge = document.getElementById('sidebarNotificationBadge');
+                if (sidebarBadge) {
+                    if (data.count > 0) { sidebarBadge.style.display = 'inline'; sidebarBadge.innerText = data.count > 99 ? '99+' : data.count; }
+                    else { sidebarBadge.style.display = 'none'; }
+                }
+            } catch(err) { console.error('Count error:', err); }
+        }
+        
+        updateNotificationCount();
+
+        // ========== AI COMMENT GENERATOR (Rule-based - No API Key) ==========
+        async function generateAIComment() {
+            const btn = document.getElementById('aiGenerateCommentBtn');
+            const textarea = document.getElementById('commentText');
+            
+            if (!textarea) return;
+            
+            // Disable button and show loading
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            btn.disabled = true;
+            
+            try {
+                // Get incident details from the page
+                const title = '@Html.Raw(Model.Title)';
+                const description = '@Html.Raw(Model.Description)';
+                const severity = '@Model.Severity';
+                const status = '@Model.Status';
+                const department = '@dept';
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                
+                let comment = '';
+                
+                // Generate comment based on status
+                if (status === 'Open') {
+                    comment = `[${timeStr}] ⚠️ Incident reported: "${title}". `;
+                    
+                    if (severity === 'Critical') {
+                        comment += `🚨 CRITICAL EMERGENCY: Immediate response team dispatched to ${department}. Highest priority assigned. `;
+                    } else if (severity === 'High') {
+                        comment += `🔴 HIGH PRIORITY: Response team en route to location. Emergency services notified. `;
+                    } else if (severity === 'Medium') {
+                        comment += `🟡 MEDIUM PRIORITY: Investigation initiated. Field team being deployed. `;
+                    } else {
+                        comment += `🟢 ROUTINE RESPONSE: Incident logged in system. Team will be assigned shortly. `;
+                    }
+                    
+                    if (department.includes('Police')) {
+                        comment += `Police patrol dispatched to scene. FIR registration in process. `;
+                    } else if (department.includes('Fire')) {
+                        comment += `Fire tenders dispatched. Evacuation protocol activated if needed. `;
+                    } else if (department.includes('Rescue')) {
+                        comment += `Ambulance dispatched. Medical team on standby. `;
+                    }
+                    
+                    comment += `Residents advised to stay clear of the area. Next update in 15 minutes.`;
+                }
+                else if (status === 'In Progress') {
+                    comment = `[${timeStr}] 🔄 UPDATE: Response team actively working on "${title}". `;
+                    
+                    if (department.includes('Police')) {
+                        comment += `Police investigation in progress. Evidence collection underway. Witness statements being recorded. `;
+                    } else if (department.includes('Fire')) {
+                        if (severity === 'Critical') {
+                            comment += `Firefighting operations active at scene. Multiple units deployed. Fire being contained. `;
+                        } else {
+                            comment += `Firefighters on scene. Cooling operations in progress. Situation under control. `;
+                        }
+                    } else if (department.includes('Rescue')) {
+                        comment += `Rescue team on site. First aid being administered. Patient being stabilized for transport. `;
+                    } else {
+                        comment += `Field team assessing situation. Necessary actions being taken. `;
+                    }
+                    
+                    comment += `Estimated resolution time: 30-45 minutes. Further updates to follow.`;
+                }
+                else if (status === 'Resolved') {
+                    comment = `[${timeStr}] ✅ RESOLVED: Incident "${title}" successfully closed. `;
+                    
+                    if (department.includes('Police')) {
+                        comment += `Case investigation complete. FIR filed. Area declared safe. `;
+                    } else if (department.includes('Fire')) {
+                        comment += `Fire completely extinguished. Area declared safe. No further risk identified. `;
+                    } else if (department.includes('Rescue')) {
+                        comment += `Patient treated and transported to hospital. Condition stable. Family notified. `;
+                    }
+                    
+                    comment += `Thank you for your cooperation. Report filed for records.`;
+                }
+                else {
+                    comment = `[${timeStr}] 📋 Incident "${title}" is under review by ${department} department. Officials are assessing the situation. Further updates will be provided as information becomes available.`;
+                }
+                
+                // Insert comment into textarea
+                if (textarea.value.trim() === '') {
+                    textarea.value = comment;
+                } else {
+                    textarea.value = textarea.value + '\n\n' + comment;
+                }
+                
+                // Auto-resize textarea
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 'px';
+                
+                // Show success toast
+                showToast('✨ AI comment generated! You can edit before posting.', '#10B981');
+                
+            } catch (error) {
+                console.error('AI generation error:', error);
+                showToast('❌ Failed to generate comment. Please try again.', '#DC2626');
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+        
+        function showToast(message, color) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: ${color};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 13px;
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+            `;
+            toast.innerHTML = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ========== MAP FUNCTIONS ==========
+        let currentMap = null;
+
+        function openMapModal() {
+            document.getElementById('mapModal').style.display = 'flex';
+            setTimeout(function() {
+                initLocationMap();
+            }, 100);
+        }
+
+        function closeMapModal() {
+            document.getElementById('mapModal').style.display = 'none';
+            if (currentMap) {
+                currentMap.remove();
+                currentMap = null;
+            }
+        }
+
+        function openInGoogleMaps() {
+            var address = encodeURIComponent('@Model.Location');
+            window.open('https://www.google.com/maps/search/?api=1&query=' + address, '_blank');
+        }
+
+        function initLocationMap() {
+            var locationName = '@Html.Raw(Model.Location)';
+            var mapContainer = document.getElementById('locationMap');
+            
+            mapContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#6B7280;"><i class="fas fa-spinner fa-spin"></i> Loading map...</div>';
+            
+            if (currentMap) {
+                currentMap.remove();
+            }
+            
+            var defaultLat = 24.8607;
+            var defaultLng = 67.0011;
+            
+            currentMap = L.map('locationMap').setView([defaultLat, defaultLng], 12);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }).addTo(currentMap);
+            
+            fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(locationName + ', Pakistan') + '&limit=1')
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (data && data.length > 0) {
+                        var lat = parseFloat(data[0].lat);
+                        var lng = parseFloat(data[0].lon);
+                        currentMap.setView([lat, lng], 16);
+                        
+                        var redIcon = L.icon({
+                            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41],
+                            popupAnchor: [1, -34],
+                            shadowSize: [41, 41]
+                        });
+                        
+                        L.marker([lat, lng], { icon: redIcon })
+                            .addTo(currentMap)
+                            .bindPopup('<b>📍 @Html.Raw(Model.Title)</b><br/>' + escapeHtml(locationName))
+                            .openPopup();
+                    } else {
+                        var popupContent = '<div style="text-align:center;"><i class="fas fa-map-marker-alt" style="font-size:24px;color:#DC2626;"></i><br/><b>Location:</b> ' + escapeHtml(locationName) + '<br/><i>Click below to open in Google Maps</i></div>';
+                        L.popup()
+                            .setLatLng([defaultLat, defaultLng])
+                            .setContent(popupContent)
+                            .openOn(currentMap);
+                    }
+                })
+                .catch(function() {
+                    console.log('Geocoding failed, showing default view');
+                });
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            var div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.getElementById('showMapBtn')?.addEventListener('click', openMapModal);
+
+        window.onclick = function(event) {
+            var modal = document.getElementById('mapModal');
+            if (event.target == modal) {
+                closeMapModal();
+            }
+        }
+
         function updateInvestigationStatus(incidentId) {
             const status = document.getElementById('investigationStatus').value;
             fetch('/Operator/UpdateInvestigationStatus', {
@@ -323,7 +698,6 @@
             .catch(error => { console.error('Error:', error); alert('❌ An error occurred'); });
         }
 
-        // Fire Status Update
         function updateFireStatus(incidentId) {
             const status = document.getElementById('fireStatus').value;
             fetch('/Operator/UpdateFireStatus', {
@@ -336,7 +710,6 @@
             .catch(error => { console.error('Error:', error); alert('❌ An error occurred'); });
         }
 
-        // Rescue Status Update
         function updateRescueStatus(incidentId) {
             const status = document.getElementById('rescueStatus').value;
             fetch('/Operator/UpdateRescueStatus', {
