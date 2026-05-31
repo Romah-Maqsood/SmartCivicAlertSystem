@@ -446,7 +446,7 @@
             <div class="breadcrumb-icon"><i class="fas fa-user-shield"></i></div>
             <div class="breadcrumb-text">
                 <h1>Welcome back, @userName</h1>
-                <p id="topbarSubtitle">Manage your city's incident response</p>
+                <p>Manage your city's incident response</p>
             </div>
         </div>
         <div class="topbar-right">
@@ -583,9 +583,7 @@
             <div class="chart-card" style="margin-top:20px;"><div class="chart-title"><i class="fas fa-chart-area"></i> Weekly Trend — Total vs Resolved</div><div class="chart-canvas-wrapper"><canvas id="trendDetailChart"></canvas></div><div id="trendDetailError" class="chart-error hide"></div></div>
         </div>
 
-        <!-- ============================================================
-             REPORTS SECTION — Redesigned with AI Summary
-             ============================================================ -->
+        <!-- REPORTS SECTION -->
         <div id="reportsSection" class="hide">
             <div class="section-header">
                 <h2 class="section-title"><i class="fas fa-file-alt"></i> Generate Reports</h2>
@@ -594,10 +592,7 @@
                 Filter incidents, preview the count, download in your preferred format, or generate an AI-powered summary.
             </p>
 
-            <!-- Card 1: Filters + Download + AI Summary -->
             <div class="chart-card report-custom" style="margin-bottom:20px;">
-
-                <!-- Step 1: Filters -->
                 <div class="chart-title" style="margin-bottom:14px;">
                     <i class="fas fa-sliders-h"></i> Step 1 — Set Filters
                 </div>
@@ -625,7 +620,6 @@
                     </div>
                 </div>
 
-                <!-- Preview + Download -->
                 <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--border);">
                     <button class="btn-ghost" onclick="previewCount()">
                         <i class="fas fa-eye"></i> Preview Count
@@ -646,7 +640,6 @@
 
                 <div class="report-divider"></div>
 
-                <!-- Step 2: AI Summary -->
                 <div class="report-step-label">
                     <div class="report-step-title">
                         <i class="fas fa-robot"></i> Step 2 — AI Summary
@@ -662,7 +655,6 @@
                     <i class="fas fa-magic"></i> Generate AI Summary
                 </button>
 
-                <!-- Loading state -->
                 <div class="ai-loading-box" id="aiSummaryLoading">
                     <i class="fas fa-spinner fa-spin" style="color:#7C3AED;font-size:16px;flex-shrink:0;"></i>
                     <div>
@@ -671,7 +663,6 @@
                     </div>
                 </div>
 
-                <!-- Result box (initially hidden) -->
                 <div class="ai-result-box" id="aiSummaryResult" style="display:none;">
                     <div class="ai-result-header">
                         <div class="ai-result-header-left">
@@ -684,10 +675,8 @@
                         <div class="ai-result-tags" id="aiSummaryTags"></div>
                     </div>
                 </div>
-
             </div>
 
-            <!-- Card 2: Quick Presets -->
             <div class="chart-card">
                 <div class="chart-title"><i class="fas fa-bolt"></i> Quick Presets</div>
                 <p style="font-size:12px;color:var(--text-secondary);margin-bottom:16px;margin-top:-8px;">
@@ -738,15 +727,12 @@
                     <i class="fas fa-info-circle"></i> PDF export requires iTextSharp.
                 </p>
             </div>
-
         </div>
-        <!-- END REPORTS SECTION -->
 
         <!-- NOTIFICATIONS -->
         <div id="notificationsSection" class="hide">
             @await Html.PartialAsync("_NotificationsPartial")
         </div>
-
     </div>
 </div>
 
@@ -1006,8 +992,7 @@
     function showSection(section) {
         document.querySelectorAll('.nav-item').forEach(item => { item.classList.toggle('active', item.getAttribute('data-page') === section); });
         ['dashboard', 'incidents', 'operators', 'citizens', 'analytics', 'reports', 'notifications'].forEach(s => { document.getElementById(s + 'Section').classList.toggle('hide', s !== section); });
-        const subtitles = { dashboard: "Manage your city's incident response", incidents: "All Incidents", operators: "Operators Management", citizens: "Citizens Management", analytics: "Analytics & Insights", reports: "Generate Reports", notifications: "Notifications" };
-        const sub = document.getElementById('topbarSubtitle'); if (sub) sub.textContent = subtitles[section] || '';
+        // Subtitle is now static – no need to change it.
         if (section === 'incidents') { loadAllIncidents(); logActivity('view', 'Viewed All Incidents', 'Incidents Section'); }
         if (section === 'operators') { loadOperators(); logActivity('view', 'Viewed Operators', 'Operators Section'); }
         if (section === 'citizens') { loadCitizens(); logActivity('view', 'Viewed Citizens', 'Citizens Section'); }
@@ -1120,10 +1105,6 @@
         document.getElementById('downloadMenu').style.display = 'none';
     }
 
-
-    // =====================================================
-    // AI SUMMARY — Updated with proper loading/result UI
-    // =====================================================
     async function generateAISummary() {
         const start  = document.getElementById('reportStartDate').value;
         const end    = document.getElementById('reportEndDate').value;
@@ -1137,7 +1118,6 @@
         const tagsEl    = document.getElementById('aiSummaryTags');
         const tsEl      = document.getElementById('aiSummaryTimestamp');
 
-        // Show loading state
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
         loading.style.display  = 'flex';
@@ -1159,10 +1139,7 @@
             loading.style.display = 'none';
 
             if (data.success) {
-                // Populate text
                 textEl.textContent = data.summary;
-
-                // Build filter context tags
                 const tags = [];
                 tags.push(dept  ? dept  : 'All Departments');
                 tags.push(sev   ? sev   : 'All Severities');
@@ -1175,7 +1152,6 @@
                     `<span class="ai-tag">${escapeHtml(t)}</span>`
                 ).join('');
 
-                // Timestamp
                 tsEl.textContent = 'Generated at ' + new Date().toLocaleTimeString('en-PK', {
                     hour: '2-digit', minute: '2-digit', hour12: true
                 });
