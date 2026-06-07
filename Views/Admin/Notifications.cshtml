@@ -1,0 +1,588 @@
+@{
+    Layout = null;
+}
+
+<style>
+    .notif-wrap {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        padding: 0;
+        overflow-x: hidden;
+        max-width: 100%;
+    }
+
+    /* ── Page Header ── */
+    .notif-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    .notif-header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .notif-header-icon {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, #2563EB, #6366F1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+    .notif-header-text h2 {
+        font-size: 18px;
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 2px;
+        line-height: 1.2;
+    }
+    .notif-header-text p {
+        font-size: 12px;
+        color: #9CA3AF;
+        margin: 0;
+        font-weight: 400;
+    }
+    .notif-mark-all-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 20px;
+        border-radius: 40px;
+        border: 1.5px solid #E5E7EB;
+        background: #FFFFFF;
+        color: #374151;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.16s ease;
+        white-space: nowrap;
+        font-family: inherit;
+    }
+    .notif-mark-all-btn:hover {
+        border-color: #10B981;
+        background: #F0FDF4;
+        color: #059669;
+    }
+    .notif-mark-all-btn:active { transform: scale(0.97); }
+
+    /* ── Filter Pills ── */
+    .notif-filter-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+    }
+    .notif-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 18px;
+        border-radius: 40px;
+        border: 2px solid #2563EB;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.16s ease;
+        background: #FFFFFF;
+        color: #2563EB;
+        white-space: nowrap;
+        outline: none;
+        font-family: inherit;
+    }
+    .notif-pill:hover:not(.active) {
+        background: #EFF6FF;
+    }
+    .notif-pill.active {
+        background: #2563EB;
+        color: #FFFFFF;
+        border-color: #2563EB;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+    .notif-pill-count {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 1px 7px;
+        border-radius: 20px;
+        background: rgba(37, 99, 235, 0.10);
+        color: #2563EB;
+        min-width: 20px;
+        text-align: center;
+        transition: all 0.16s ease;
+    }
+    .notif-pill.active .notif-pill-count {
+        background: rgba(255, 255, 255, 0.25);
+        color: #FFFFFF;
+    }
+
+    /* ── List container ── */
+    #notifListContainer {
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    .notif-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* ── Notification Card ── */
+    .notif-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 20px;
+        background: #FFFFFF;
+        border: 1px solid #EAECF0;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        transition: all 0.2s ease;
+        cursor: default;
+        position: relative;           /* ← anchor for corner pill */
+        max-width: 100%;
+        box-sizing: border-box;
+        width: 100%;
+        overflow: hidden;
+    }
+    .notif-card:hover {
+        transform: translateY(-2px);
+        border-color: #BFDBFE;
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.09);
+    }
+
+    /* ── Read / Unread corner pill ── */
+    .notif-status-pill {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 10px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        z-index: 2;
+    }
+    .notif-status-pill.read {
+        background: #DCFCE7;
+        color: #166534;
+    }
+    .notif-status-pill.unread {
+        background: #FEE2E2;
+        color: #B91C1C;
+    }
+
+    /* ── Notification Type Icons ── */
+    .notif-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 19px;
+        flex-shrink: 0;
+    }
+    .icon-operator-edit   { background: #EFF6FF; color: #2563EB; }
+    .icon-operator-delete { background: #FEF2F2; color: #DC2626; }
+    .icon-critical        { background: #FFF1F2; color: #E11D48; }
+    .icon-unattended      { background: #FFFBEB; color: #D97706; }
+    .icon-sos             { background: #FFF7ED; color: #EA580C; }
+    .icon-default         { background: #F3F4F6; color: #6B7280; }
+
+    /* ── Card Body ── */
+    .notif-card-body {
+        flex: 1;
+        min-width: 0;
+    }
+    .notif-card-top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 3px;
+        flex-wrap: wrap;
+        padding-right: 70px;          /* ← space for corner pill */
+    }
+    .notif-card-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #111827;
+        line-height: 1.3;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+    .notif-type-badge {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 9px;
+        border-radius: 20px;
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        flex-shrink: 0;
+    }
+    .badge-operator-edit   { background: #DBEAFE; color: #1E40AF; }
+    .badge-operator-delete { background: #FEE2E2; color: #B91C1C; }
+    .badge-critical        { background: #FFE4E6; color: #BE123C; }
+    .badge-unattended      { background: #FEF3C7; color: #92400E; }
+    .badge-sos             { background: #FFEDD5; color: #C2410C; }
+    .badge-default         { background: #F3F4F6; color: #6B7280; }
+
+    .notif-card-message {
+        font-size: 12.5px;
+        color: #6B7280;
+        margin: 0 0 6px;
+        line-height: 1.5;
+        white-space: normal;
+        overflow: visible;
+    }
+    .notif-card-time {
+        font-size: 11px;
+        color: #9CA3AF;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .notif-card-time i { font-size: 10px; }
+
+    /* ── Card Actions ── */
+    .notif-card-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+    .notif-action-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        border: 1px solid #E5E7EB;
+        background: #F9FAFB;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        color: #6B7280;
+        transition: all 0.15s ease;
+        flex-shrink: 0;
+    }
+    .notif-action-btn:hover {
+        background: #EFF6FF;
+        border-color: #93C5FD;
+        color: #2563EB;
+    }
+    .notif-view-incident-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 6px 13px;
+        border-radius: 9px;
+        background: #EFF6FF;
+        color: #2563EB;
+        border: 1px solid #BFDBFE;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+        font-family: inherit;
+    }
+    .notif-view-incident-btn:hover {
+        background: #2563EB;
+        color: white;
+        border-color: #2563EB;
+    }
+
+    /* ── Empty State ── */
+    .notif-empty {
+        text-align: center;
+        padding: 70px 20px;
+        background: #FFFFFF;
+        border-radius: 18px;
+        border: 1.5px dashed #E5E7EB;
+    }
+    .notif-empty-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #EFF6FF, #E0E7FF);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+        font-size: 28px;
+        color: #2563EB;
+    }
+    .notif-empty h3 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1A1F36;
+        margin: 0 0 6px;
+    }
+    .notif-empty p {
+        font-size: 13px;
+        color: #9CA3AF;
+        margin: 0;
+    }
+
+    /* ── Loading State ── */
+    .notif-loading {
+        text-align: center;
+        padding: 70px 20px;
+        background: #FFFFFF;
+        border-radius: 18px;
+        border: 1px solid #EAECF0;
+    }
+    .notif-loading i {
+        font-size: 32px;
+        color: #2563EB;
+        margin-bottom: 14px;
+        display: block;
+    }
+    .notif-loading p {
+        font-size: 13px;
+        color: #9CA3AF;
+        margin: 0;
+    }
+
+    @@media (max-width: 600px) {
+        .notif-card { padding: 13px 14px; gap: 12px; }
+        .notif-icon { width: 40px; height: 40px; font-size: 16px; border-radius: 11px; }
+        .notif-pill { padding: 7px 13px; font-size: 12px; }
+        .notif-card-top { padding-right: 60px; }
+    }
+</style>
+
+<div class="notif-wrap">
+
+    <!-- Header -->
+    <div class="notif-header">
+        <div class="notif-header-left">
+            <div class="notif-header-icon">
+                <i class="fas fa-bell"></i>
+            </div>
+            <div class="notif-header-text">
+                <h2>Notifications</h2>
+                <p>Stay updated on all system alerts</p>
+            </div>
+        </div>
+        <button class="notif-mark-all-btn" onclick="markAllNotificationsRead()">
+            <i class="fas fa-check-double"></i> Mark all as read
+        </button>
+    </div>
+
+    <!-- Filter Pills -->
+    <div class="notif-filter-row" id="notifPillGroup">
+        <button class="notif-pill active" data-filter="all"
+                onclick="handleNotifFilter('all', this)">
+            <i class="fas fa-layer-group"></i> All
+            <span class="notif-pill-count" id="pillCountAll">0</span>
+        </button>
+        <button class="notif-pill" data-filter="unread"
+                onclick="handleNotifFilter('unread', this)">
+            <i class="fas fa-envelope"></i> Unread
+            <span class="notif-pill-count" id="pillCountUnread">0</span>
+        </button>
+        <button class="notif-pill" data-filter="read"
+                onclick="handleNotifFilter('read', this)">
+            <i class="fas fa-envelope-open"></i> Read
+            <span class="notif-pill-count" id="pillCountRead">0</span>
+        </button>
+    </div>
+
+    <!-- List Container -->
+    <div id="notifListContainer">
+        <div class="notif-loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading notifications…</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+(function () {
+
+    /* ── Detect notification type from title ── */
+    function getNotifType(title) {
+        const t = (title || '').toLowerCase();
+
+        if (t.includes('sos') || t.includes('emergency sos'))
+            return {
+                iconCls:   'icon-sos',
+                icon:      'fa-truck-medical',
+                badgeCls:  'badge-sos',
+                label:     'SOS Emergency'
+            };
+        if (t.includes('operator removed') || t.includes('deleted operator') || t.includes('operator deleted'))
+            return {
+                iconCls:   'icon-operator-delete',
+                icon:      'fa-user-minus',
+                badgeCls:  'badge-operator-delete',
+                label:     'Operator Removed'
+            };
+        if (t.includes('operator added') || t.includes('new operator') || t.includes('operator edited') || t.includes('operator updated'))
+            return {
+                iconCls:   'icon-operator-edit',
+                icon:      'fa-user-pen',
+                badgeCls:  'badge-operator-edit',
+                label:     t.includes('added') || t.includes('new') ? 'Operator Added' : 'Operator Edited'
+            };
+        if (t.includes('unattended') || t.includes('10 min') || (t.includes('unassigned') && t.includes('critical')))
+            return {
+                iconCls:   'icon-unattended',
+                icon:      'fa-clock',
+                badgeCls:  'badge-unattended',
+                label:     'Unattended Alert'
+            };
+        if (t.includes('critical'))
+            return {
+                iconCls:   'icon-critical',
+                icon:      'fa-circle-exclamation',
+                badgeCls:  'badge-critical',
+                label:     'Critical Incident'
+            };
+        return {
+            iconCls:   'icon-default',
+            icon:      'fa-bell',
+            badgeCls:  'badge-default',
+            label:     'Notification'
+        };
+    }
+
+    /* ── Time ago ── */
+    function timeAgo(ts) {
+        if (!ts) return '';
+        const diff = Math.floor((Date.now() - new Date(ts)) / 1000);
+        if (diff < 60)    return 'just now';
+        if (diff < 3600)  return Math.floor(diff / 60) + 'm ago';
+        if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+        return Math.floor(diff / 86400) + 'd ago';
+    }
+
+    /* ── Sync pill counts & sidebar badge ── */
+    function syncCounts() {
+        const all    = typeof realNotifications !== 'undefined' ? realNotifications : [];
+        const unread = all.filter(n => !n.isRead).length;
+        const read   = all.length - unread;
+
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        set('pillCountAll',    all.length);
+        set('pillCountUnread', unread);
+        set('pillCountRead',   read);
+
+        if (typeof updateNotifCounts === 'function') updateNotifCounts();
+    }
+
+    /* ── Render ── */
+    window.renderNotifications = function () {
+        const container = document.getElementById('notifListContainer');
+        if (!container) return;
+
+        const all    = typeof realNotifications !== 'undefined' ? realNotifications : [];
+        const filter = window._notifActiveFilter || 'all';
+
+        syncCounts();
+
+        const filtered = all.filter(n => {
+            if (filter === 'unread') return !n.isRead;
+            if (filter === 'read')   return  n.isRead;
+            return true;
+        });
+
+        if (!filtered.length) {
+            const emptyIcons = { all: 'fa-bell-slash', unread: 'fa-envelope-open', read: 'fa-check-double' };
+            const emptyMsgs  = {
+                all:    'No notifications yet.',
+                unread: 'You\'re all caught up!',
+                read:   'No read notifications.'
+            };
+            container.innerHTML = `
+                <div class="notif-empty">
+                    <div class="notif-empty-icon">
+                        <i class="fas ${emptyIcons[filter]}"></i>
+                    </div>
+                    <h3>${emptyMsgs[filter]}</h3>
+                    <p>New notifications will appear here when they arrive.</p>
+                </div>`;
+            return;
+        }
+
+        const cards = filtered.map(n => {
+            const type        = getNotifType(n.title);
+            const toggleIcon  = n.isRead ? 'fa-envelope'     : 'fa-check';
+            const toggleTitle = n.isRead ? 'Mark as unread'  : 'Mark as read';
+            const statusPill  = `<span class="notif-status-pill ${n.isRead ? 'read' : 'unread'}">${n.isRead ? 'Read' : 'Unread'}</span>`;
+            const viewBtn     = n.incidentId
+                ? `<button class="notif-view-incident-btn"
+                       onclick="event.stopPropagation();viewIncidentDetail('${n.incidentId}')">
+                       <i class="fas fa-eye"></i> View
+                   </button>`
+                : '';
+
+            return `
+            <div class="notif-card" id="nc-${n.id}">
+                ${statusPill}
+                <div class="notif-icon ${type.iconCls}">
+                    <i class="fas ${type.icon}"></i>
+                </div>
+                <div class="notif-card-body">
+                    <div class="notif-card-top">
+                        <span class="notif-card-title">${n.title || 'Notification'}</span>
+                        <span class="notif-type-badge ${type.badgeCls}">${type.label}</span>
+                    </div>
+                    ${n.message ? `<div class="notif-card-message">${n.message}</div>` : ''}
+                    <div class="notif-card-time">
+                        <i class="far fa-clock"></i>
+                        ${timeAgo(n.createdAt || n.timestamp)}
+                    </div>
+                </div>
+                <div class="notif-card-actions">
+                    ${viewBtn}
+                    <button class="notif-action-btn" title="${toggleTitle}"
+                        onclick="event.stopPropagation(); markNotificationRead('${n.id}')">
+                        <i class="fas ${toggleIcon}"></i>
+                    </button>
+                </div>
+            </div>`;
+        }).join('');
+
+        container.innerHTML = `<div class="notif-list">${cards}</div>`;
+    };
+
+    /* ── Filter pill click ── */
+    window.handleNotifFilter = function (filter, btn) {
+        window._notifActiveFilter = filter;
+        document.querySelectorAll('#notifPillGroup .notif-pill').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        window.renderNotifications();
+    };
+
+    /* ── Init ── */
+    window._notifActiveFilter = 'all';
+
+    const _origLoad = window.loadNotifications;
+    if (typeof _origLoad === 'function') {
+        window.loadNotifications = function () {
+            _origLoad();
+            setTimeout(window.renderNotifications, 350);
+        };
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => setTimeout(window.renderNotifications, 250));
+    } else {
+        setTimeout(window.renderNotifications, 250);
+    }
+
+})();
+</script>

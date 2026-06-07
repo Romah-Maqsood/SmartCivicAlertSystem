@@ -241,7 +241,7 @@ namespace SmartCityPulse.Controllers
                 ReportedByName = userName ?? "Citizen",
                 ReportedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                Department = "Rescue",
+                Department = "Rescue Department",   // ✅ FIXED: was "Rescue", now consistent
                 Comments = new List<IncidentComment>()
             };
 
@@ -267,13 +267,15 @@ namespace SmartCityPulse.Controllers
                 targetUserId: userId
             );
 
-            // Send notification to RESCUE department with location
+            // Notify the Rescue Department
+            // NOTE: If your NotificationHub group is "RescueDepartment" (no space), keep it as is;
+            // if it's "Rescue Department", change accordingly.
             await NotificationService.SendAndSave(
                 _context, _hubContext,
                 "🚨 EMERGENCY SOS - Rescue Required",
                 $"CRITICAL: Citizen {userName} has raised an emergency SOS at: {request.Location}. Immediate rescue assistance required.",
                 "critical", "high",
-                targetRole: "Rescue"
+                targetRole: "RescueDepartment"   // Adjust if your group name differs
             );
 
             // Also notify Admin for oversight
@@ -394,8 +396,6 @@ namespace SmartCityPulse.Controllers
             return View();
         }
 
-        
-
         // ==================== SAFETY TIPS ====================
         [HttpGet]
         public IActionResult SafetyTips()
@@ -416,7 +416,6 @@ namespace SmartCityPulse.Controllers
             return Ok();
         }
 
-        // ==================== REPORTS PAGE ====================
         // ==================== REPORTS PAGE ====================
         [HttpGet]
         public async Task<IActionResult> Reports()
@@ -538,6 +537,7 @@ namespace SmartCityPulse.Controllers
 
             return Json(new { success = true, incidents = incidentList });
         }
+
         // ==================== GET PROFILE STATISTICS ====================
         [HttpGet]
         public async Task<IActionResult> GetProfileStatistics()
@@ -564,6 +564,7 @@ namespace SmartCityPulse.Controllers
                 activeIncidents = (int)activeIncidents
             });
         }
+
         [HttpPost]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileModel model)
         {
