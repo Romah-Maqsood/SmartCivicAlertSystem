@@ -11,484 +11,695 @@
     <title>@ViewData["Title"]</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+            /* SAME CSS as before */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #E8EDF5;
-            color: #1A1F36;
-            line-height: 1.5;
-        }
+            body {
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                background: #E8EDF5;
+                color: #1A1F36;
+                line-height: 1.5;
+            }
 
-        /* ========== NAVBAR ========== */
-        .navbar {
-            background: #FFFFFF;
-            border-bottom: 1px solid #EAECF0;
-            padding: 0.85rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-        }
+            .navbar {
+                background: #FFFFFF;
+                border-bottom: 1px solid #EAECF0;
+                padding: 0.85rem 2rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            }
 
-        .navbar-brand {
-            color: #1A1F36;
-            font-size: 1rem;
-            font-weight: 700;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+            .navbar-brand {
+                color: #1A1F36;
+                font-size: 1rem;
+                font-weight: 700;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
 
-        .navbar-brand i { color: #2563EB; font-size: 1.2rem; }
-        .brand-accent { color: #2563EB; }
+                .navbar-brand i {
+                    color: #2563EB;
+                    font-size: 1.2rem;
+                }
 
-        .nav-links {
-            display: flex;
-            gap: 0.6rem;
-            align-items: center;
-        }
+            .brand-accent {
+                color: #2563EB;
+            }
 
-        .nav-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px 18px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 500;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-        }
+            .nav-links {
+                display: flex;
+                gap: 0.6rem;
+                align-items: center;
+            }
 
-        .nav-btn-outline {
-            background: #F1F5F9;
-            color: #5A6A7F;
-            border: 1px solid #EAECF0;
-        }
+            .nav-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 7px 18px;
+                border-radius: 40px;
+                font-size: 12px;
+                font-weight: 500;
+                text-decoration: none;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                border: none;
+            }
 
-        .nav-btn-outline:hover {
-            background: #EFF6FF;
-            color: #2563EB;
-            border-color: #BFDBFE;
-        }
+            .nav-btn-outline {
+                background: #F1F5F9;
+                color: #5A6A7F;
+                border: 1px solid #EAECF0;
+            }
 
-        .nav-btn-solid {
-            background: #2563EB;
-            color: #FFFFFF;
-        }
+                .nav-btn-outline:hover {
+                    background: #EFF6FF;
+                    color: #2563EB;
+                    border-color: #BFDBFE;
+                }
 
-        .nav-btn-solid:hover {
-            background: #1D4ED8;
-            transform: translateY(-1px);
-        }
+            .nav-btn-solid {
+                background: #2563EB;
+                color: #FFFFFF;
+            }
 
-        /* ========== CONTAINER ========== */
-        .container { max-width: 1060px; margin: 0 auto; padding: 2rem 1.5rem; }
+                .nav-btn-solid:hover {
+                    background: #1D4ED8;
+                    transform: translateY(-1px);
+                }
 
-        /* ========== HERO ========== */
-        .hero-section {
-            background: #FFFFFF;
-            border: 1px solid #EAECF0;
-            border-top: 3px solid #2563EB;
-            border-radius: 16px;
-            padding: 3rem 2rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-        }
+            .container {
+                max-width: 1060px;
+                margin: 0 auto;
+                padding: 2rem 1.5rem;
+            }
 
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #EFF6FF;
-            color: #2563EB;
-            font-size: 11px;
-            font-weight: 500;
-            padding: 5px 14px;
-            border-radius: 50px;
-            border: 1px solid #BFDBFE;
-            margin-bottom: 1.25rem;
-        }
+            .hero-section {
+                background: #FFFFFF;
+                border: 1px solid #EAECF0;
+                border-top: 3px solid #2563EB;
+                border-radius: 16px;
+                padding: 3rem 2rem;
+                text-align: center;
+                margin-bottom: 2rem;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            }
 
-        .hero-title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 0.9rem;
-            color: #1A1F36;
-        }
+            .hero-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background: #EFF6FF;
+                color: #2563EB;
+                font-size: 11px;
+                font-weight: 500;
+                padding: 5px 14px;
+                border-radius: 50px;
+                border: 1px solid #BFDBFE;
+                margin-bottom: 1.25rem;
+            }
 
-        .gradient-text {
-            background: linear-gradient(135deg, #2563EB, #7C3AED);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
+            .hero-title {
+                font-size: 2.2rem;
+                font-weight: 800;
+                line-height: 1.2;
+                margin-bottom: 0.9rem;
+                color: #1A1F36;
+            }
 
-        .hero-subtitle {
-            font-size: 0.88rem;
-            color: #6B7280;
-            max-width: 480px;
-            margin: 0 auto 1.75rem;
-        }
+            .gradient-text {
+                background: linear-gradient(135deg, #2563EB, #7C3AED);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+            }
 
-        .hero-buttons {
-            display: flex;
-            gap: 0.75rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+            .hero-subtitle {
+                font-size: 0.88rem;
+                color: #6B7280;
+                max-width: 480px;
+                margin: 0 auto 1.75rem;
+            }
 
-        /* ========== BUTTONS ========== */
-        .btn-primary {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: 8px 22px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 500;
-            text-decoration: none;
-            background: #2563EB;
-            color: #FFFFFF;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+            .hero-buttons {
+                display: flex;
+                gap: 0.75rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
 
-        .btn-primary:hover {
-            background: #1D4ED8;
-            transform: translateY(-1px);
-        }
+            .btn-primary {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                padding: 8px 22px;
+                border-radius: 40px;
+                font-size: 12px;
+                font-weight: 500;
+                text-decoration: none;
+                background: #2563EB;
+                color: #FFFFFF;
+                border: none;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
 
-        .btn-ghost {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: 8px 22px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 500;
-            text-decoration: none;
-            background: transparent;
-            color: #5A6A7F;
-            border: 1px solid #EAECF0;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+                .btn-primary:hover {
+                    background: #1D4ED8;
+                    transform: translateY(-1px);
+                }
 
-        .btn-ghost:hover {
-            border-color: #2563EB;
-            color: #2563EB;
-            background: #EFF6FF;
-        }
+            .btn-ghost {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                padding: 8px 22px;
+                border-radius: 40px;
+                font-size: 12px;
+                font-weight: 500;
+                text-decoration: none;
+                background: transparent;
+                color: #5A6A7F;
+                border: 1px solid #EAECF0;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
 
-        /* ========== SECTION LABELS ========== */
-        .section-label {
-            font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 1px;
-            color: #6B7280;
-            text-transform: uppercase;
-            text-align: center;
-            margin-bottom: 0.3rem;
-        }
+                .btn-ghost:hover {
+                    border-color: #2563EB;
+                    color: #2563EB;
+                    background: #EFF6FF;
+                }
 
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1A1F36;
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
+            .section-label {
+                font-size: 11px;
+                font-weight: 500;
+                letter-spacing: 1px;
+                color: #6B7280;
+                text-transform: uppercase;
+                text-align: center;
+                margin-bottom: 0.3rem;
+            }
 
-        /* ========== FEATURE CARDS ========== */
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 2.5rem;
-        }
+            .section-title {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: #1A1F36;
+                text-align: center;
+                margin-bottom: 1.5rem;
+            }
 
-        .feature-card {
-            background: #FFFFFF;
-            border: 1px solid #EAECF0;
-            border-top: 3px solid #2563EB;
-            border-radius: 16px;
-            padding: 1.4rem 1rem;
-            text-align: center;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-            transition: all 0.2s ease;
-        }
+            .feature-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1rem;
+                margin-bottom: 2.5rem;
+            }
 
-        .feature-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.1);
-        }
+            .feature-card {
+                background: #FFFFFF;
+                border: 1px solid #EAECF0;
+                border-top: 3px solid #2563EB;
+                border-radius: 16px;
+                padding: 1.4rem 1rem;
+                text-align: center;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+                transition: all 0.2s ease;
+            }
 
-        .feature-icon-box {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            background: #EFF6FF;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 0.85rem;
-            color: #2563EB;
-            font-size: 1.1rem;
-        }
+                .feature-card:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.1);
+                }
 
-        .feature-card h3 {
-            font-size: 13px;
-            font-weight: 600;
-            color: #1A1F36;
-            margin-bottom: 0.35rem;
-        }
+            .feature-icon-box {
+                width: 44px;
+                height: 44px;
+                border-radius: 10px;
+                background: #EFF6FF;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 0.85rem;
+                color: #2563EB;
+                font-size: 1.1rem;
+            }
 
-        .feature-card p {
-            font-size: 11px;
-            color: #6B7280;
-            line-height: 1.5;
-        }
+            .feature-card h3 {
+                font-size: 13px;
+                font-weight: 600;
+                color: #1A1F36;
+                margin-bottom: 0.35rem;
+            }
 
-        /* ========== HOW IT WORKS ========== */
-        .steps-container {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            margin-bottom: 2.5rem;
-            flex-wrap: wrap;
-        }
+            .feature-card p {
+                font-size: 11px;
+                color: #6B7280;
+                line-height: 1.5;
+            }
 
-        .step {
-            flex: 1;
-            min-width: 130px;
-            background: #FFFFFF;
-            border: 1px solid #EAECF0;
-            border-radius: 16px;
-            padding: 1.3rem 0.9rem;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-        }
+            .steps-container {
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+                margin-bottom: 2.5rem;
+                flex-wrap: wrap;
+            }
 
-        .step-number {
-            position: absolute;
-            top: -11px;
-            left: 14px;
-            background: #2563EB;
-            color: #FFFFFF;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: 700;
-        }
+            .step {
+                flex: 1;
+                min-width: 130px;
+                background: #FFFFFF;
+                border: 1px solid #EAECF0;
+                border-radius: 16px;
+                padding: 1.3rem 0.9rem;
+                text-align: center;
+                position: relative;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            }
 
-        .step-icon-box {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            background: #EFF6FF;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 0.65rem;
-            color: #2563EB;
-            font-size: 1rem;
-        }
+            .step-number {
+                position: absolute;
+                top: -11px;
+                left: 14px;
+                background: #2563EB;
+                color: #FFFFFF;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 10px;
+                font-weight: 700;
+            }
 
-        .step h4 {
-            font-size: 12px;
-            font-weight: 600;
-            color: #1A1F36;
-            margin-bottom: 0.25rem;
-        }
+            .step-icon-box {
+                width: 38px;
+                height: 38px;
+                border-radius: 10px;
+                background: #EFF6FF;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 0.65rem;
+                color: #2563EB;
+                font-size: 1rem;
+            }
 
-        .step p { font-size: 11px; color: #6B7280; }
+            .step h4 {
+                font-size: 12px;
+                font-weight: 600;
+                color: #1A1F36;
+                margin-bottom: 0.25rem;
+            }
 
-        .step-arrow { color: #CBD5E1; font-size: 1rem; flex-shrink: 0; }
+            .step p {
+                font-size: 11px;
+                color: #6B7280;
+            }
 
-        /* ========== STATS ========== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 2.5rem;
-        }
+            .step-arrow {
+                color: #CBD5E1;
+                font-size: 1rem;
+                flex-shrink: 0;
+            }
 
-        .stat-card {
-            background: #FFFFFF;
-            border: 1px solid #EAECF0;
-            border-radius: 16px;
-            padding: 18px 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-        }
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1rem;
+                margin-bottom: 2.5rem;
+            }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-        }
+            .stat-card {
+                background: #FFFFFF;
+                border: 1px solid #EAECF0;
+                border-radius: 16px;
+                padding: 18px 20px;
+                text-align: center;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            }
 
-        .stat-blue::before   { background: #3B82F6; }
-        .stat-purple::before { background: #7C3AED; }
-        .stat-green::before  { background: #10B981; }
-        .stat-amber::before  { background: #F59E0B; }
+                .stat-card::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 3px;
+                }
 
-        .stat-value {
-            font-size: 28px;
-            font-weight: 800;
-            color: #1A1F36;
-            margin-bottom: 4px;
-        }
+            .stat-blue::before {
+                background: #3B82F6;
+            }
 
-        .stat-label {
-            font-size: 12px;
-            font-weight: 500;
-            color: #6B7280;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
+            .stat-purple::before {
+                background: #7C3AED;
+            }
 
-        .stat-label i { font-size: 12px; color: #2563EB; }
+            .stat-green::before {
+                background: #10B981;
+            }
 
-        /* ========== FAQ ========== */
-        .faq-section {
-            background: #FFFFFF;
-            border: 1px solid #EAECF0;
-            border-radius: 16px;
-            padding: 1.75rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-        }
+            .stat-amber::before {
+                background: #F59E0B;
+            }
 
-        .faq-section h2 {
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            color: #1A1F36;
-            margin-bottom: 1.25rem;
-        }
+            .stat-value {
+                font-size: 28px;
+                font-weight: 800;
+                color: #1A1F36;
+                margin-bottom: 4px;
+            }
 
-        .faq-container {
-            max-width: 720px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
+            .stat-label {
+                font-size: 12px;
+                font-weight: 500;
+                color: #6B7280;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+            }
 
-        .faq-item {
-            background: #F8FAFC;
-            border: 1px solid #EAECF0;
-            border-radius: 10px;
-            overflow: hidden;
-            transition: border-color 0.2s ease;
-        }
+                .stat-label i {
+                    font-size: 12px;
+                    color: #2563EB;
+                }
 
-        .faq-item.active {
-            border-color: #2563EB;
-            background: #FFFFFF;
-        }
+            .map-modal-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(15, 23, 42, 0.7);
+                backdrop-filter: blur(4px);
+                z-index: 2000;
+                align-items: center;
+                justify-content: center;
+                animation: fadeIn 0.2s ease;
+            }
 
-        .faq-question {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            background: none;
-            border: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            text-align: left;
-            gap: 12px;
-        }
+                .map-modal-overlay.active {
+                    display: flex;
+                }
 
-        .faq-question span {
-            font-size: 12px;
-            font-weight: 500;
-            color: #1A1F36;
-        }
+            .map-modal-card {
+                background: #FFFFFF;
+                border-radius: 20px;
+                width: 90%;
+                max-width: 800px;
+                max-height: 90vh;
+                overflow: hidden;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+                display: flex;
+                flex-direction: column;
+                animation: slideUp 0.3s ease;
+            }
 
-        .faq-question i {
-            color: #2563EB;
-            font-size: 11px;
-            transition: transform 0.25s ease;
-            flex-shrink: 0;
-        }
+            .map-modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 24px;
+                background: linear-gradient(135deg, #2563EB, #6366F1);
+                color: white;
+            }
 
-        .faq-item.active .faq-question i { transform: rotate(180deg); }
+                .map-modal-header h4 {
+                    font-size: 16px;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
 
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease, padding 0.3s ease;
-        }
+            .map-modal-close {
+                background: rgba(255,255,255,0.2);
+                border: none;
+                color: white;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                cursor: pointer;
+                font-size: 18px;
+                transition: all 0.2s;
+            }
 
-        .faq-item.active .faq-answer {
-            max-height: 150px;
-            padding: 0 1rem 0.8rem;
-        }
+                .map-modal-close:hover {
+                    background: rgba(255,255,255,0.4);
+                }
 
-        .faq-answer p {
-            font-size: 12px;
-            color: #6B7280;
-            line-height: 1.6;
-        }
+            .map-modal-body {
+                flex: 1;
+                padding: 0;
+            }
 
-        .faq-answer a {
-            color: #2563EB;
-            text-decoration: none;
-            font-weight: 500;
-        }
+            #mapContainer {
+                height: 450px;
+                width: 100%;
+                position: relative;
+            }
 
-        .faq-answer a:hover { text-decoration: underline; }
+            .map-modal-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 24px;
+                background: #F8FAFC;
+                border-top: 1px solid #EAECF0;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
 
-        /* ========== FOOTER ========== */
-        .footer {
-            text-align: center;
-            padding: 1.1rem;
-            color: #6B7280;
-            font-size: 11px;
-            background: #FFFFFF;
-            border-top: 1px solid #EAECF0;
-        }
+                .map-modal-footer p {
+                    font-size: 13px;
+                    color: #1A1F36;
+                    margin: 0;
+                }
 
-        /* ========== RESPONSIVE ========== */
-        @@media (max-width: 1024px) {
-            .feature-grid { grid-template-columns: repeat(2, 1fr); }
-        }
+            .btn-google-maps {
+                background: #DB4437;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 30px;
+                font-size: 12px;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font-weight: 500;
+                transition: all 0.2s;
+            }
 
-        @@media (max-width: 768px) {
-            .navbar { flex-direction: column; gap: 0.75rem; text-align: center; }
-            .hero-title { font-size: 1.65rem; }
-            .hero-buttons { flex-direction: column; align-items: center; }
-            .feature-grid { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .steps-container { flex-direction: column; }
-            .step-arrow { transform: rotate(90deg); }
-            .container { padding: 1rem; }
-        }
+                .btn-google-maps:hover {
+                    background: #C53929;
+                }
+
+            .leaflet-popup-content {
+                font-size: 13px;
+            }
+
+                .leaflet-popup-content b {
+                    color: #1A1F36;
+                }
+
+            @@keyframes fadeIn {
+                from {
+                    opacity: 0
+                }
+
+                to {
+                    opacity: 1
+                }
+            }
+
+            @@keyframes slideUp {
+                from {
+                    transform: translateY(30px);
+                    opacity: 0
+                }
+
+                to {
+                    transform: translateY(0);
+                    opacity: 1
+                }
+            }
+
+            .faq-section {
+                background: #FFFFFF;
+                border: 1px solid #EAECF0;
+                border-radius: 16px;
+                padding: 1.75rem;
+                margin-bottom: 1.5rem;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            }
+
+                .faq-section h2 {
+                    font-size: 14px;
+                    font-weight: 600;
+                    text-align: center;
+                    color: #1A1F36;
+                    margin-bottom: 1.25rem;
+                }
+
+            .faq-container {
+                max-width: 720px;
+                margin: 0 auto;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .faq-item {
+                background: #F8FAFC;
+                border: 1px solid #EAECF0;
+                border-radius: 10px;
+                overflow: hidden;
+                transition: border-color 0.2s ease;
+            }
+
+                .faq-item.active {
+                    border-color: #2563EB;
+                    background: #FFFFFF;
+                }
+
+            .faq-question {
+                width: 100%;
+                padding: 0.8rem 1rem;
+                background: none;
+                border: none;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                cursor: pointer;
+                text-align: left;
+                gap: 12px;
+            }
+
+                .faq-question span {
+                    font-size: 12px;
+                    font-weight: 500;
+                    color: #1A1F36;
+                }
+
+                .faq-question i {
+                    color: #2563EB;
+                    font-size: 11px;
+                    transition: transform 0.25s ease;
+                    flex-shrink: 0;
+                }
+
+            .faq-item.active .faq-question i {
+                transform: rotate(180deg);
+            }
+
+            .faq-answer {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease, padding 0.3s ease;
+            }
+
+            .faq-item.active .faq-answer {
+                max-height: 150px;
+                padding: 0 1rem 0.8rem;
+            }
+
+            .faq-answer p {
+                font-size: 12px;
+                color: #6B7280;
+                line-height: 1.6;
+            }
+
+            .faq-answer a {
+                color: #2563EB;
+                text-decoration: none;
+                font-weight: 500;
+            }
+
+                .faq-answer a:hover {
+                    text-decoration: underline;
+                }
+
+            .footer {
+                text-align: center;
+                padding: 1.1rem;
+                color: #6B7280;
+                font-size: 11px;
+                background: #FFFFFF;
+                border-top: 1px solid #EAECF0;
+            }
+
+            @@media (max-width: 1024px) {
+                .feature-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+
+            @@media (max-width: 768px) {
+                .navbar {
+                    flex-direction: column;
+                    gap: 0.75rem;
+                    text-align: center;
+                }
+
+                .hero-title {
+                    font-size: 1.65rem;
+                }
+
+                .hero-buttons {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .feature-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .stats-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+
+                .steps-container {
+                    flex-direction: column;
+                }
+
+                .step-arrow {
+                    transform: rotate(90deg);
+                }
+
+                .container {
+                    padding: 1rem;
+                }
+
+                .map-modal-card {
+                    width: 95%;
+                }
+
+                #mapContainer {
+                    height: 350px;
+                }
+            }
     </style>
 </head>
 <body>
@@ -527,9 +738,9 @@
                 <a href="/Incident/Create" class="btn-primary">
                     <i class="fas fa-exclamation-triangle"></i> Report Incident
                 </a>
-                <a href="/Incident/Map" class="btn-ghost">
+                <button id="openMapBtn" class="btn-ghost">
                     <i class="fas fa-map-marker-alt"></i> View Live Map
-                </a>
+                </button>
             </div>
         </div>
 
@@ -616,7 +827,6 @@
         <div class="faq-section">
             <h2>Frequently Asked Questions</h2>
             <div class="faq-container">
-
                 <div class="faq-item active">
                     <button class="faq-question" onclick="toggleFAQ(this)">
                         <span>How do I report an incident?</span>
@@ -626,7 +836,6 @@
                         <p>Click the <a href="/Incident/Create">"Report Incident"</a> button on this page. No login needed — fill out the form and our AI will automatically route it to the correct department.</p>
                     </div>
                 </div>
-
                 <div class="faq-item">
                     <button class="faq-question" onclick="toggleFAQ(this)">
                         <span>Do I need to create an account to report an issue?</span>
@@ -636,7 +845,6 @@
                         <p>No account required. However, <a href="/Account/Register">registering</a> lets you track your reports, receive status updates, and view your reporting history. It only takes a minute!</p>
                     </div>
                 </div>
-
                 <div class="faq-item">
                     <button class="faq-question" onclick="toggleFAQ(this)">
                         <span>What happens after I submit a report?</span>
@@ -646,10 +854,28 @@
                         <p>Our AI analyzes severity and category, then auto-routes to the right department (Fire, Police, or Rescue). The operator reviews and updates status — registered users receive real-time notifications.</p>
                     </div>
                 </div>
-
             </div>
         </div>
 
+    </div>
+
+    <!-- MAP MODAL -->
+    <div id="mapModal" class="map-modal-overlay">
+        <div class="map-modal-card">
+            <div class="map-modal-header">
+                <h4><i class="fas fa-map-marked-alt"></i> Live Map – Your Location & Nearby Places</h4>
+                <button class="map-modal-close" onclick="closeMapModal()">&times;</button>
+            </div>
+            <div class="map-modal-body">
+                <div id="mapContainer"></div>
+            </div>
+            <div class="map-modal-footer">
+                <p id="coordsText"><i class="fas fa-spinner fa-spin"></i> Fetching your location...</p>
+                <button onclick="openInGoogleMaps()" class="btn-google-maps">
+                    <i class="fab fa-google"></i> Open in Google Maps
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- FOOTER -->
@@ -657,16 +883,245 @@
         <p><i class="far fa-copyright"></i> 2026 Smart Civic Alert System — AI-Powered City Incident Management</p>
     </footer>
 
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // FAQ toggle
         function toggleFAQ(button) {
-            const faqItem = button.parentElement;
-            const isActive = faqItem.classList.contains('active');
-            document.querySelectorAll('.faq-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            if (!isActive) {
-                faqItem.classList.add('active');
-            }
+        const faqItem = button.parentElement;
+        const isActive = faqItem.classList.contains('active');
+        document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+        if (!isActive) faqItem.classList.add('active');
+        }
+
+        // ---------- MAP LOGIC ----------
+        let currentMap = null;
+        let userLat = null, userLng = null;
+
+        const mapModal = document.getElementById('mapModal');
+        const mapContainer = document.getElementById('mapContainer');
+        const coordsText = document.getElementById('coordsText');
+
+        document.getElementById('openMapBtn').addEventListener('click', () => {
+        mapModal.classList.add('active');
+        if (!currentMap) {
+        initMap();
+        } else {
+        if (userLat && userLng) {
+        currentMap.setView([userLat, userLng], 15);
+        }
+        if (userLat && userLng) fetchNearbyPlaces(userLat, userLng);
+        }
+        });
+
+        function closeMapModal() {
+        mapModal.classList.remove('active');
+        }
+
+        window.onclick = function(event) {
+        if (event.target === mapModal) closeMapModal();
+        };
+
+        function openInGoogleMaps() {
+        if (userLat && userLng) {
+        window.open(`https://www.google.com/maps/search/?api=1&query=${userLat},${userLng}`, '_blank');
+        } else {
+        alert('Location not yet determined.');
+        }
+        }
+
+        function initMap() {
+        // UPDATED: Ab main OpenStreetMap Standard Tiles use kar raha hoon taaki road names saaf dikhen
+        // Zoom level bhi badha diya hai (16) taaki names clear dikhen
+        currentMap = L.map('mapContainer').setView([33.5837, 73.3885], 16);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(currentMap);
+
+        if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+        position => {
+        userLat = position.coords.latitude;
+        userLng = position.coords.longitude;
+
+        currentMap.setView([userLat, userLng], 16);
+
+        const userIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+        });
+
+        L.marker([userLat, userLng], { icon: userIcon })
+        .addTo(currentMap)
+        .bindPopup('<b>📍 You are here</b>')
+        .openPopup();
+
+        coordsText.innerHTML = `<i class="fas fa-location-dot"></i> Lat: ${userLat.toFixed(5)}, Lng: ${userLng.toFixed(5)}`;
+
+        fetchNearbyPlaces(userLat, userLng);
+        },
+        error => {
+        coordsText.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Location access denied or unavailable.';
+        console.error('Geolocation error:', error);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+        } else {
+        coordsText.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Geolocation not supported.';
+        }
+        }
+
+        // ... (fetchNearbyPlaces function same rahega)
+        async function fetchNearbyPlaces(lat, lng) {
+        coordsText.innerHTML += ' <i class="fas fa-spinner fa-spin"></i> Finding nearby places...';
+
+        // Remove previous layer
+        if (currentMap._nearbyLayer) {
+        currentMap.removeLayer(currentMap._nearbyLayer);
+        }
+        const nearbyLayer = L.layerGroup().addTo(currentMap);
+        currentMap._nearbyLayer = nearbyLayer;
+
+        const categories = [
+        { key: 'amenity', value: 'hospital',      color: '#EF4444', icon: 'fa-hospital',         label: 'Hospital' },
+        { key: 'amenity', value: 'school',         color: '#F59E0B', icon: 'fa-school',            label: 'School' },
+        { key: 'shop',    value: 'mall',            color: '#8B5CF6', icon: 'fa-shopping-cart',    label: 'Mall' },
+        { key: 'amenity', value: 'marketplace',    color: '#10B981', icon: 'fa-store',             label: 'Market' },
+        { key: 'shop',    value: 'supermarket',    color: '#EC4899', icon: 'fa-shopping-basket',   label: 'Supermarket' }
+        ];
+
+        // Build query with nwr (node, way, relation) + out center to get coordinates for areas
+        let queryParts = [];
+        categories.forEach(cat => {
+        queryParts.push(`nwr["${cat.key}"="${cat.value}"](around:5000,${lat},${lng});`);
+        });
+        const query = `[out:json][timeout:15];(${queryParts.join('')});out center;`;
+
+        const servers = [
+        'https://overpass-api.de/api/interpreter',
+        'https://overpass.kumi.systems/api/interpreter',
+        'https://maps.mail.ru/osm/tools/overpass/api/interpreter'
+        ];
+
+        let data = null;
+        for (const server of servers) {
+        try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 12000); // 12s
+        const response = await fetch(server, {
+        method: 'POST',
+        body: 'data=' + encodeURIComponent(query),
+        signal: controller.signal
+        });
+        clearTimeout(timeout);
+        if (response.ok) {
+        data = await response.json();
+        break; // success
+        }
+        } catch (e) {
+        console.warn(`Overpass server ${server} failed:`, e);
+        continue;
+        }
+        }
+
+        if (!data || !data.elements) {
+        // Show error popup on map
+        L.popup()
+        .setLatLng([lat, lng])
+        .setContent('<div style="color:#DC2626;"><i class="fas fa-exclamation-circle"></i> Could not load nearby places. Please try again later.</div>')
+        .openOn(currentMap);
+        coordsText.innerHTML = coordsText.innerHTML.replace(' <i class="fas fa-spinner fa-spin"></i> Finding nearby places...', '');
+        return;
+        }
+
+        // Build tag lookup for categories
+        const catMap = {};
+        categories.forEach(c => catMap[c.value] = c);
+
+        // Process elements
+        let addedCount = 0;
+        data.elements.forEach(element => {
+        let elLat, elLon;
+        if (element.type === 'node') {
+        elLat = element.lat;
+        elLon = element.lon;
+        } else if (element.center) {
+        elLat = element.center.lat;
+        elLon = element.center.lon;
+        } else {
+        return;
+        }
+
+        const tags = element.tags || {};
+        let matchedCat = null;
+        for (const cat of categories) {
+        if (tags[cat.key] === cat.value) {
+        matchedCat = cat;
+        break;
+        }
+        }
+        if (!matchedCat) return;
+
+        const name = tags.name || tags['name:en'] || (matchedCat.label + ' (unnamed)');
+        const popupContent = `<b><i class="fas ${matchedCat.icon}" style="color:${matchedCat.color};"></i> ${escapeHtml(name)}</b><br/>${matchedCat.label}`;
+
+        const marker = L.circleMarker([elLat, elLon], {
+        radius: 7,
+        fillColor: matchedCat.color,
+        color: '#fff',
+        weight: 1,
+        fillOpacity: 0.85
+        }).bindPopup(popupContent);
+
+        nearbyLayer.addLayer(marker);
+        addedCount++;
+        });
+
+        // If no places were added, show a popup
+        if (addedCount === 0) {
+        L.popup()
+        .setLatLng([lat, lng])
+        .setContent('<div style="color:#6B7280;"><i class="fas fa-info-circle"></i> No nearby places found within 5 km.</div>')
+        .openOn(currentMap);
+        } else {
+        // Add legend only if we have real data
+        if (!currentMap._legendAdded) {
+        const legend = L.control({ position: 'bottomright' });
+        legend.onAdd = function() {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.background = 'white';
+        div.style.padding = '6px 10px';
+        div.style.borderRadius = '6px';
+        div.style.fontSize = '12px';
+        div.style.boxShadow = '0 1px 4px rgba(0,0,0,0.1)';
+        div.innerHTML = '<strong>Nearby Places</strong><br/>';
+        categories.forEach(c => {
+        div.innerHTML += `<i class="fas ${c.icon}" style="color:${c.color}; width:14px; display:inline-block;"></i> ${c.label}<br/>`;
+        });
+        return div;
+        };
+        legend.addTo(currentMap);
+        currentMap._legendAdded = true;
+        }
+        }
+
+        coordsText.innerHTML = coordsText.innerHTML.replace(' <i class="fas fa-spinner fa-spin"></i> Finding nearby places...', '');
+        }
+
+        function escapeHtml(text) {
+        if (!text) return '';
+        return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
         }
     </script>
 </body>
