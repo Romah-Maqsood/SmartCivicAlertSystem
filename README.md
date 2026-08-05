@@ -213,50 +213,39 @@ SmartCityPulse/
 | CreatedAt | DateTime | Account creation timestamp |
 
 ---
-
 ## Detailed Feature Explanations
 
-# Incident Reporting
-
+### Incident Reporting
 Citizens can report incidents by providing details such as title, description, location, severity, and an optional image. AI can automatically generate incident information from uploaded images.
 
-# SOS Emergency
-
+### SOS Emergency
 Allows users to send one-click emergency alerts with their current location. The system creates a high-priority incident and instantly notifies the relevant department.
 
-# Reports Management
-
+### Reports Management
 Users can view incident history, track report status, and export selected reports as PDF or CSV.
 
-# Real-Time Notifications
-
+### Real-Time Notifications
 SignalR provides instant notifications for incident updates, SOS alerts, and department-specific events without requiring a page refresh.
 
 ## AI Features
-# AI Vision
 
+### AI Vision
 Uses Google Gemini Vision API to analyze uploaded images and automatically generate the incident title, description, severity, and recommended department.
 
-# AI Department Recommendation
-
+### AI Department Recommendation
 Analyzes incident descriptions and suggests the most appropriate department for handling the incident.
 
-# AI Report Summarizer
-
+### AI Report Summarizer
 Generates concise summaries of incident reports, helping administrators and operators review incidents more efficiently.
 
-# RAG Chatbot
-
+### RAG Chatbot
 Enables administrators to query incident data using natural language and receive context-aware responses powered by Retrieval-Augmented Generation (RAG).
 
-# City Assistant Chatbot
-
+### City Assistant Chatbot
 Provides citizens with instant assistance for platform navigation, emergency contacts, safety tips, and common queries.
 
-# Interactive Incident Mapping
-
+### Interactive Incident Mapping
 Uses Leaflet.js and OpenStreetMap to display incident locations on an interactive map, helping operators monitor and respond to incidents efficiently.
-
 ---
 
 ## User Roles
