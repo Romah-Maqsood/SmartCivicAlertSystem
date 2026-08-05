@@ -31,11 +31,19 @@ Smart Civic Alert System is an AI-powered city operations platform that enables 
 - Priority-based incident handling
 
 ### Admin Module
+- Dashboard with real-time system statistics and analytics
 - User management for citizens and operators
-- System oversight with comprehensive incident monitoring
+- Comprehensive incident monitoring across all departments
 - Priority-based incident sorting and management
-- RAG Chatbot implementation for advanced query handling
-- Full system access and configuration
+- Incident status tracking and response monitoring
+- Department-wise incident analytics and reporting
+- Response time analysis and performance insights
+- Historical incident record management
+- RAG Chatbot for intelligent incident queries and data retrieval
+- AI-powered report summarization
+- View incident severity and status distributions
+- Monitor department activities and system performance
+- Full system access and administrative configuration
 
 ---
 
@@ -208,26 +216,46 @@ SmartCityPulse/
 
 ## Detailed Feature Explanations
 
-### Incident Reporting
-Citizens can submit incident reports through a comprehensive form. The system supports manual entry of title, description, location, severity, and department selection. Optional photo upload allows citizens to attach images up to 5MB in JPG or PNG format. The AI Vision feature analyzes uploaded photos using Google Gemini API to automatically populate title, description, severity, and department fields. The AI department suggestion provides intelligent recommendations based on the incident description.
+# Incident Reporting
 
-### SOS Emergency
-The SOS feature provides one-click emergency alert functionality. Citizens enter or auto-detect their current location using browser geolocation. The system immediately notifies the Rescue Department, creates a Critical priority incident, and alerts all departments in real-time through SignalR. A confirmation toast message appears after successful submission.
+Citizens can report incidents by providing details such as title, description, location, severity, and an optional image. AI can automatically generate incident information from uploaded images.
 
-### Reports Export
-Citizens can export incident reports in PDF and CSV formats. The Reports page displays all incidents with checkboxes for selective download. Users can select specific incidents and download them as professional PDF documents or Excel-compatible CSV files. The download process generates only the selected reports without including the sidebar or other UI elements.
+# SOS Emergency
 
-### Real-Time Notifications
-SignalR integration provides live notifications for incident status changes. Notifications are department-specific, ensuring relevant personnel receive appropriate alerts. Users can mark notifications as read or resolved directly from the interface. The system supports in-app toast notifications for important updates.
+Allows users to send one-click emergency alerts with their current location. The system creates a high-priority incident and instantly notifies the relevant department.
 
-### AI Features
-Google Gemini Vision API powers the AI image analysis functionality. The system analyzes uploaded incident photos to detect incident type, estimate severity, and suggest appropriate departments. The AI department suggestion analyzes incident descriptions to recommend the most suitable department. The RAG Chatbot in the admin module provides advanced query handling capabilities.
+# Reports Management
 
-### City Assistant Chatbot
-The chatbot provides quick help for common queries, emergency numbers, and navigation support. Responses are professional, informative, and formatted with clean bullet points. The chatbot guides users through platform features without using emojis or informal language.
+Users can view incident history, track report status, and export selected reports as PDF or CSV.
 
-### Operator Mapping
-Operators can view incident locations on OpenStreetMap integration. The mapping functionality displays incident pins with severity indicators, allowing operators to visualize incident distribution and respond efficiently.
+# Real-Time Notifications
+
+SignalR provides instant notifications for incident updates, SOS alerts, and department-specific events without requiring a page refresh.
+
+## AI Features
+# AI Vision
+
+Uses Google Gemini Vision API to analyze uploaded images and automatically generate the incident title, description, severity, and recommended department.
+
+# AI Department Recommendation
+
+Analyzes incident descriptions and suggests the most appropriate department for handling the incident.
+
+# AI Report Summarizer
+
+Generates concise summaries of incident reports, helping administrators and operators review incidents more efficiently.
+
+# RAG Chatbot
+
+Enables administrators to query incident data using natural language and receive context-aware responses powered by Retrieval-Augmented Generation (RAG).
+
+# City Assistant Chatbot
+
+Provides citizens with instant assistance for platform navigation, emergency contacts, safety tips, and common queries.
+
+# Interactive Incident Mapping
+
+Uses Leaflet.js and OpenStreetMap to display incident locations on an interactive map, helping operators monitor and respond to incidents efficiently.
 
 ---
 
@@ -254,9 +282,11 @@ Operators can view incident locations on OpenStreetMap integration. The mapping 
 ### Admin
 - Monitor all system incidents
 - Manage citizen and operator users
+- Manage admin profile and account
 - Oversee system operations
-- Access RAG Chatbot for advanced queries
-- Priority-based incident sorting
+- Track incident progress and response time
+- Access RAG Chatbot for intelligent data retrivel
+- Can view reports of all incidents and summarize them using AI Summerizer
 - Full system configuration access
 
 ---
@@ -264,7 +294,7 @@ Operators can view incident locations on OpenStreetMap integration. The mapping 
 ## Contributors
 
 - Romah Maqsood: Citizen Dashboard, AI Vision Integration, Reports Module, Profile Management, Notifications, City Assistant Chatbot
-- Taqdees: Admin Dashboard, Priority System, RAG Chatbot Integration, Database Design
+- Taqdees: Admin Module, Priority System, RAG Chatbot Integration, Database Design , SignalR Hub , AI Report Summarizer
 - Samra Ramzan: Operator Dashboard, Incident Management, OpenStreetMap Integration, Analytics
 
 ---
